@@ -34,8 +34,7 @@ namespace ReporteGasolina
             CargarPeriodoActual();
 
             ConsultarPrecios();
-            
-
+        
         }
 
 
@@ -450,6 +449,11 @@ namespace ReporteGasolina
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
             }
+        }
+
+        private void btnProcesar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 

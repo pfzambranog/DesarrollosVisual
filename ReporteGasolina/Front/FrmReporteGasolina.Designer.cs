@@ -31,11 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.pnlHeader = new System.Windows.Forms.Panel();
-            this.btnSalir = new System.Windows.Forms.Button();
-            this.btnProcesar = new System.Windows.Forms.Button();
-            this.btnExcel = new System.Windows.Forms.Button();
-            this.btnImportarExcel = new System.Windows.Forms.Button();
-            this.btnConsultar = new System.Windows.Forms.Button();
             this.txtUsuario = new System.Windows.Forms.TextBox();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.txtOperacion = new System.Windows.Forms.TextBox();
@@ -51,6 +46,11 @@
             this.grpCostoGasolina = new System.Windows.Forms.GroupBox();
             this.dvgPrecios = new System.Windows.Forms.DataGridView();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.btnSalir = new System.Windows.Forms.Button();
+            this.btnProcesar = new System.Windows.Forms.Button();
+            this.btnExcel = new System.Windows.Forms.Button();
+            this.btnImportarExcel = new System.Windows.Forms.Button();
+            this.btnConsultar = new System.Windows.Forms.Button();
             this.pnlHeader.SuspendLayout();
             this.grpParametros.SuspendLayout();
             this.grpCostoGasolina.SuspendLayout();
@@ -78,66 +78,6 @@
             this.pnlHeader.Size = new System.Drawing.Size(1200, 168);
             this.pnlHeader.TabIndex = 0;
             this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
-            // 
-            // btnSalir
-            // 
-            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSalir.Image = global::ReporteGasolina.Properties.Resources.salir;
-            this.btnSalir.Location = new System.Drawing.Point(276, 0);
-            this.btnSalir.Name = "btnSalir";
-            this.btnSalir.Size = new System.Drawing.Size(64, 65);
-            this.btnSalir.TabIndex = 11;
-            this.btnSalir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnSalir.UseVisualStyleBackColor = true;
-            this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
-            // 
-            // btnProcesar
-            // 
-            this.btnProcesar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnProcesar.Image = global::ReporteGasolina.Properties.Resources.procesar;
-            this.btnProcesar.Location = new System.Drawing.Point(206, 0);
-            this.btnProcesar.Name = "btnProcesar";
-            this.btnProcesar.Size = new System.Drawing.Size(64, 65);
-            this.btnProcesar.TabIndex = 10;
-            this.btnProcesar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnProcesar.UseVisualStyleBackColor = true;
-            // 
-            // btnExcel
-            // 
-            this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExcel.Image = global::ReporteGasolina.Properties.Resources.Excel;
-            this.btnExcel.Location = new System.Drawing.Point(136, 0);
-            this.btnExcel.Name = "btnExcel";
-            this.btnExcel.Size = new System.Drawing.Size(64, 65);
-            this.btnExcel.TabIndex = 9;
-            this.btnExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnExcel.UseVisualStyleBackColor = true;
-            this.btnExcel.Click += new System.EventHandler(this.btnExcel_Click);
-            // 
-            // btnImportarExcel
-            // 
-            this.btnImportarExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnImportarExcel.Image = global::ReporteGasolina.Properties.Resources.importar;
-            this.btnImportarExcel.Location = new System.Drawing.Point(68, 0);
-            this.btnImportarExcel.Name = "btnImportarExcel";
-            this.btnImportarExcel.Size = new System.Drawing.Size(64, 65);
-            this.btnImportarExcel.TabIndex = 8;
-            this.btnImportarExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnImportarExcel.UseVisualStyleBackColor = true;
-            this.btnImportarExcel.Click += new System.EventHandler(this.btnImportarExcel_Click);
-            // 
-            // btnConsultar
-            // 
-            this.btnConsultar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnConsultar.Image = global::ReporteGasolina.Properties.Resources.consultar;
-            this.btnConsultar.Location = new System.Drawing.Point(0, 0);
-            this.btnConsultar.Name = "btnConsultar";
-            this.btnConsultar.Size = new System.Drawing.Size(64, 65);
-            this.btnConsultar.TabIndex = 7;
-            this.btnConsultar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.btnConsultar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.btnConsultar.UseVisualStyleBackColor = true;
-            this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
             // 
             // txtUsuario
             // 
@@ -303,6 +243,67 @@
             this.dvgPrecios.Size = new System.Drawing.Size(1192, 600);
             this.dvgPrecios.TabIndex = 0;
             this.dvgPrecios.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dvgPrecios_CellContentClick);
+            // 
+            // btnSalir
+            // 
+            this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSalir.Image = global::ReporteGasolina.Properties.Resources.salir;
+            this.btnSalir.Location = new System.Drawing.Point(276, 0);
+            this.btnSalir.Name = "btnSalir";
+            this.btnSalir.Size = new System.Drawing.Size(64, 65);
+            this.btnSalir.TabIndex = 11;
+            this.btnSalir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnSalir.UseVisualStyleBackColor = true;
+            this.btnSalir.Click += new System.EventHandler(this.btnSalir_Click);
+            // 
+            // btnProcesar
+            // 
+            this.btnProcesar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProcesar.Image = global::ReporteGasolina.Properties.Resources.procesar;
+            this.btnProcesar.Location = new System.Drawing.Point(206, 0);
+            this.btnProcesar.Name = "btnProcesar";
+            this.btnProcesar.Size = new System.Drawing.Size(64, 65);
+            this.btnProcesar.TabIndex = 10;
+            this.btnProcesar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnProcesar.UseVisualStyleBackColor = true;
+            this.btnProcesar.Click += new System.EventHandler(this.btnProcesar_Click);
+            // 
+            // btnExcel
+            // 
+            this.btnExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnExcel.Image = global::ReporteGasolina.Properties.Resources.Excel;
+            this.btnExcel.Location = new System.Drawing.Point(136, 0);
+            this.btnExcel.Name = "btnExcel";
+            this.btnExcel.Size = new System.Drawing.Size(64, 65);
+            this.btnExcel.TabIndex = 9;
+            this.btnExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnExcel.UseVisualStyleBackColor = true;
+            this.btnExcel.Click += new System.EventHandler(this.btnExcel_Click);
+            // 
+            // btnImportarExcel
+            // 
+            this.btnImportarExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnImportarExcel.Image = global::ReporteGasolina.Properties.Resources.importar;
+            this.btnImportarExcel.Location = new System.Drawing.Point(68, 0);
+            this.btnImportarExcel.Name = "btnImportarExcel";
+            this.btnImportarExcel.Size = new System.Drawing.Size(64, 65);
+            this.btnImportarExcel.TabIndex = 8;
+            this.btnImportarExcel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnImportarExcel.UseVisualStyleBackColor = true;
+            this.btnImportarExcel.Click += new System.EventHandler(this.btnImportarExcel_Click);
+            // 
+            // btnConsultar
+            // 
+            this.btnConsultar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConsultar.Image = global::ReporteGasolina.Properties.Resources.consultar;
+            this.btnConsultar.Location = new System.Drawing.Point(0, 0);
+            this.btnConsultar.Name = "btnConsultar";
+            this.btnConsultar.Size = new System.Drawing.Size(64, 65);
+            this.btnConsultar.TabIndex = 7;
+            this.btnConsultar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.btnConsultar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnConsultar.UseVisualStyleBackColor = true;
+            this.btnConsultar.Click += new System.EventHandler(this.btnConsultar_Click);
             // 
             // FrmReporteGasolina
             // 

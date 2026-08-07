@@ -1,12 +1,23 @@
 ﻿using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using ReporteGasolina.Infrastructure;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+
 
 namespace ReporteGasolina.Services
 {
     public class ExcelExportService
     {
+
+
+
+
         public void ExportarPreciosGasolina(
             string archivo,
             DataGridView grid,
@@ -20,6 +31,8 @@ namespace ReporteGasolina.Services
             {
                 var worksheet =
                     workbook.Worksheets.Add("Gasolina");
+
+                AgregarLogo(worksheet, AppSettings.Compania);
 
                 ConstruirEncabezado(
                     worksheet,
@@ -35,6 +48,41 @@ namespace ReporteGasolina.Services
                 workbook.SaveAs(archivo);
             }
         }
+
+        private void AgregarLogo(IXLWorksheet ws, string ciaCodigo)
+        {
+            string nombreLogo = $"logo_{ciaCodigo.Trim().ToLower()}";
+
+            Image logo = Properties.Resources.ResourceManager
+                                .GetObject(nombreLogo) as Image;
+
+
+
+            if (logo == null)
+            {
+                MessageBox.Show(
+                    $"No existe el recurso: {nombreLogo}");
+                return;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                logo.Save(ms, ImageFormat.Png);
+
+                ms.Position = 0;
+
+                var picture =
+                    ws.AddPicture(
+                        ms,
+                        XLPictureFormat.Png,
+                        "Logo");
+
+                picture.MoveTo(ws.Cell("A1"));
+
+                picture.WithSize(226, 85);
+            }
+        }
+
 
         private void ConstruirEncabezado(
             IXLWorksheet ws,
