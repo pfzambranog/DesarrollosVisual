@@ -1,46 +1,25 @@
-Datos Generales.
-
-Base de datos: Microsoft SQL Server 2008 R2 (RTM) - 10.50.1600.1 (X64)   Apr  2 2010 15:48:46   Copyright (c) Microsoft Corporation  Standard Edition (64-bit) on Windows NT 6.1 <X64> (Build 7601: Service Pack 1) 
-Servidor: 192.168.1.24 Puerto 1433.
-          Windows 7
-
-Ambiente de desarrollo: Windows 11, Ip 192.168.1.20
-
-Funcionalidad:
-
- Actualizar los precios de la Gasolina por año, mes y zona mediante la lectura de un archivo excel 
- Generar un reporte en excel de los precios de la Gasolina cargados en la base de datos.
- Generar un reporte con el detalle de la asignación mensual de la asignacion del importe de gasolina a empleados.
-    
-
-Este es el back desarrollado para el Reporte Control de pago de Gasolina.
-
-
-
-
-Tablas
-
+1.- Tablas
 Use adam
 Go
 
-If Exists ( Select	Top 1 1
-			From	Sysobjects
-			Where	Uid = 1
-			And		Type = 'U'
-			And		Name = 'Ls_HistPrecioGasolinaTbl')
-	Begin
-	   Drop table dbo.Ls_HistPrecioGasolinaTbl;
-	End
+If Exists ( Select  Top 1 1
+            From    Sysobjects
+            Where   Uid = 1
+            And     Type = 'U'
+            And     Name = 'Ls_HistPrecioGasolinaTbl')
+    Begin
+       Drop table dbo.Ls_HistPrecioGasolinaTbl;
+    End
 Go
 
 Create table dbo.Ls_HistPrecioGasolinaTbl
-(compania	 Char(4)	   Not Null,
- anio		 Smallint	   Not Null,
- mes		 Tinyint	   Not Null,
- ciudad		 Char(10)	   Not Null,
- precio		 Decimal(19,2) Not Null,
- usuario	 Varchar(30)   Not Null,
- fechaAct	 Datetime	   Not Null Default Getdate(),
+(compania    Char(4)       Not Null,
+ anio        Smallint      Not Null,
+ mes         Tinyint       Not Null,
+ ciudad      Char(10)      Not Null,
+ precio      Decimal(19,2) Not Null,
+ usuario     Varchar(30)   Not Null,
+ fechaAct    Datetime      Not Null Default Getdate(),
  Constraint Ls_HistPrecioGasolinaPK
 Primary Key (compania, anio, mes, ciudad),
 Constraint Ls_HistPrecioGasolinaFk01
@@ -56,79 +35,80 @@ Go
 --
 
 Declare
-   @v_existe	Bit		= 0,
-   @v_table		Sysname = 'Ls_HistPrecioGasolinaTbl';
+   @v_existe    Bit     = 0,
+   @v_table     Sysname = 'Ls_HistPrecioGasolinaTbl';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Tabla Histórica de Precios de Gasolina por Región',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table;
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Tabla Histórica de Precios de Gasolina por Región',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table;
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Código Único de Compañía',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'compania'
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Código Único de Compañía',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'compania'
 
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Año de Proceso',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'anio';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Año de Proceso',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'anio';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Mes de Proceso',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'mes';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Mes de Proceso',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'mes';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Código de Ciudad',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'ciudad';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Código de Ciudad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'ciudad';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Precio de la gasolina en el período para la Ciudad',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'precio';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Precio de la gasolina en el período para la Ciudad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'precio';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Ult. Codigo Usuario que Actualizo el Registro',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'usuario';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Ult. Codigo Usuario que Actualizo el Registro',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'usuario';
 
-Execute sp_addExtendedproperty	@name		= N'Ms_descripcion',
-								@value		= N'Ult. Fecha de Actualización del Registro',
-								@level0type = N'Schema',
-								@level0name = N'dbo',
-								@level1type = N'Table',
-								@level1name = @v_table,
-								@level2type = N'column',
-								@level2name = 'fechaAct';
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Ult. Fecha de Actualización del Registro',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'fechaAct';
+
 
 -- Use adam
 -- Go
@@ -297,7 +277,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'descRegion';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Nombre del Departamento Relacionado al Trabajador',
                                 @level0type = N'Schema',
@@ -306,7 +286,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'descDepart';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Nombre de la Zona Relacionada al Trabajador',
                                 @level0type = N'Schema',
@@ -315,7 +295,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'desczona';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Nombre de la Ciudad Relacionada al Trabajador',
                                 @level0type = N'Schema',
@@ -333,7 +313,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'PVPLitro';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Cantidad de Litros de Gasolina por Trabajador',
                                 @level0type = N'Schema',
@@ -360,7 +340,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'diasFalta';
-                               
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Importe por Falta Aplicable a la Asignación por Gasolina del Mes',
                                 @level0type = N'Schema',
@@ -378,7 +358,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'diasIncap';
-                               
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Importe por Incapacidad Aplicable a la Asignación por Gasolina del Mes',
                                 @level0type = N'Schema',
@@ -388,7 +368,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level2type = N'column',
                                 @level2name = N'impIncap';
 
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Importe Bruto de Asignación por Gasolina del Mes',
                                 @level0type = N'Schema',
@@ -397,7 +377,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'totalDias';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Importe Neto de Asignación por Gasolina del Mes',
                                 @level0type = N'Schema',
@@ -414,8 +394,8 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1type = N'Table',
                                 @level1name = @v_table,
                                 @level2type = N'column',
-                                @level2name = N'tarjeta'; 
-                                
+                                @level2name = N'tarjeta';
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Tipo de Linea del Reporte T = Titulo, D = Detalle',
                                 @level0type = N'Schema',
@@ -424,7 +404,7 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = N'tipoLinea';
-                                
+
 Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @value      = N'Ult. Codigo Usuario que Actualizo el Registro',
                                 @level0type = N'Schema',
@@ -442,7 +422,6 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level1name = @v_table,
                                 @level2type = N'column',
                                 @level2name = 'fechaAct';
-
 
 -- Use adam
 -- Go
@@ -835,15 +814,223 @@ Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
                                 @level2name = 'fechaAct';
 
 
---
--- Datos de Parametrización
---
+-- Use adam
+-- Go
 
-Use adam
+If Exists ( Select  Top 1 1
+            From    Sysobjects
+            Where   Uid = 1
+            And     Type = 'U'
+            And     Name = 'Ls_RepFaltasIncapacidadTbl')
+    Begin
+       Drop table dbo.Ls_RepFaltasIncapacidadTbl;
+    End
+Go
+
+Create table dbo.Ls_RepFaltasIncapacidadTbl
+ (compania         Char(4)        Not Null,
+  anio             Smallint       Not Null,
+  mes              Tinyint        Not Null,
+  descRegion       Varchar(100)   Not Null Default Char(32),
+  depZona          Varchar( 25)   Not Null Default Char(32),
+  descCiudad       Varchar(100)   Not Null Default Char(32),
+  trabajador       Char(10)       Not Null,
+  nombre           Varchar(100)   Not Null Default Char(32),
+  fechaInicio      Date           Not Null,
+  fechaTermino     Varchar( 10)   Not Null Default Char(32),
+  dias             Integer        Not Null Default 0,
+  diasDet          Varchar(100)   Not Null Default Char(32),
+  pago             Decimal(19, 2) Not Null Default 0,
+  observaciones    Varchar(100)   Not Null Default Char(32),
+  tarjeta          Varchar( 30)   Not Null Default Char(32),
+  usuario          Varchar( 30)   Not Null,
+  fechaAct         Datetime       Not Null Default Getdate(),
+ Constraint Ls_RepFaltasIncapacidadPK
+Primary Key (compania, anio, mes, trabajador, fechaInicio),
+Constraint Ls_RepFaltasIncapacidadFk01
+Foreign Key (compania)
+References dbo.companias (compania) On Delete Cascade,
+Constraint Ls_RepFaltasIncapacidadFk02
+Foreign Key (compania, trabajador)
+References dbo.trabajadores_grales (compania, trabajador) On Delete Cascade)
+Go
+
+Grant Select, Insert, Update, Delete, References On Ls_RepFaltasIncapacidadTbl To Public
 Go
 
 --
--- Objetivo.: Generación de Operación Reporte de Gasolina.
+-- Comentarios
+--
+
+Declare
+   @v_existe    Bit     = 0,
+   @v_table     Sysname = 'Ls_RepFaltasIncapacidadTbl';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Tabla Trabajo de Incidencias por Incapacidad para el Reporte de Gasolina.',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table;
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Código Único de Compañía',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'compania'
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Año de Proceso',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'anio';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Mes de Proceso',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'mes';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Nombre de la Región Relacionada al Trabajador',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'descRegion';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Código del Departamento y la Zona  Relacionada al Trabajador',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'depZona';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Nombre de la Ciudad Relacionada al Trabajador',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'descCiudad';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Código de Trabajador',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'trabajador';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Nombre del Trabajador',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'nombre';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Fecha Inicio Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'fechaInicio';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Fecha Termino Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'fechaTermino';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Cantidad de Días de Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'dias';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Detalle de Días de Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'diasDet';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Importe de los Dias de Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'pago';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Observaciones sobre el pago de la Incapacidad',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'observaciones';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Tarjeta donde se deposita la Asignación por Gasolina del Mes',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'tarjeta';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Ult. Codigo Usuario que Actualizo el Registro',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = N'usuario';
+
+Execute sp_addExtendedproperty  @name       = N'Ms_descripcion',
+                                @value      = N'Ult. Fecha de Actualización del Registro',
+                                @level0type = N'Schema',
+                                @level0name = N'dbo',
+                                @level1type = N'Table',
+                                @level1name = @v_table,
+                                @level2type = N'column',
+                                @level2name = 'fechaAct';
+
+
+2.- operaciones
+
+--
+-- Objetivo.: Generación de Operación Mantenimiento Firma/Imagen/Logo.
 -- Fecha:     01/06/2026
 -- Version:   1
 -- Programador: Pedro Zambrano.
@@ -895,17 +1082,17 @@ Begin
   From   rel_oper_menus
   Where  modulo = 'NS'
   And    Menu   = 20;
-  
+
   Insert Into rel_oper_menus
  (modulo,       menu, secuencia, tipo_llamada,
   ejecuta_menu, ejecuta_operacion)
-  Select 'NS', 20, Isnull(@v_secuencia, 0) + 1, 2, 
+  Select 'NS', 20, Isnull(@v_secuencia, 0) + 1, 2,
           null,   @v_operacion;
 
    Insert Into aut_operaciones
   (usuario, operacion, nivel_seguridad)
    Select 'ADAM', @v_operacion, 4;
-   
+
    Return;
 
 End;
@@ -1115,6 +1302,8 @@ Begin
    Values (@v_campo, 1, @v_agrupacion)
 
 --
+-- Número de Tarjeta de Pago Asignación Gasolina
+--
 
    Select @v_campo      = 'tarjetagas',
           @v_agrupacion = 'var_tra_21';
@@ -1130,15 +1319,34 @@ Begin
    Insert Into dbo.criterios_valores
    (campo, item, descripcion)
    Values (@v_campo, 1, @v_agrupacion)
-   
+
+--
+-- Directorio Ubicación del reporte de salida
+--
+
+   Set @v_campo      = 'dirsalgas'
+
+   If Exists (Select top 1 1
+              From   dbo.criterios_valores
+              Where  campo = @v_campo)
+      Begin
+         Delete dbo.criterios_valores
+         Where  campo = @v_campo;
+      End
+
+   Insert Into dbo.criterios_valores
+   (campo, item, descripcion)
+   Values (@v_campo, 1, 'C:\TempAdam');
+
+
    Return
 
 End;
 Go
 
---
--- Funciones
---
+
+
+3.- Funciones
 
 -- Use Adam
 --Go
@@ -1195,17 +1403,17 @@ Go
 --Go
 
 If Exists ( Select Top 1 1
-			From   sysobjects
-			Where  Uid	= 1
-			And	   Type = 'Fn'
-			And	   Name = 'fn_obten_nss')
+            From   sysobjects
+            Where  Uid  = 1
+            And    Type = 'Fn'
+            And    Name = 'fn_obten_nss')
    Begin
-	  Drop Function dbo.fn_obten_nss
+      Drop Function dbo.fn_obten_nss
    End
 Go
 
 Create Function dbo.fn_obten_nss
-   (@PsTrabajador	Char(10))
+   (@PsTrabajador   Char(10))
 Returns Char(150)
 As
 
@@ -1213,32 +1421,33 @@ Begin
 
 -- ***************************************************************************************************************************
 --
--- Nombre físico :	 fn_obten_nss
--- Autor:			 Pedro Zambrano
--- Fecha:			 23-jul-2026.
--- Objetivo:		 Funcion que consulta el numero de seguridad social del trabajador
--- Versión:			 1
+-- Nombre físico :   fn_obten_nss
+-- Autor:            Pedro Zambrano
+-- Fecha:            23-jul-2026.
+-- Objetivo:         Funcion que consulta el numero de seguridad social del trabajador
+-- Versión:          1
 --
 -- ***************************************************************************************************************************
 
 
    Declare
-	  @v_nss	 Varchar(20);
+      @v_nss     Varchar(20);
 
    Begin
-	  Select @v_nss = Isnull(reg_seguro_social, Char(32))
-	  From	 dbo.trabajadores
-	  Where	 trabajador = @PsTrabajador;
-	  If @@Rowcount = 0
-		 Begin
-			Set @v_nss = Char(32);
-		 End;
+      Select @v_nss = Isnull(reg_seguro_social, Char(32))
+      From   dbo.trabajadores
+      Where  trabajador = @PsTrabajador;
+      If @@Rowcount = 0
+         Begin
+            Set @v_nss = Char(32);
+         End;
    End
 
    Return (@v_nss);
 
 End;
 Go
+
 
 -- Use Adam
 --Go
@@ -1275,11 +1484,11 @@ Begin
       @v_fecha_termino         Date;
 
    Begin
-      Select @v_fecha_termino  = DateAdd(dd, -1, DateAdd(mm, 1, 
+      Select @v_fecha_termino  = DateAdd(dd, -1, DateAdd(mm, 1,
                                  Convert(Date, '01/' + Cast(DatePart(mm,   @PdFecha) As Varchar) + '/' +
                                  Cast(DatePart(yyyy, @PdFecha) As Varchar), 103)));
    End;
-   
+
    Return (@v_fecha_termino);
 
 End;
@@ -1338,6 +1547,7 @@ Begin
 End;
 Go
 
+
 -- Use Adam
 --Go
 
@@ -1380,15 +1590,15 @@ Begin
    Begin
       Select @v_fecha_inicio  = Convert(Date, '01/' + Cast(@PnMes  As Varchar) + '/' +
                                                       Cast(@PnAnio As Varchar), 103),
-             @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio);   
+             @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio);
 
       If @PnAcum = 1
          Begin
             Select @v_fecha_inicio  = DateAdd(Month, -1, @v_fecha_inicio),
                    @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio),
-                   @v_fecha_inicio  = DateAdd(Month, -5, @v_fecha_inicio);   
+                   @v_fecha_inicio  = DateAdd(Month, -5, @v_fecha_inicio);
          End;
-         
+
       Select @v_resultado = Sum(dias)
       From   dbo.Ls_faltasIncapacidadTbl
       Where  compania               = @PsCompania
@@ -1461,7 +1671,86 @@ Begin
 End;
 Go
 
+-- Use Adam
+--Go
 
+If Exists ( Select Top 1 1
+            From   sysobjects
+            Where  Uid  = 1
+            And    Type = 'Fn'
+            And    Name = 'fn_flagfaltasIncapacidad')
+   Begin
+      Drop Function dbo.fn_flagfaltasIncapacidad
+   End
+Go
+
+Create Function dbo.fn_flagfaltasIncapacidad
+  (@PsCompania     Char( 3),
+   @PnAnio         Integer,
+   @PnMes          Integer,
+   @PsTrabajador   Char(10))
+Returns Char(3)
+As
+
+Begin
+
+-- ***************************************************************************************************************************
+--
+-- Nombre físico :   fn_flagfaltasIncapacidad
+-- Autor:            Pedro Zambrano
+-- Fecha:            27-jul-2026.
+-- Objetivo:         Funcion que indica si hay incapacidades en el periodo actual y en el anterior
+-- Versión:          1
+--
+-- ***************************************************************************************************************************
+
+
+   Declare
+      @v_resultado             Char(3),
+      @v_fecha_inicio          Date,
+      @v_fecha_termino         Date;
+
+   Begin
+      Select @v_fecha_inicio  = Convert(Date, '01/' + Convert(Char(2), @PnMes) + '/' +
+                                                      Convert(Char(4), @PnAnio), 103),
+             @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio),
+              @v_resultado    = '0-';
+
+      If Exists (Select Top 1 1
+                 From   dbo.Ls_faltasIncapacidadTbl
+                 Where  compania               = @PsCompania
+                 And    anio                   = @PnAnio
+                 And    mes                    = @PnMes
+                 And    trabajador             = @PsTrabajador
+                 And    fecha_incidencia Between @v_fecha_inicio And @v_fecha_termino)
+         Begin
+            Set @v_resultado = '1-'
+         End;
+
+      Select @v_fecha_inicio  = DateAdd(Month, -1, @v_fecha_inicio ),
+             @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio);
+
+      If Exists (Select Top 1 1
+                 From   dbo.Ls_faltasIncapacidadTbl
+                 Where  compania               = @PsCompania
+                 And    anio                   = @PnAnio
+                 And    mes                    = @PnMes
+                 And    trabajador             = @PsTrabajador
+                 And    fecha_incidencia Between @v_fecha_inicio And @v_fecha_termino)
+         Begin
+            Set @v_resultado = Rtrim(@v_resultado) + '1';
+         End;
+     Else
+         Begin
+            Set @v_resultado = Rtrim( @v_resultado) + '0';
+         End;
+
+   End;
+
+   Return (@v_resultado);
+
+End;
+Go
 
 -- Use Adam
 --Go
@@ -1518,7 +1807,7 @@ Begin
          Begin
             Set @v_resultado = '1-'
          End;
-         
+
       Select @v_fecha_inicio  = DateAdd(Month, -1, @v_fecha_inicio ),
              @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio);
 
@@ -1544,18 +1833,17 @@ Begin
 End;
 Go
 
-Triggers 
 
-Use Adam
-Go
+4.- Triggers
+
 
 --
--- Diparador:	  TrinsLs_HistPrecioGasolinaTbl
--- Objetivo:	  Disparador de Alta y Actualización relacionado a la Entidad Ls_HistPrecioGasolinaTbl
--- Fecha:		  25-Jul-2026
--- Version:		  1
+-- Diparador:     TrinsLs_HistPrecioGasolinaTbl
+-- Objetivo:      Disparador de Alta y Actualización relacionado a la Entidad Ls_HistPrecioGasolinaTbl
+-- Fecha:         25-Jul-2026
+-- Version:       1
 --
--- Programador:	  Pedro Zambrano
+-- Programador:   Pedro Zambrano
 --
 
 If Exists ( Select Top 1 1
@@ -1567,32 +1855,32 @@ If Exists ( Select Top 1 1
 go
 
 Create Trigger dbo.TrinsLs_HistPrecioGasolinaTbl
-On	   dbo.Ls_HistPrecioGasolinaTbl
+On     dbo.Ls_HistPrecioGasolinaTbl
 After  Insert, Update
 As
 
 Declare
-   @v_compania			Char ( 4),
-   @v_anio				Smallint,
-   @v_mes				Tinyint,
-   @v_ciudad			Char (10),
-   @v_precio			Decimal(19,2),
-   @v_usuario			Varchar(  30),
-   @v_fechaAct			Datetime,
+   @v_compania          Char ( 4),
+   @v_anio              Smallint,
+   @v_mes               Tinyint,
+   @v_ciudad            Char (10),
+   @v_precio            Decimal(19,2),
+   @v_usuario           Varchar(  30),
+   @v_fechaAct          Datetime,
 --
-   @v_desc_error		Varchar(400),
-   @v_agrupacion		Char(10);
+   @v_desc_error        Varchar(400),
+   @v_agrupacion        Char(10);
 
 Begin
 
    Select @v_compania  = compania,
-		  @v_anio	   = anio,
-		  @v_mes	   = mes,
-		  @v_ciudad	   = ciudad,
-		  @v_precio	   = precio,
-		  @v_usuario   = usuario,
-		  @v_fechaAct  = fechaAct
-   From	  Inserted a;
+          @v_anio      = anio,
+          @v_mes       = mes,
+          @v_ciudad    = ciudad,
+          @v_precio    = precio,
+          @v_usuario   = usuario,
+          @v_fechaAct  = fechaAct
+   From   Inserted a;
 
 --
 
@@ -1601,110 +1889,110 @@ Begin
  -------------------------------------------------------
 
    Begin
-	  If Not Exists (Select Top 1 1
-					 From	master.dbo.usuario_base
-					 Where	Usuario			= @v_Usuario )
-		 Begin
-			Set @v_desc_error = 'Error: El Usuario no esta Registrado como usuario ADAM';
+      If Not Exists (Select Top 1 1
+                     From   master.dbo.usuario_base
+                     Where  Usuario         = @v_Usuario )
+         Begin
+            Set @v_desc_error = 'Error: El Usuario no esta Registrado como usuario ADAM';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
-	  If Not Exists (Select Top 1 1
-					 From	dbo.Aut_Operaciones
-					 Where	Usuario			= @v_Usuario
-					 And	Operacion		= 'FPLS001'
-					 And	Nivel_seguridad > 1)
-		 Begin
-			Set @v_desc_error = 'Error: No tiene Autorizacion de Operacion';
+      If Not Exists (Select Top 1 1
+                     From   dbo.Aut_Operaciones
+                     Where  Usuario         = @v_Usuario
+                     And    Operacion       = 'FPLS001'
+                     And    Nivel_seguridad > 1)
+         Begin
+            Set @v_desc_error = 'Error: No tiene Autorizacion de Operacion';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
 
-		 End
+         End
 
-	  If Not Exists (Select Top 1 1
-					 From	dbo.Aut_Companias
-					 Where	Usuario		   = @v_Usuario
-					 And	Compania	   = @v_Compania)
-		 Begin
-			Set @v_desc_error = 'Error: No tiene Autorizacion para la compania';
+      If Not Exists (Select Top 1 1
+                     From   dbo.Aut_Companias
+                     Where  Usuario        = @v_Usuario
+                     And    Compania       = @v_Compania)
+         Begin
+            Set @v_desc_error = 'Error: No tiene Autorizacion para la compania';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
-	  If IsNull(@v_Precio, 0) <= 0
-		 Begin
-			Select @v_desc_error = 'Error: El Precio de la Gasolina debe ser mayor a cero (0)';
+      If IsNull(@v_Precio, 0) <= 0
+         Begin
+            Select @v_desc_error = 'Error: El Precio de la Gasolina debe ser mayor a cero (0)';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
-	  If IsNull(@v_Anio, 0) Not Between 2000 And 2050
-		 Begin
-			Set @v_desc_error = 'Error: El Parámetro Año de Proceso no es Valido. (2020-2050)';
+      If IsNull(@v_Anio, 0) Not Between 2000 And 2050
+         Begin
+            Set @v_desc_error = 'Error: El Parámetro Año de Proceso no es Valido. (2020-2050)';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
-	  If IsNull(@v_Mes, 0) Not Between 1 And 12
-		 Begin
-			Set @v_desc_error = 'Error: El Parámetro Mes de Proceso no es Valido. (1-12)';
+      If IsNull(@v_Mes, 0) Not Between 1 And 12
+         Begin
+            Set @v_desc_error = 'Error: El Parámetro Mes de Proceso no es Valido. (1-12)';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
 --
 -- Búsqueda de codigo de Agrupación
 --
 
-	  Select @v_agrupacion = Rtrim(descripcion)
-	  From	 dbo.criterios_valores
-	  Where	 campo = 'agrciudad'
-	  And	 item  = 1;
-	  If @@Rowcount = 0
-		 Begin
-			Set @v_desc_error = 'Error: El Parámetro de Ciudad (agrciudad) no existe en criterios_valores';
+      Select @v_agrupacion = Rtrim(descripcion)
+      From   dbo.criterios_valores
+      Where  campo = 'agrciudad'
+      And    item  = 1;
+      If @@Rowcount = 0
+         Begin
+            Set @v_desc_error = 'Error: El Parámetro de Ciudad (agrciudad) no existe en criterios_valores';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
-	  If Not Exists (Select top 1 1
-					 From	dbo.agrupaciones_trab
-					 Where	agrupacion = @v_agrupacion)
-		 Begin
-			Set @v_desc_error = 'Error: El Código de Agrupacion de Ciudad no es Válido';
+      If Not Exists (Select top 1 1
+                     From   dbo.agrupaciones_trab
+                     Where  agrupacion = @v_agrupacion)
+         Begin
+            Set @v_desc_error = 'Error: El Código de Agrupacion de Ciudad no es Válido';
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 
-		 End
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
 
-	  If Not Exists (Select top 1 1
-					 From	dbo.datos_agr_trab
-					 Where	agrupacion = @v_agrupacion
-					 And	dato	   = @v_ciudad)
-		 Begin
-			Select @v_desc_error = 'Error: El Código de Ciudad seleccionado no es Válido,';
+         End
 
-			Raiserror (@v_desc_error, 16, 1)
-			Rollback Transaction
-			Return
-		 End
+      If Not Exists (Select top 1 1
+                     From   dbo.datos_agr_trab
+                     Where  agrupacion = @v_agrupacion
+                     And    dato       = @v_ciudad)
+         Begin
+            Select @v_desc_error = 'Error: El Código de Ciudad seleccionado no es Válido,';
+
+            Raiserror (@v_desc_error, 16, 1)
+            Rollback Transaction
+            Return
+         End
 
    End;
 
@@ -1713,10 +2001,8 @@ Begin
 End
 Go
 
-Procedimientos
+5.- Procedimientos
 
-Use adam
-Go
 
 /*
 
@@ -1741,7 +2027,7 @@ Begin
                                             @PsOperacion = @PsOperacion,
                                             @PnEstatus   = @PnEstatus Output,
                                             @PsMensaje   = @PsMensaje Output;
-                                            
+
    Select @PnEstatus As Error, @PsMensaje As MensajeError
 
    Return;
@@ -1810,13 +2096,13 @@ Begin
                      Where  Usuario         = @PsUsuario )
          Begin
             Select @PnEstatus    = 250001,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Usuario no esta Registrado como usuario ADAM',
                    @PsMensaje    = @v_desc_error
-                   
+
             Goto Salida
          End
-                     
+
       If Not Exists (Select Top 1 1
                      From   dbo.Aut_Operaciones
                      Where  Usuario         = @PsUsuario
@@ -1824,10 +2110,10 @@ Begin
                      And    Nivel_seguridad > 1)
          Begin
             Select @PnEstatus    = 250002,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' No tiene Autorizacion de Operacion',
                    @PsMensaje    = @v_desc_error;
-                   
+
             Goto Salida
 
          End
@@ -1839,7 +2125,7 @@ Begin
                      And    Compania       = @PsCompania)
          Begin
             Select @PnEstatus    = 250003,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              '  No tiene Autorizacion para la compania',
                    @PsMensaje    = @v_desc_error;
 
@@ -1849,7 +2135,7 @@ Begin
       If IsNull(@PnPrecio, 0) <= 0
          Begin
             Select @PnEstatus    = 250004,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Precio de la Gasolina debe ser mayor a cero (0)',
                    @PsMensaje    = @v_desc_error;
 
@@ -1859,7 +2145,7 @@ Begin
       If IsNull(@PnAnio, 0) Not Between 2000 And 2050
          Begin
             Select @PnEstatus    = 250005,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Parámetro Año de Proceso no es Valido. (2020-2050)',
                    @PsMensaje    = @v_desc_error;
 
@@ -1869,7 +2155,7 @@ Begin
       If IsNull(@PnMes, 0) Not Between 1 And 12
          Begin
             Select @PnEstatus    = 250006,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              '  El Parámetro Mes de Proceso no es Valido. (1-12)',
                    @PsMensaje    = @v_desc_error;
 
@@ -1887,7 +2173,7 @@ Begin
       If @@Rowcount = 0
          Begin
             Select @PnEstatus    = 250007,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Parámetro de Ciudad (agrciudad) no existe en criterios_valores',
                    @PsMensaje    = @v_desc_error;
 
@@ -1899,7 +2185,7 @@ Begin
                      Where  agrupacion = @v_agrupacion)
          Begin
             Select @PnEstatus    = 250008,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Código de Agrupacion de Ciudad no es Válido',
                    @PsMensaje    = @v_desc_error;
 
@@ -1912,7 +2198,7 @@ Begin
                      And    dato       = @v_dato)
          Begin
             Select @PnEstatus    = 250009,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Código de Ciudad seleccionado no es Válido,',
                    @PsMensaje    = @v_desc_error;
 
@@ -1927,7 +2213,7 @@ Begin
                  And    ciudad   = @v_dato)
          Begin
             Select @PnEstatus    = 250010,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El precio de la gasolina para la ciudad ya fue cargado',
                    @PsMensaje    = @v_desc_error;
 
@@ -1966,6 +2252,40 @@ Go
 
 
 Grant  Execute On Spa_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Alta de Registros a la Tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'Spa_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
 
 /*
 
@@ -2041,7 +2361,7 @@ Begin
    Set Nocount       On
    Set Xact_Abort    On
    Set Ansi_Nulls    Off
-   
+
    Select @v_dato = Rtrim(Substring(@PsCiudad, 1, 10)),
           @PnEstatus  = 0,
           @PsMensaje  = Char(32);
@@ -2056,7 +2376,7 @@ Begin
          Begin
             Goto Salida
          End
-         
+
       If Not Exists (Select Top 1 1
                      From   master.dbo.usuario_base
                      Where  Usuario         = @PsUsuario )
@@ -2067,7 +2387,7 @@ Begin
 
             Goto Salida
          End
-                     
+
       If Not Exists (Select Top 1 1
                      From   dbo.Aut_Operaciones
                      Where  Usuario         = @PsUsuario
@@ -2108,10 +2428,10 @@ Begin
                       Select @v_desc_error = 'Error: El Registro a Eliminar No es Valido',
                              @PsMensaje    = @v_desc_error,
                              @PnEstatus    = 250007;
-   
+
                       Goto Salida
                   End
-         
+
                Delete dbo.Ls_HistPrecioGasolinaTbl
                Where  compania = @PsCompania
                And    anio     = @PnAnio
@@ -2141,11 +2461,11 @@ Begin
                    @PsMensaje = 'Error.: ' + @v_desc_error;
 
          End;
-    
+
    End;
 
    Set @PsMensaje = Cast(@v_registros As Varchar) + ' Registros Eliminados.';
-   
+
 Salida:
 
    Set Xact_Abort    Off
@@ -2155,6 +2475,42 @@ Go
 
 
 Grant  Execute On spd_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
+
 
 Use adam
 Go
@@ -2182,7 +2538,7 @@ Begin
                                             @PsOperacion = @PsOperacion,
                                             @PnEstatus   = @PnEstatus Output,
                                             @PsMensaje   = @PsMensaje Output;
-                                            
+
    Select @PnEstatus As Error, @PsMensaje As MensajeError
 
    Return;
@@ -2256,7 +2612,7 @@ Begin
 
             Goto Salida
          End
-                     
+
       If Not Exists (Select Top 1 1
                      From   dbo.Aut_Operaciones
                      Where  Usuario         = @PsUsuario
@@ -2379,6 +2735,40 @@ Go
 
 
 Grant  Execute On spv_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Validación de Registros a ser incoporados a la tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spv_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
 
 -- Use adam
 -- Go
@@ -2532,6 +2922,41 @@ Go
 
 Grant  Execute On spd_Ls_RepPrecioGasolinaTbl to Public;
 
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_RepPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_RepPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
+
 -- Use adam
 -- Go
 
@@ -2607,7 +3032,7 @@ Begin
 
    Select @PnEstatus       = 0,
           @PsMensaje       = Char(32);
-          
+
  -------------------------------------------------------
  -- Validar Seguridad
  -------------------------------------------------------
@@ -2617,7 +3042,7 @@ Begin
                   Where  Usuario         = @PsUsuario )
       Begin
          Select @PnEstatus    = 250001,
-                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) + 
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
                                           ' El Usuario "' + @PsUsuario + '" no esta Registrado como usuario ADAM',
                 @PsMensaje    = @v_desc_error;
 
@@ -2632,7 +3057,7 @@ Begin
                   And    Nivel_seguridad > 1)
       Begin
          Select @PnEstatus    = 250002,
-                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) + 
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
                                           ' El Usuario No tiene Autorizacion sobre la Operacion ' + @PsOperacion,
                 @PsMensaje    = @v_desc_error;
 
@@ -2646,7 +3071,7 @@ Begin
                   And    Compania       = @PsCompania)
       Begin
          Select @PnEstatus    = 250003,
-                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) + 
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
                                           ' El Usuario no tiene Autorizacion sobre la compania ' + @PsCompania,
                 @PsMensaje    = @v_desc_error;
 
@@ -2683,6 +3108,41 @@ Go
 
 
 Grant  Execute On spd_Ls_FaltasGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_FaltasGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_FaltasGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
 
 -- Use adam
 -- Go
@@ -2921,6 +3381,40 @@ Go
 
 
 Grant  Execute On spp_Ls_FaltasGasolinaTbl to Public;
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento que Procesa el Alta de Registros a la tabla Ls_FaltasGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_FaltasGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
 
 -- Use adam
 -- Go
@@ -3073,6 +3567,40 @@ Go
 
 
 Grant  Execute On spd_Ls_FaltasIncapacidadTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_FaltasIncapacidadTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_FaltasIncapacidadTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
 
 -- Use Adam
 --Go
@@ -3385,6 +3913,640 @@ Salida:
 End;
 Go
 
+-- Use adam
+-- Go
+
+/*
+
+Declare
+   @PsCompania              Char(4)         = 'LS',
+   @PnAnio                  Smallint        = 2026,
+   @PnMes                   Tinyint         = 7,
+   @PsUsuario               Char(20)        = 'adam',
+   @PsOperacion             Char(10)        = 'FPLS001',
+   @PnEstatus               Integer         = Null,
+   @PsMensaje               Varchar( 250)   = Null
+
+Begin
+   Execute dbo.spd_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
+
+   Select @PnEstatus As Error, @PsMensaje As MensajeError
+
+   Return;
+
+End;
+Go
+
+*/
+
+If Exists (Select Top 1 1
+           From   sys.procedures
+           Where  Name = 'spd_Ls_RepFaltasIncapacidadTbl')
+   Begin
+      Drop Procedure dbo.spd_Ls_RepFaltasIncapacidadTbl;
+   End
+Go
+
+Create Procedure dbo.spd_Ls_RepFaltasIncapacidadTbl
+  (@PsCompania              Char(04),
+   @PnAnio                  Smallint,
+   @PnMes                   Tinyint,
+   @PsUsuario               Char(20),
+   @PsOperacion             Char(10),
+   @PnEstatus               Integer         = Null Output,
+   @PsMensaje               Varchar( 250)   = Null Output)
+
+As
+
+Declare
+   @v_mensaje               Varchar(250),
+   @v_existe                Bit,
+   @v_Error                 Integer,
+   @v_desc_error            Varchar(250);
+
+Begin
+
+-- ***************************************************************************************************************************
+--
+-- Nombre físico :   spd_Ls_RepFaltasIncapacidadTbl
+-- Autor:            Pedro Zambrano
+-- Fecha:            10-ago-2026.
+-- Objetivo:         Procedimiento de baja a la tabla Ls_RepFaltasIncapacidadTbl
+-- Versión:          1
+--
+-- ***************************************************************************************************************************
+
+   Set Nocount       On
+   Set Xact_Abort    On
+   Set Ansi_Nulls    Off
+
+   Select @PnEstatus       = 0,
+          @PsMensaje       = Char(32);
+
+ -------------------------------------------------------
+ -- Validar Seguridad
+ -------------------------------------------------------
+
+   If Not Exists (Select Top 1 1
+                  From   master.dbo.usuario_base
+                  Where  Usuario         = @PsUsuario )
+      Begin
+         Select @PnEstatus    = 250001,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario "' + @PsUsuario + '" no esta Registrado como usuario ADAM',
+                @PsMensaje    = @v_desc_error;
+
+
+         Goto Salida
+      End
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.Aut_Operaciones
+                  Where  Usuario         = @PsUsuario
+                  And    Operacion       = @PsOperacion
+                  And    Nivel_seguridad > 1)
+      Begin
+         Select @PnEstatus    = 250002,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario No tiene Autorizacion sobre la Operacion ' + @PsOperacion,
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+
+      End
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.Aut_Companias
+                  Where  Usuario        = @PsUsuario
+                  And    Compania       = @PsCompania)
+      Begin
+         Select @PnEstatus    = 250003,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario no tiene Autorizacion sobre la compania ' + @PsCompania,
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+      End
+
+   Begin Try
+      Delete dbo.Ls_RepFaltasIncapacidadTbl
+      Where  compania = @PsCompania
+      And    Anio     = @PnAnio
+      And    Mes      = @PnMes;
+   End   Try
+
+   Begin Catch
+      Select  @v_Error      = @@Error,
+              @v_desc_error = Substring (Error_Message(), 1, 230)
+   End   Catch
+
+   If IsNull(@v_Error, 0) <> 0
+      Begin
+         Select @PnEstatus = @v_error,
+                @PsMensaje = 'Error.: ' + @v_desc_error;
+         Goto Salida;
+
+     End;
+
+Salida:
+
+   Set Xact_Abort    Off
+   Return;
+
+End;
+Go
+
+Grant  Execute spd_Ls_RepFaltasIncapacidadTbl to Public;
+
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_RepFaltasIncapacidadTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_RepFaltasIncapacidadTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
+
+-- Use adam
+-- Go
+
+/*
+
+Declare
+   @PsCompania              Char(4)         = 'LS',
+   @PnAnio                  Smallint        = 2026,
+   @PnMes                   Tinyint         = 7,
+   @PsUsuario               Char(20)        = 'adam',
+   @PsOperacion             Char(10)        = 'FPLS001',
+   @PnImprime               Bit             = 1,
+   @PnEstatus               Integer         = Null,
+   @PsMensaje               Varchar( 250)   = Null
+
+Begin
+   Execute dbo.spp_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnImprime   = @PnImprime,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
+
+   If @PnEstatus > 0
+      Begin
+         Select @PnEstatus As Error, @PsMensaje As MensajeError
+      End
+
+   Return;
+
+End;
+Go
+
+*/
+
+If Exists (Select Top 1 1
+           From   sys.procedures
+           Where  Name = 'spp_Ls_RepFaltasIncapacidadTbl')
+   Begin
+      Drop Procedure dbo.spp_Ls_RepFaltasIncapacidadTbl;
+   End
+Go
+
+Create Procedure dbo.spp_Ls_RepFaltasIncapacidadTbl
+  (@PsCompania              Char(04),
+   @PnAnio                  Smallint,
+   @PnMes                   Tinyint,
+   @PsUsuario               Char(20),
+   @PsOperacion             Char(10),
+   @PnImprime               Bit             = 0,
+   @PnEstatus               Integer         = Null Output,
+   @PsMensaje               Varchar( 250)   = Null Output)
+
+As
+
+Declare
+   @v_mensaje               Varchar(250),
+   @v_linea                 Integer,
+   @v_existe                Bit,
+   @v_Error                 Integer,
+   @v_desc_error            Varchar(250),
+--
+   @v_secuencia             Integer,
+   @v_sec                   Integer,
+   @v_diasPer               Integer,
+   @v_totDias               Integer,
+   @v_trabajador            Char(10),
+   @v_ciclo                 Varchar(  7),
+   @v_dias                  Varchar(100),
+   @v_diasDet               Varchar( 15),
+   @v_mesDesc               Varchar(  3),
+   @v_fecha_inicio          Date,
+   @v_fecha_termino         Date,
+   @v_fechaProcIni          Date,
+   @v_fechaProcFin          Date,
+   @v_mes                   Tinyint,
+   @v_anio                  Smallint;
+
+Begin
+
+-- ********************************************************************************************************************************
+--
+-- Nombre físico :   spp_Ls_RepFaltasIncapacidadTbl
+-- Autor:            Pedro Zambrano
+-- Fecha:            10-ago-2026.
+-- Objetivo:         Procedimiento de Calculo del Reporte de Incapacidades Aplicables a la Asignación de Gasolina a Trabajadores
+-- Versión:          1
+--
+-- ********************************************************************************************************************************
+
+   Set Nocount       On
+   Set Xact_Abort    On
+   Set Ansi_Nulls    Off
+
+   Select @PnEstatus       = 0,
+          @PsMensaje       = Char(32),
+          @v_linea         = 0,
+          @v_sec           = 0,
+          @v_totDias       = 0,
+          @v_fecha_inicio  = Convert(Date, '01/' + Convert(Char(2), @PnMes) + '/' +
+                                                   Convert(Char(4), @PnAnio), 103),
+          @v_fecha_termino = dbo.fn_obten_FinMes(@v_fecha_inicio);
+
+   Set @v_fecha_inicio = DateAdd(Month, -7, @v_fecha_inicio);
+
+ -------------------------------------------------------
+ -- Validar Seguridad
+ -------------------------------------------------------
+
+   If Not Exists (Select Top 1 1
+                  From   master.dbo.usuario_base
+                  Where  Usuario         = @PsUsuario )
+      Begin
+         Select @PnEstatus    = 250001,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario "' + @PsUsuario + '" no esta Registrado como usuario ADAM',
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+      End
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.Aut_Operaciones
+                  Where  Usuario         = @PsUsuario
+                  And    Operacion       = @PsOperacion
+                  And    Nivel_seguridad > 1)
+      Begin
+         Select @PnEstatus    = 250002,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario No tiene Autorizacion sobre la Operacion ' + @PsOperacion,
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+
+      End
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.Aut_Companias
+                  Where  Usuario        = @PsUsuario
+                  And    Compania       = @PsCompania)
+      Begin
+         Select @PnEstatus    = 250003,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' El Usuario no tiene Autorizacion sobre la compania ' + @PsCompania,
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+      End
+
+   If Not Exists (Select top 1 1
+                  From   dbo.Ls_HistPrecioGasolinaTbl
+                  Where  compania = @PsCompania
+                  And    anio     = @PnAnio)
+      Begin
+         Select @PnEstatus    = 250004,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' No existen Precios de Gasolina para el AÑO seleccionado: ' +
+                                            Cast(@PnAnio As Varchar),
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+      End
+
+   If Not Exists (Select top 1 1
+                  From   dbo.Ls_HistPrecioGasolinaTbl
+                  Where  compania = @PsCompania
+                  And    anio     = @PnAnio
+                  And    mes      = @PnMes)
+      Begin
+         Select @PnEstatus    = 250005,
+                @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
+                                          ' No existen Precios de Gasolina para el AÑO-MES seleccionado: ' +
+                                            Cast(@PnAnio As Varchar) + '-' + Cast(@PnMes As Varchar),
+                @PsMensaje    = @v_desc_error;
+
+         Goto Salida
+      End
+
+--
+
+   Execute dbo.spd_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
+
+   If @PnEstatus != 0
+      Begin
+         Goto Salida
+      End
+
+--
+
+   If Object_id('tempdb..#TempRepFaltas') Is Not Null
+      Begin
+         Drop Table #TempRepFaltas
+      End
+
+   Create Table #TempRepFaltas
+  (secuencia    Integer      Not Null Identity (1, 1),
+   trabajador   Char(10)     Not Null,
+   ciclo        Varchar( 8)  Not Null,
+   dias         Integer      Not Null,
+   Constraint TempRepFaltasPk
+   Primary Key (secuencia));
+
+   Insert Into #TempRepFaltas
+  (trabajador,  ciclo, dias)
+   Select trabajador,   Cast(DatePart(yyyy, a.fecha_incidencia) As Varchar) + '-' + Substring(Convert(Char(10), a.fecha_incidencia, 103), 4, 2),
+          Sum(dias)
+   From   dbo.Ls_faltasIncapacidadTbl a
+   Where  compania               = @PsCompania
+   And    anio                   = @PnAnio
+   And    mes                    = @PnMes
+   And    fecha_incidencia Between @v_fecha_inicio And @v_fecha_termino
+   Group  By trabajador, Cast(DatePart(yyyy, a.fecha_incidencia) As Varchar) + '-' + Substring(Convert(Char(10), a.fecha_incidencia, 103), 4, 2)
+   Order  by trabajador, 2;
+   Set @v_secuencia = @@Identity;
+
+   While @v_secuencia > @v_sec
+   Begin
+      Set @v_sec = @v_sec + 1
+
+      Select @v_trabajador = trabajador,
+             @v_ciclo      = ciclo,
+             @v_diasPer    = dias
+      From   #TempRepFaltas
+      Where  secuencia     = @v_sec;
+      If @@Rowcount = 0
+         Begin
+            Select @v_sec
+            Break
+         End;
+
+      Select @v_anio = Cast(Substring(@v_ciclo, 1, 4) As Smallint),
+             @v_mes  = Cast(Substring(@v_ciclo, 6, 2) As Tinyint);
+
+      Select top 1 @v_mesDesc = Substring(Rtrim(descripcion), 1, 3)
+      From   dbo.criterios_valores
+      Where  campo = 'meses'
+      And    item  = @v_mes;
+      If  @@Rowcount = 0
+          Begin
+             Set @v_mesDesc = Char(32);
+          End;
+
+      Begin Try
+         Select @v_fechaProcIni =  Convert(Date, '01/' + Convert(Char(2), @v_mes) + '/' +
+                                                         Convert(Char(4), @v_anio), 103),
+                @v_fechaProcFin = dbo.fn_obten_FinMes(@v_fechaProcIni);
+
+      End Try
+
+      Begin Catch
+         Select  @v_Error      = @@Error,
+                 @v_desc_error = Substring (Error_Message(), 1, 230),
+                 @v_linea      = Error_line();
+      End   Catch
+
+      If IsNull(@v_Error, 0) <> 0
+         Begin
+            Select @PnEstatus = @v_error,
+                   @PsMensaje = 'Error.: ' +  Cast(@v_error As Varchar) + ': ' + @v_desc_error + ' En Linea: ' + Cast(@v_linea As Varchar);
+            Goto Salida;
+
+        End;
+
+     Set @v_diasDet = Cast(Isnull(@v_diasPer, 0) As Varchar) + ' ' + Rtrim(@v_mesDesc);
+
+     If Not Exists (Select Top 1 1
+                    From   dbo.Ls_RepFaltasIncapacidadTbl
+                    Where  compania               = @PsCompania
+                    And    anio                   = @PnAnio
+                    And    mes                    = @PnMes
+                    And    trabajador             = @v_trabajador)
+        Begin
+           Begin Try
+              Insert Into dbo.Ls_RepFaltasIncapacidadTbl
+             (compania,    anio,        mes, trabajador,  fechaInicio, fechaTermino,
+              dias,        diasDet,     usuario)
+              Select compania,    @PnAnio,     @PnMes,  trabajador,  Min(fecha_incidencia)  fechaInicio,
+                     Convert(Char(10), Max(fecha_incidencia), 103) fechaTermino,
+                     @v_diasPer,       Ltrim(Rtrim(@v_diasDet)),              @PsUsuario
+              From   dbo.Ls_faltasIncapacidadTbl a
+              Where  compania               = @PsCompania
+              And    anio                   = @PnAnio
+              And    mes                    = @PnMes
+              And    trabajador             = @v_trabajador
+              And    fecha_incidencia Between @v_fecha_inicio And @v_fecha_termino
+              Group  By compania,    descRegion,   depZona, descCiudad,
+                         trabajador,  nombre;
+           End Try
+
+           Begin Catch
+              Select  @v_Error      = @@Error,
+                      @v_desc_error = Substring (Error_Message(), 1, 230),
+                      @v_linea      = Error_line();
+           End   Catch
+
+           If IsNull(@v_Error, 0) <> 0
+              Begin
+                 Select @PnEstatus = @v_error,
+                        @PsMensaje = 'Error.: ' +  Cast(@v_error As Varchar) + ': ' + @v_desc_error + ' En Linea: ' + Cast(@v_linea As Varchar);
+                 Goto Salida;
+
+             End;
+        End
+
+     Else
+        Begin
+           Begin Try
+              Update  dbo.Ls_RepFaltasIncapacidadTbl
+              Set     dias    = dias + @v_diasPer,
+                      diasDet = Ltrim(diasDet) + '+' +  Ltrim(Rtrim(@v_diasDet))
+              Where   compania               = @PsCompania
+              And     anio                   = @PnAnio
+              And     mes                    = @PnMes
+              And     trabajador             = @v_trabajador;
+           End Try
+
+           Begin Catch
+              Select  @v_Error      = @@Error,
+                      @v_desc_error = Substring (Error_Message(), 1, 230),
+                      @v_linea      = Error_line();
+           End   Catch
+
+           If IsNull(@v_Error, 0) <> 0
+              Begin
+                 Select @PnEstatus = @v_error,
+                        @PsMensaje = 'Error.: ' +  Cast(@v_error As Varchar) + ': ' + @v_desc_error + ' En Linea: ' + Cast(@v_linea As Varchar);
+                 Goto Salida;
+
+             End;
+        End;
+
+   End
+
+--
+
+    Update  dbo.Ls_RepFaltasIncapacidadTbl
+    Set     Observaciones = 'PAGAR EN: ' + Replace(Convert(Varchar(5), Cast(@PnMes  As Money), 1), '.00', '')  + '-' +
+                                           Replace(Convert(Varchar(8), Cast(@PnAnio As Money), 1), '.00', '')
+    Where   compania               = @PsCompania
+    And     anio                   = @PnAnio
+    And     mes                    = @PnMes
+    And     Substring(dbo.fn_flagfaltasIncapacidad(Compania, Anio, Mes, trabajador), 1, 1) = '0'
+
+   If @PnImprime = 1
+      Begin
+         Select trabajador, Convert(Char(1), fechaInicio, 103) fechaInicio, fechaTermino, diasDet, dias,
+                dbo.fn_flagfaltasIncapacidad(@PsCompania, @PnAnio, @PnMes, trabajador) Flag
+         From   dbo.Ls_RepFaltasIncapacidadTbl
+         Where  compania = @PsCompania
+         And    Anio     = @PnAnio
+         And    Mes      = @PnMes;
+      End;
+
+Salida:
+
+   If Object_id('tempdb..#TempRepFaltas') Is Not Null
+      Begin
+         Drop Table #TempRepFaltas
+      End
+
+   Set Xact_Abort    Off
+   Return;
+
+End;
+Go
+
+Grant  Execute On spp_Ls_RepFaltasIncapacidadTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Calculo del Reporte de Incapacidades Aplicables a la Asignación de Gasolina a Trabajadores.',
+   @w_procedimiento  NVarchar(250) = 'spp_Ls_RepFaltasIncapacidadTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+
+
+-- Use adam
+-- Go
+
+/*
+
+Declare
+   @PsCompania              Char(4)         = 'LS',
+   @PnAnio                  Smallint        = 2026,
+   @PnMes                   Tinyint         = 7,
+   @PsUsuario               Char(20)        = 'adam',
+   @PsOperacion             Char(10)        = 'FPLS001',
+   @PnImprime               Bit             = 1,
+   @PnEstatus               Integer         = Null,
+   @PsMensaje               Varchar( 250)   = Null
+
+Begin
+   Execute dbo.spp_Ls_RepPrecioGasolinaTbl @PsCompania  = @PsCompania,
+                                           @PnAnio      = @PnAnio,
+                                           @PnMes       = @PnMes,
+                                           @PsUsuario   = @PsUsuario,
+                                           @PsOperacion = @PsOperacion,
+                                           @PnImprime   = @PnImprime,
+                                           @PnEstatus   = @PnEstatus Output,
+                                           @PsMensaje   = @PsMensaje Output;
+
+   If @PnEstatus > 0
+      Begin
+         Select @PnEstatus As Error, @PsMensaje As MensajeError
+      End
+
+   Return;
+
+End;
+Go
+
+*/
 
 -- Use adam
 -- Go
@@ -3772,7 +4934,6 @@ Begin
          Goto Salida
       End
 
-
 --
 -- Búsqueda de codigo de Agrupación Ciudad
 --
@@ -3854,7 +5015,6 @@ Begin
                                         @PnMes       = @PnMes,
                                         @PsUsuario   = @PsUsuario,
                                         @PsOperacion = @PsOperacion,
-                                        @PnImprime   = @PnImprime,
                                         @PnEstatus   = @PnEstatus Output,
                                         @PsMensaje   = @PsMensaje Output;
    If @PnEstatus != 0
@@ -3862,14 +5022,28 @@ Begin
          Goto Salida
       End
 
+
    Execute dbo.spp_Ls_FaltasIncapacidadTbl @PsCompania  = @PsCompania,
                                            @PnAnio      = @PnAnio,
                                            @PnMes       = @PnMes,
                                            @PsUsuario   = @PsUsuario,
                                            @PsOperacion = @PsOperacion,
-                                           @PnImprime   = @PnImprime,
                                            @PnEstatus   = @PnEstatus Output,
                                            @PsMensaje   = @PsMensaje Output;
+   If @PnEstatus != 0
+      Begin
+         Goto Salida
+      End
+
+   Execute dbo.spp_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnImprime   = 0,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
+
    If @PnEstatus != 0
       Begin
          Goto Salida
@@ -4142,6 +5316,39 @@ Proximo:
 
      End;
 
+   Begin Try
+      Update dbo.Ls_RepFaltasIncapacidadTbl
+      Set    descRegion = dbo.fn_desc_agrup_dato(@v_region, b.Region),
+             depZona    = Rtrim(b.departamento) + ' - ' + Rtrim(b.Zona),
+             descCiudad = b.descCiudad,
+             nombre     = b.nombre,
+             tarjeta    = b.tarjeta,
+             pago       = Cast(Replace(b.impGasMes, ',', '') As Decimal(19, 2)) / 30.00 * a.dias
+      From   dbo.Ls_RepFaltasIncapacidadTbl a
+      Join   dbo.Ls_RepPrecioGasolinaTbl    b
+      On     b.compania   = a.compania
+      And    b.anio       = a.anio
+      And    b.mes        = a.mes
+      And    b.trabajador = a.trabajador
+      Where  a.compania   = @PsCompania
+      And    a.Anio       = @PnAnio
+      And    a.Mes        = @PnMes
+      And    b.tipoLinea  = 'D';
+   End Try
+
+   Begin Catch
+      Select  @v_Error      = @@Error,
+              @v_desc_error = Substring (Error_Message(), 1, 230)
+   End   Catch
+
+   If IsNull(@v_Error, 0) <> 0
+      Begin
+         Select @PnEstatus = @v_error,
+                @PsMensaje = 'Error.: ' + @v_desc_error;
+         Goto Salida;
+
+     End;
+
    If @PnImprime = 1
       Begin
          Select descRegion region, Case When tipoLinea = 'T'
@@ -4167,6 +5374,38 @@ Salida:
 End;
 Go
 
-
 Grant  Execute On spp_Ls_RepPrecioGasolinaTbl to Public;
 
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Calculo del Reporte de Asignación de Gasolina a Trabajadores.',
+   @w_procedimiento  NVarchar(250) = 'spp_Ls_RepPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go

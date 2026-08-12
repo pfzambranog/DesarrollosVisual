@@ -1,0 +1,687 @@
+﻿using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.Spreadsheet;
+using ReporteGasolina.Infrastructure;
+using ReporteGasolina.Services;
+
+using System;
+using System.Data;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Windows.Forms;
+
+
+
+
+namespace ReporteGasolina.Services
+{
+    public class ExcelReporteGasolinaService
+    {
+
+        private void AgregarLogo(IXLWorksheet ws, string ciaCodigo)
+        {
+            string nombreLogo = $"logo_{ciaCodigo.Trim().ToLower()}";
+
+            Image logo = Properties.Resources.ResourceManager
+                                .GetObject(nombreLogo) as Image;
+
+
+
+            if (logo == null)
+            {
+                MessageBox.Show(
+                    $"No existe el recurso: {nombreLogo}");
+                return;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                logo.Save(ms, ImageFormat.Png);
+
+                ms.Position = 0;
+
+                var picture =
+                    ws.AddPicture(
+                        ms,
+                        XLPictureFormat.Png,
+                        "Logo");
+
+                picture.MoveTo(ws.Cell("A1"));
+
+                picture.WithSize(226, 85);
+            }
+        }
+
+        public void ExportarReporteCompleto(
+            string archivo,
+            DataTable dtReporte,
+            DataTable dtAltas,
+            DataTable dtFaltas,
+            DataTable dtIncapacidades,
+            int mes,
+            int anio,
+            string operacion,
+            string usuario)
+        {
+            using (XLWorkbook workbook =
+                new XLWorkbook())
+            {
+                IXLWorksheet ws =
+                    workbook.Worksheets.Add("Gasolina");
+
+                AgregarLogo(ws, AppSettings.Compania);
+
+                ConstruirEncabezado(
+                    ws,
+                    mes,
+                    anio,
+                    operacion,
+                    usuario);
+
+                int filaActual = 8;
+
+                filaActual =
+                    ConstruirSeccion(
+                        ws,
+                        "Reporte de Asignación de Gasolina",
+                        dtReporte,
+                        filaActual,
+                        false);
+
+                filaActual += 3;
+
+
+                if (dtAltas != null &&
+                    dtAltas.Rows.Count > 0)
+                {
+                    ws.Range($"A{filaActual}:Q{filaActual}").Merge();
+
+                    ws.Range($"A{filaActual}:Q{filaActual}").Merge()
+                       .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+
+                    filaActual =
+                        ConstruirSeccionAltas(
+                            ws,
+                            $"Altas del Período: {mes:00}-{anio}",
+                            dtAltas,
+                            filaActual,
+                            true);
+
+                    filaActual += 3;
+                }
+
+
+              //  filaActual += 3;
+
+                filaActual =
+                    ConstruirSeccion(
+                        ws,
+                        $"Detalle de Faltas del Período: {mes:00}-{anio}",
+                        dtFaltas,
+                        filaActual,
+                        true);
+
+                filaActual += 3;
+
+                filaActual =
+                    ConstruirSeccion(
+                        ws,
+                        $"Detalle de Incapacidades del Período: {mes:00}-{anio}",
+                        dtIncapacidades,
+                        filaActual,
+                        true);
+
+                ws.Columns().AdjustToContents();
+
+                ws.Column(1).Width = 20;  // Región
+                ws.Column(2).Width = 20;  // Dep-Zona
+                ws.Column(4).Width = 45;  // Nombre
+                ws.Column(6).Width = 25;  // Ciudad
+                ws.Column(7).Width = 15;
+                ws.Column(8).Width = 10;
+                ws.Column(9).Width = 15;
+                ws.Column(10).Width = 10;
+                ws.Column(11).Width = 15;
+                ws.Column(12).Width = 15; // diasIncap
+                ws.Column(13).Width = 15;
+                ws.Column(14).Width = 10;
+                ws.Column(15).Width = 15;
+                ws.Column(16).Width = 15;
+                ws.Column(17).Width = 22; // Tarjeta
+
+                workbook.SaveAs(archivo);
+            }
+        }
+
+        private void ConstruirEncabezado(
+            IXLWorksheet ws,
+            int mes,
+            int anio,
+            string operacion,
+            string usuario)
+        {
+            ws.Cell("K1").Value = "Página:";
+            ws.Cell("K2").Value = "Fecha:";
+            ws.Cell("K3").Value = "Reporte:";
+            ws.Cell("K4").Value = "Usuario:";
+
+            ws.Range("K1:K4")
+              .Style.Font.SetBold(true);
+
+            ws.Cell("L1").Value = "1";
+
+            ws.Cell("L2").Value =
+                DateTime.Now;
+
+
+            ws.Cell("L3").Value = operacion;
+
+            ws.Cell("L4").Value = usuario;
+
+            ws.Range("A6:R6").Merge();
+
+            ws.Cell("A6").Value =
+                $"Reporte de Asignación de Gasolina Correspondiente al Período: {mes:00}-{anio}";
+
+            ws.Cell("A6").Style.Font.Bold = true;
+            ws.Cell("A6").Style.Font.FontSize = 12;
+
+            ws.Cell("A6")
+              .Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+        }
+
+        private int ConstruirSeccionAltas(IXLWorksheet ws, 
+                                          string titulo,
+                                          DataTable dt,
+                                          int filaInicio,
+                                         bool imprimirTitulo)
+        {
+
+            if (dt == null)
+            {
+                return filaInicio;
+            }
+
+            int filaActual = filaInicio;
+
+            if (imprimirTitulo)
+            {
+                ws.Range(
+                    filaInicio,
+                    1,
+                    filaInicio,
+                    Math.Max(1,
+                    dt.Columns.Count))
+                    .Merge();
+
+                ws.Cell(
+                    filaInicio,
+                    1).Value = titulo;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.Bold = true;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.FontSize = 12;
+                            if (imprimirTitulo)
+            {
+                ws.Range(
+                    filaInicio,
+                    1,
+                    filaInicio,
+                    Math.Max(1,
+                    dt.Columns.Count))
+                    .Merge();
+
+                ws.Cell(
+                    filaInicio,
+                    1).Value = titulo;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.Bold = true;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.FontSize = 12;
+
+                filaInicio += 2;
+            }
+                filaInicio += 2;
+            }
+
+            if (dt == null ||
+                dt.Rows.Count == 0)
+            {
+                return filaInicio + 1;
+            }
+
+            MessageBox.Show($"Valor Fila Actual: {filaActual}", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+
+            ws.Cell("A{$filaActual}").Value = "Región";
+            ws.Cell("B{$filaActual}").Value = "DepZona";
+            ws.Cell("C$filaActual}").Value = "Trabajador";
+            ws.Cell("D$filaActual}").Value = "Nombre";
+            ws.Cell("E$filaActual}").Value = "NSS";
+            ws.Cell("F$filaActual}").Value = "Ciudad";
+            ws.Cell("G$filaActual}").Value = "PVP Ciudad";
+            ws.Cell("H$filaActual}").Value = "Litros";
+            ws.Cell("I$filaActual}").Value = "Alta";
+            ws.Cell("J$filaActual}").Value = "Días";
+            ws.Cell("K$filaActual}").Value = "Pagar";
+
+            ws.Range($"L$filaActual:P$filaActual").Merge();
+            ws.Range($"L$filaActual:P$filaActual").Merge()
+                     .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            ws.Cell("L$filaActual}").Value = "Observaciones";
+
+
+            ws.Cell("Q$filaActual}").Value = "Tarjeta";
+
+          //  int columna = 1;
+
+
+
+            var encabezado =
+                ws.Range(
+                    filaInicio,
+                    1,
+                    filaInicio,
+                    dt.Columns.Count);
+
+            encabezado.Style.Fill.BackgroundColor =
+                XLColor.LightGray;
+
+            encabezado.Style.Font.Bold = true;
+
+            encabezado.Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+
+            int fila = filaInicio + 1;
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                for (int col = 0; col < dt.Columns.Count; col++)
+                {
+                    object valor = dr[col];
+
+                    string nombreColumna =
+                        dt.Columns[col].ColumnName
+                          .Trim()
+                          .ToUpper();
+
+                    if (valor == DBNull.Value)
+                    {
+                        ws.Cell(fila, col + 1).Value = "";
+                    }
+                    else
+                    {
+                        string texto =
+                            Convert.ToString(valor)
+                                .Trim();
+
+                        //
+                        // Columnas enteras
+                        //
+
+                        if (nombreColumna == "CANTLITROS" ||
+                            nombreColumna == "DIASFALTA" ||
+                            nombreColumna == "DIASINCAP" ||
+                            nombreColumna == "TOTALDIAS")
+                        {
+                            if (decimal.TryParse(
+                                    texto.Replace(",", ""),
+                                    out decimal numero))
+                            {
+                                ws.Cell(
+                                    fila,
+                                    col + 1).Value =
+                                    (int)numero;
+                            }
+                            else
+                            {
+                                ws.Cell(
+                                    fila,
+                                    col + 1).Value =
+                                    texto;
+                            }
+                        }
+                        else
+                        {
+                            ws.Cell(
+                                fila,
+                                col + 1).Value =
+                                texto;
+                        }
+                    }
+                }
+
+                if (dt.Columns.Contains("netoMes"))
+                {
+                    string neto =
+                        Convert.ToString(
+                            dr["netoMes"])
+                        .Trim()
+                        .ToUpper();
+
+                    if (neto == "EXENTO" ||
+                        neto == "INCAPACITADO")
+                    {
+                        IXLCell celdaNeto =
+                            ws.Cell(
+                                fila,
+                                16);
+
+                        celdaNeto.Style.Fill.BackgroundColor =
+                            XLColor.Red;
+
+                        celdaNeto.Style.Font.FontColor =
+                            XLColor.White;
+
+                        celdaNeto.Style.Font.Bold = true;
+
+                        celdaNeto.Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Center;
+                    }
+                }
+
+                fila++;
+
+            }
+
+            // rango que incluye encabezado y todas las filas de datos
+
+            int filaUltima = fila - 1; // última fila escrita
+            var rango = ws.Range(filaInicio, 1, filaUltima, dt.Columns.Count);
+            rango.Style.Border.OutsideBorder =
+                XLBorderStyleValues.Thin;
+
+            rango.Style.Border.InsideBorder =
+                XLBorderStyleValues.Thin;
+
+            //
+            // COLUMNAS MONETARIAS
+            // G, I, K, M, O, P -> índices 7,9,11,13,15,16
+            //
+            int[] monetarias = { 7, 9, 11, 13, 15, 16 };
+
+            foreach (int colIndex in monetarias)
+            {
+                if (colIndex <= dt.Columns.Count) // proteger contra tablas con menos columnas
+                {
+                    ws.Column(colIndex)
+                        .Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Right;
+
+                    ws.Column(colIndex)
+                        .Style.NumberFormat.Format =
+                            "#,##0.00";
+                }
+            }
+
+            //
+            // COLUMNAS ENTERAS
+            // H, J, L, N, Q -> índices 8,10,12,14,17
+            //
+            int[] enteras = { 8, 10, 12, 14, 17 };
+
+            foreach (int colIndex in enteras)
+            {
+                if (colIndex <= dt.Columns.Count)
+                {
+                    ws.Column(colIndex)
+                        .Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Center;
+
+                    ws.Column(colIndex)
+                        .Style.NumberFormat.Format =
+                            "#,##0";
+                }
+            }
+
+            ws.Cell("L2")
+             .Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Range("K1:L4")
+                   .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Row(8)
+                .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            return fila;
+
+
+        }
+
+        private int ConstruirSeccion(
+            IXLWorksheet ws,
+            string titulo,
+            DataTable dt,
+            int filaInicio,
+            bool imprimirTitulo)
+        {
+
+            if (dt == null)
+            {
+                return filaInicio;
+            }
+
+            if (imprimirTitulo)
+            {
+                ws.Range(
+                    filaInicio,
+                    1,
+                    filaInicio,
+                    Math.Max(1,
+                    dt.Columns.Count))
+                    .Merge();
+
+                ws.Cell(
+                    filaInicio,
+                    1).Value = titulo;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.Bold = true;
+
+                ws.Cell(
+                    filaInicio,
+                    1).Style.Font.FontSize = 12;
+
+                filaInicio += 2;
+            }
+
+            if (dt == null ||
+                dt.Rows.Count == 0)
+            {
+                return filaInicio + 1;
+            }
+
+            int columna = 1;
+
+            foreach (DataColumn dc in dt.Columns)
+            {
+                ws.Cell(
+                    filaInicio,
+                    columna).Value =
+                    dc.ColumnName;
+
+                columna++;
+            }
+
+            var encabezado =
+                ws.Range(
+                    filaInicio,
+                    1,
+                    filaInicio,
+                    dt.Columns.Count);
+
+            encabezado.Style.Fill.BackgroundColor =
+                XLColor.LightGray;
+
+            encabezado.Style.Font.Bold = true;
+
+            encabezado.Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+
+            int fila = filaInicio + 1;
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                for (int col = 0; col < dt.Columns.Count; col++)
+                {
+                    object valor = dr[col];
+
+                    string nombreColumna =
+                        dt.Columns[col].ColumnName
+                          .Trim()
+                          .ToUpper();
+
+                    if (valor == DBNull.Value)
+                    {
+                        ws.Cell(fila, col + 1).Value = "";
+                    }
+                    else
+                    {
+                        string texto =
+                            Convert.ToString(valor)
+                                .Trim();
+
+                        //
+                        // Columnas enteras
+                        //
+
+                        if (nombreColumna == "CANTLITROS" ||
+                            nombreColumna == "DIASFALTA" ||
+                            nombreColumna == "DIASINCAP" ||
+                            nombreColumna == "TOTALDIAS")
+                        {
+                            if (decimal.TryParse(
+                                    texto.Replace(",", ""),
+                                    out decimal numero))
+                            {
+                                ws.Cell(
+                                    fila,
+                                    col + 1).Value =
+                                    (int)numero;
+                            }
+                            else
+                            {
+                                ws.Cell(
+                                    fila,
+                                    col + 1).Value =
+                                    texto;
+                            }
+                        }
+                        else
+                        {
+                            ws.Cell(
+                                fila,
+                                col + 1).Value =
+                                texto;
+                        }
+                    }
+                }
+
+                if (dt.Columns.Contains("netoMes"))
+                {
+                    string neto =
+                        Convert.ToString(
+                            dr["netoMes"])
+                        .Trim()
+                        .ToUpper();
+
+                    if (neto == "EXENTO" ||
+                        neto == "INCAPACITADO")
+                    {
+                        IXLCell celdaNeto =
+                            ws.Cell(
+                                fila,
+                                16);
+
+                        celdaNeto.Style.Fill.BackgroundColor =
+                            XLColor.Red;
+
+                        celdaNeto.Style.Font.FontColor =
+                            XLColor.White;
+
+                        celdaNeto.Style.Font.Bold = true;
+
+                        celdaNeto.Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Center;
+                    }
+                }
+
+                fila++;
+
+            }
+
+            // rango que incluye encabezado y todas las filas de datos
+
+            int filaUltima = fila - 1; // última fila escrita
+            var rango = ws.Range(filaInicio, 1, filaUltima, dt.Columns.Count);
+            rango.Style.Border.OutsideBorder =
+                XLBorderStyleValues.Thin;
+
+            rango.Style.Border.InsideBorder =
+                XLBorderStyleValues.Thin;
+
+            //
+            // COLUMNAS MONETARIAS
+            // G, I, K, M, O, P -> índices 7,9,11,13,15,16
+            //
+            int[] monetarias = { 7, 9, 11, 13, 15, 16 };
+
+            foreach (int colIndex in monetarias)
+            {
+                if (colIndex <= dt.Columns.Count) // proteger contra tablas con menos columnas
+                {
+                    ws.Column(colIndex)
+                        .Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Right;
+
+                    ws.Column(colIndex)
+                        .Style.NumberFormat.Format =
+                            "#,##0.00";
+                }
+            }
+
+            //
+            // COLUMNAS ENTERAS
+            // H, J, L, N, Q -> índices 8,10,12,14,17
+            //
+            int[] enteras = { 8, 10, 12, 14, 17 };
+
+            foreach (int colIndex in enteras)
+            {
+                if (colIndex <= dt.Columns.Count)
+                {
+                    ws.Column(colIndex)
+                        .Style.Alignment.Horizontal =
+                            XLAlignmentHorizontalValues.Center;
+
+                    ws.Column(colIndex)
+                        .Style.NumberFormat.Format =
+                            "#,##0";
+                }
+            }
+
+            ws.Cell("L2")
+             .Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+
+            ws.Range("K1:L4")
+                   .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            ws.Row(8)
+                .Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            return fila;
+
+
+        }
+    }
+}

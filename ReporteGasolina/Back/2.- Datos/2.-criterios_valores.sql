@@ -202,6 +202,8 @@ Begin
    Values (@v_campo, 1, @v_agrupacion)
 
 --
+-- Número de Tarjeta de Pago Asignación Gasolina
+--
 
    Select @v_campo      = 'tarjetagas',
           @v_agrupacion = 'var_tra_21';
@@ -217,6 +219,25 @@ Begin
    Insert Into dbo.criterios_valores
    (campo, item, descripcion)
    Values (@v_campo, 1, @v_agrupacion)
+
+--
+-- Directorio Ubicación del reporte de salida
+--
+
+   Set @v_campo      = 'dirsalgas'
+
+   If Exists (Select top 1 1
+              From   dbo.criterios_valores
+              Where  campo = @v_campo)
+      Begin
+         Delete dbo.criterios_valores
+         Where  campo = @v_campo;
+      End
+
+   Insert Into dbo.criterios_valores
+   (campo, item, descripcion)
+   Values (@v_campo, 1, 'C:\TempAdam\');
+
    
    Return
 

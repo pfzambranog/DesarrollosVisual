@@ -219,5 +219,38 @@ Salida:
 End;
 Go
 
-
 Grant  Execute On spv_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Validación de Registros a ser incoporados a la tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spv_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go

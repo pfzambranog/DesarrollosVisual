@@ -72,7 +72,7 @@ Begin
    Set Nocount       On
    Set Xact_Abort    On
    Set Ansi_Nulls    Off
-   
+
    Select @v_dato = Rtrim(Substring(@PsCiudad, 1, 10)),
           @PnEstatus  = 0,
           @PsMensaje  = Char(32);
@@ -87,7 +87,7 @@ Begin
          Begin
             Goto Salida
          End
-         
+
       If Not Exists (Select Top 1 1
                      From   master.dbo.usuario_base
                      Where  Usuario         = @PsUsuario )
@@ -98,7 +98,7 @@ Begin
 
             Goto Salida
          End
-                     
+
       If Not Exists (Select Top 1 1
                      From   dbo.Aut_Operaciones
                      Where  Usuario         = @PsUsuario
@@ -139,10 +139,10 @@ Begin
                       Select @v_desc_error = 'Error: El Registro a Eliminar No es Valido',
                              @PsMensaje    = @v_desc_error,
                              @PnEstatus    = 250007;
-   
+
                       Goto Salida
                   End
-         
+
                Delete dbo.Ls_HistPrecioGasolinaTbl
                Where  compania = @PsCompania
                And    anio     = @PnAnio
@@ -172,11 +172,11 @@ Begin
                    @PsMensaje = 'Error.: ' + @v_desc_error;
 
          End;
-    
+
    End;
 
    Set @PsMensaje = Cast(@v_registros As Varchar) + ' Registros Eliminados.';
-   
+
 Salida:
 
    Set Xact_Abort    Off
@@ -184,5 +184,39 @@ Salida:
 End;
 Go
 
-
 Grant  Execute On spd_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+

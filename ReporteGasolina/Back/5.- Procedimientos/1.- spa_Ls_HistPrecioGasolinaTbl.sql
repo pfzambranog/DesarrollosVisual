@@ -24,7 +24,7 @@ Begin
                                             @PsOperacion = @PsOperacion,
                                             @PnEstatus   = @PnEstatus Output,
                                             @PsMensaje   = @PsMensaje Output;
-                                            
+
    Select @PnEstatus As Error, @PsMensaje As MensajeError
 
    Return;
@@ -93,13 +93,13 @@ Begin
                      Where  Usuario         = @PsUsuario )
          Begin
             Select @PnEstatus    = 250001,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Usuario no esta Registrado como usuario ADAM',
                    @PsMensaje    = @v_desc_error
-                   
+
             Goto Salida
          End
-                     
+
       If Not Exists (Select Top 1 1
                      From   dbo.Aut_Operaciones
                      Where  Usuario         = @PsUsuario
@@ -107,10 +107,10 @@ Begin
                      And    Nivel_seguridad > 1)
          Begin
             Select @PnEstatus    = 250002,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' No tiene Autorizacion de Operacion',
                    @PsMensaje    = @v_desc_error;
-                   
+
             Goto Salida
 
          End
@@ -122,7 +122,7 @@ Begin
                      And    Compania       = @PsCompania)
          Begin
             Select @PnEstatus    = 250003,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              '  No tiene Autorizacion para la compania',
                    @PsMensaje    = @v_desc_error;
 
@@ -132,7 +132,7 @@ Begin
       If IsNull(@PnPrecio, 0) <= 0
          Begin
             Select @PnEstatus    = 250004,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Precio de la Gasolina debe ser mayor a cero (0)',
                    @PsMensaje    = @v_desc_error;
 
@@ -142,7 +142,7 @@ Begin
       If IsNull(@PnAnio, 0) Not Between 2000 And 2050
          Begin
             Select @PnEstatus    = 250005,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Parámetro Año de Proceso no es Valido. (2020-2050)',
                    @PsMensaje    = @v_desc_error;
 
@@ -152,7 +152,7 @@ Begin
       If IsNull(@PnMes, 0) Not Between 1 And 12
          Begin
             Select @PnEstatus    = 250006,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              '  El Parámetro Mes de Proceso no es Valido. (1-12)',
                    @PsMensaje    = @v_desc_error;
 
@@ -170,7 +170,7 @@ Begin
       If @@Rowcount = 0
          Begin
             Select @PnEstatus    = 250007,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Parámetro de Ciudad (agrciudad) no existe en criterios_valores',
                    @PsMensaje    = @v_desc_error;
 
@@ -182,7 +182,7 @@ Begin
                      Where  agrupacion = @v_agrupacion)
          Begin
             Select @PnEstatus    = 250008,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Código de Agrupacion de Ciudad no es Válido',
                    @PsMensaje    = @v_desc_error;
 
@@ -195,7 +195,7 @@ Begin
                      And    dato       = @v_dato)
          Begin
             Select @PnEstatus    = 250009,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El Código de Ciudad seleccionado no es Válido,',
                    @PsMensaje    = @v_desc_error;
 
@@ -210,7 +210,7 @@ Begin
                  And    ciudad   = @v_dato)
          Begin
             Select @PnEstatus    = 250010,
-                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) + 
+                   @v_desc_error = 'Error: ' + Cast(@PnEstatus as Varchar) +
                                              ' El precio de la gasolina para la ciudad ya fue cargado',
                    @PsMensaje    = @v_desc_error;
 
@@ -249,3 +249,38 @@ Go
 
 
 Grant  Execute On Spa_Ls_HistPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Alta de Registros a la Tabla Ls_HistPrecioGasolinaTbl.',
+   @w_procedimiento  NVarchar(250) = 'Spa_Ls_HistPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go
+

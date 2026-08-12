@@ -16,8 +16,6 @@ namespace ReporteGasolina.Services
     {
 
 
-
-
         public void ExportarPreciosGasolina(
             string archivo,
             DataGridView grid,
@@ -238,7 +236,11 @@ namespace ReporteGasolina.Services
             ws.Columns().AdjustToContents();
 
             // Ajustes manuales
+
             ws.Column(1).Width = 30;
+            ws.Column(8).Width = 15;
+            ws.Column(11).Width = 15;
+            ws.Column(5).Width = 15;
 
             if (grid.Columns
                     .Cast<DataGridViewColumn>()

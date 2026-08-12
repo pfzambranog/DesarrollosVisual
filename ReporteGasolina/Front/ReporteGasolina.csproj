@@ -100,9 +100,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ExcelExportService.cs" />
     <Compile Include="Services\ExcelGasolinaService.cs" />
+    <Compile Include="Services\ExcelReporteGasolinaService.cs" />
     <Compile Include="Services\GasolinaService.cs" />
+    <Compile Include="Services\ReporteGasolinaService.cs" />
     <EmbeddedResource Include="FrmReporteGasolina.resx">
       <DependentUpon>FrmReporteGasolina.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

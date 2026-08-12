@@ -384,7 +384,6 @@ Begin
          Goto Salida
       End
 
-
 --
 -- Búsqueda de codigo de Agrupación Ciudad
 --
@@ -466,7 +465,6 @@ Begin
                                         @PnMes       = @PnMes,
                                         @PsUsuario   = @PsUsuario,
                                         @PsOperacion = @PsOperacion,
-                                        @PnImprime   = @PnImprime,
                                         @PnEstatus   = @PnEstatus Output,
                                         @PsMensaje   = @PsMensaje Output;
    If @PnEstatus != 0
@@ -474,14 +472,28 @@ Begin
          Goto Salida
       End
 
+
    Execute dbo.spp_Ls_FaltasIncapacidadTbl @PsCompania  = @PsCompania,
                                            @PnAnio      = @PnAnio,
                                            @PnMes       = @PnMes,
                                            @PsUsuario   = @PsUsuario,
                                            @PsOperacion = @PsOperacion,
-                                           @PnImprime   = @PnImprime,
                                            @PnEstatus   = @PnEstatus Output,
                                            @PsMensaje   = @PsMensaje Output;
+   If @PnEstatus != 0
+      Begin
+         Goto Salida
+      End
+
+   Execute dbo.spp_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnImprime   = 0,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
+
    If @PnEstatus != 0
       Begin
          Goto Salida
@@ -754,6 +766,39 @@ Proximo:
 
      End;
 
+   Begin Try
+      Update dbo.Ls_RepFaltasIncapacidadTbl
+      Set    descRegion = dbo.fn_desc_agrup_dato(@v_region, b.Region),
+             depZona    = Rtrim(b.departamento) + ' - ' + Rtrim(b.Zona),
+             descCiudad = b.descCiudad,
+             nombre     = b.nombre,
+             tarjeta    = b.tarjeta,
+             pago       = Cast(Replace(b.impGasMes, ',', '') As Decimal(19, 2)) / 30.00 * a.dias
+      From   dbo.Ls_RepFaltasIncapacidadTbl a
+      Join   dbo.Ls_RepPrecioGasolinaTbl    b
+      On     b.compania   = a.compania
+      And    b.anio       = a.anio
+      And    b.mes        = a.mes
+      And    b.trabajador = a.trabajador
+      Where  a.compania   = @PsCompania
+      And    a.Anio       = @PnAnio
+      And    a.Mes        = @PnMes
+      And    b.tipoLinea  = 'D';
+   End Try
+
+   Begin Catch
+      Select  @v_Error      = @@Error,
+              @v_desc_error = Substring (Error_Message(), 1, 230)
+   End   Catch
+
+   If IsNull(@v_Error, 0) <> 0
+      Begin
+         Select @PnEstatus = @v_error,
+                @PsMensaje = 'Error.: ' + @v_desc_error;
+         Goto Salida;
+
+     End;
+
    If @PnImprime = 1
       Begin
          Select descRegion region, Case When tipoLinea = 'T'
@@ -779,5 +824,38 @@ Salida:
 End;
 Go
 
-
 Grant  Execute On spp_Ls_RepPrecioGasolinaTbl to Public;
+
+--
+-- Comentarios
+--
+
+Declare
+   @w_valor          Nvarchar(250) = 'Procedimiento de Calculo del Reporte de Asignación de Gasolina a Trabajadores.',
+   @w_procedimiento  NVarchar(250) = 'spp_Ls_RepPrecioGasolinaTbl';
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go

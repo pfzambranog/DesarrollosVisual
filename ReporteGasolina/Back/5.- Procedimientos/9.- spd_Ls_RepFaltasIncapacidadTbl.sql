@@ -13,13 +13,13 @@ Declare
    @PsMensaje               Varchar( 250)   = Null
 
 Begin
-   Execute dbo.spd_Ls_RepPrecioGasolinaTbl @PsCompania  = @PsCompania,
-                                           @PnAnio      = @PnAnio,
-                                           @PnMes       = @PnMes,
-                                           @PsUsuario   = @PsUsuario,
-                                           @PsOperacion = @PsOperacion,
-                                           @PnEstatus   = @PnEstatus Output,
-                                           @PsMensaje   = @PsMensaje Output;
+   Execute dbo.spd_Ls_RepFaltasIncapacidadTbl @PsCompania  = @PsCompania,
+                                              @PnAnio      = @PnAnio,
+                                              @PnMes       = @PnMes,
+                                              @PsUsuario   = @PsUsuario,
+                                              @PsOperacion = @PsOperacion,
+                                              @PnEstatus   = @PnEstatus Output,
+                                              @PsMensaje   = @PsMensaje Output;
 
    Select @PnEstatus As Error, @PsMensaje As MensajeError
 
@@ -32,13 +32,13 @@ Go
 
 If Exists (Select Top 1 1
            From   sys.procedures
-           Where  Name = 'spd_Ls_RepPrecioGasolinaTbl')
+           Where  Name = 'spd_Ls_RepFaltasIncapacidadTbl')
    Begin
-      Drop Procedure dbo.spd_Ls_RepPrecioGasolinaTbl;
+      Drop Procedure dbo.spd_Ls_RepFaltasIncapacidadTbl;
    End
 Go
 
-Create Procedure dbo.spd_Ls_RepPrecioGasolinaTbl
+Create Procedure dbo.spd_Ls_RepFaltasIncapacidadTbl
   (@PsCompania              Char(04),
    @PnAnio                  Smallint,
    @PnMes                   Tinyint,
@@ -59,10 +59,10 @@ Begin
 
 -- ***************************************************************************************************************************
 --
--- Nombre físico :   spd_Ls_RepPrecioGasolinaTbl
+-- Nombre físico :   spd_Ls_RepFaltasIncapacidadTbl
 -- Autor:            Pedro Zambrano
--- Fecha:            22-jul-2026.
--- Objetivo:         Procedimiento de baja a la tabla Ls_RepPrecioGasolinaTbl
+-- Fecha:            10-ago-2026.
+-- Objetivo:         Procedimiento de baja a la tabla Ls_RepFaltasIncapacidadTbl
 -- Versión:          1
 --
 -- ***************************************************************************************************************************
@@ -84,7 +84,7 @@ Begin
       Begin
          Select @PnEstatus    = 250001,
                 @v_desc_error = 'Error: ' + Cast(@PnEstatus As Varchar) +
-                                            ' El Usuario "' + @PsUsuario + '" no esta Registrado como usuario ADAM',
+                                          ' El Usuario "' + @PsUsuario + '" no esta Registrado como usuario ADAM',
                 @PsMensaje    = @v_desc_error;
 
 
@@ -120,7 +120,7 @@ Begin
       End
 
    Begin Try
-      Delete dbo.Ls_RepPrecioGasolinaTbl
+      Delete dbo.Ls_RepFaltasIncapacidadTbl
       Where  compania = @PsCompania
       And    Anio     = @PnAnio
       And    Mes      = @PnMes;
@@ -147,15 +147,15 @@ Salida:
 End;
 Go
 
-Grant  Execute On spd_Ls_RepPrecioGasolinaTbl to Public;
+Grant  Execute On spd_Ls_RepFaltasIncapacidadTbl to Public;
 
 --
 -- Comentarios
 --
 
 Declare
-   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_RepPrecioGasolinaTbl.',
-   @w_procedimiento  NVarchar(250) = 'spd_Ls_RepPrecioGasolinaTbl';
+   @w_valor          Nvarchar(250) = 'Procedimiento de Baja de Registros a la tabla Ls_RepFaltasIncapacidadTbl.',
+   @w_procedimiento  NVarchar(250) = 'spd_Ls_RepFaltasIncapacidadTbl';
 
 If Not Exists (Select Top 1 1
                From   sys.extended_properties a

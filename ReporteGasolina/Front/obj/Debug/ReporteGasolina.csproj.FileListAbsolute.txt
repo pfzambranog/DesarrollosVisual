@@ -64,7 +64,6 @@ C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\Debug\System.Memory.x
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\Debug\System.Numerics.Vectors.xml
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.csproj.AssemblyReference.cache
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.exe.config
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.FrmReporteGasolina.resources
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.Properties.Resources.resources
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.csproj.GenerateResource.cache
