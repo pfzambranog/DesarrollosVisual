@@ -31,6 +31,18 @@ namespace ReporteGasolina
 
         private readonly ExcelReporteGasolinaService _excelReporteGasolinaService;
 
+        // 
+        // Definicioón del ToolStrip y sus botones
+        //
+
+        private ToolStrip toolStrip1;
+        private ToolStripButton btnConsultar;
+        private ToolStripButton btnCargarExcel;
+        private ToolStripButton btnExportarExcel;
+        private ToolStripButton btnProcesar;
+        private ToolStripButton btnRenovar;
+        private ToolStripButton btnSalir;
+
         private void FrmReporteGasolina_Load(object sender, EventArgs e)
         {
             CargarMeses();
@@ -42,10 +54,154 @@ namespace ReporteGasolina
         }
 
 
-  
+        //
+        // Confighuración del ToolStrip y sus botones
+        //
+
+        private void ConfigurarBoton(ToolStripButton boton)
+        {
+            boton.DisplayStyle =
+                ToolStripItemDisplayStyle.ImageAndText;
+
+            boton.TextImageRelation =
+                TextImageRelation.ImageAboveText;
+
+            boton.AutoSize = false;
+
+            boton.Width = 110;
+            boton.Height = 70;
+
+            boton.TextAlign =   ContentAlignment.MiddleCenter;
+
+            boton.ImageAlign = ContentAlignment.MiddleCenter;
+        }
+
+        private void ConfigurarToolStrip()
+        {
+            toolStrip1 = new ToolStrip();
+
+            toolStrip1.Dock = DockStyle.Top;
+            toolStrip1.AutoSize = false;
+            toolStrip1.BackColor = SystemColors.ActiveCaption;
+            toolStrip1.AutoSize = false;
+
+            toolStrip1.ImageScalingSize = new Size(32, 32);
+
+            toolStrip1.Padding = new Padding(5, 4, 5, 4);
+
+            toolStrip1.RenderMode = ToolStripRenderMode.System;
+
+            toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
+
+            toolStrip1.Padding = new Padding(5, 8, 5, 8);
+
+            toolStrip1.Height = 85;
+
+            //
+
+            btnConsultar = new ToolStripButton();
+            btnCargarExcel = new ToolStripButton();
+            btnExportarExcel = new ToolStripButton();
+            btnProcesar = new ToolStripButton();
+            btnRenovar = new ToolStripButton();
+            btnSalir = new ToolStripButton();
+
+            //--------------------------------------------------
+            // BUSCAR
+            //--------------------------------------------------
+            btnConsultar.Text = "Consultar";
+            btnCargarExcel.Text = "Cargar Precios";
+            btnExportarExcel.Text = "Reporte Excel";
+            btnProcesar.Text = "Reporte Mensual";
+            btnRenovar.Text = "Refrescar Pantalla";
+            btnSalir.Text = "Salir";
+
+            ConfigurarBoton(btnConsultar);
+            ConfigurarBoton(btnCargarExcel);
+            ConfigurarBoton(btnExportarExcel);
+            ConfigurarBoton(btnProcesar);
+            ConfigurarBoton(btnRenovar);
+            ConfigurarBoton(btnSalir);
+
+            btnConsultar.Image = Properties.Resources.consultar;
+
+            btnCargarExcel.Image = Properties.Resources.Excel;
+
+            btnExportarExcel.Image = Properties.Resources.importar; 
+            btnProcesar.Image = Properties.Resources.procesar;
+
+            btnRenovar.Image = Properties.Resources.renovar;   // o el nombre real
+
+            btnSalir.Image = Properties.Resources.salir;
+
+
+            //--------------------------------------------------
+            // AGREGAR BOTONES
+            //--------------------------------------------------
+            toolStrip1.Items.Add(btnConsultar);
+            toolStrip1.Items.Add(new ToolStripSeparator());
+
+            toolStrip1.Items.Add(btnCargarExcel);
+            toolStrip1.Items.Add(new ToolStripSeparator());
+
+            toolStrip1.Items.Add(btnExportarExcel);
+            toolStrip1.Items.Add(new ToolStripSeparator());
+
+            toolStrip1.Items.Add(btnProcesar);
+            toolStrip1.Items.Add(new ToolStripSeparator());
+
+            toolStrip1.Items.Add(btnRenovar);
+            toolStrip1.Items.Add(new ToolStripSeparator());
+
+            toolStrip1.Items.Add(btnSalir);
+
+            Controls.Add(toolStrip1);
+
+            toolStrip1.Items.Add(btnSalir);
+
+            // Eventos
+            btnConsultar.Click += BtnBuscar_Click;
+            btnCargarExcel.Click += btnCargarExcel_Click;
+            btnExportarExcel.Click += BtnExportarExcel_Click;
+            btnProcesar.Click += BtnProcesar_Click;
+            btnRenovar.Click += BtnRenovar_Click;
+            btnSalir.Click += BtnSalir_Click;
+
+            Controls.Add(toolStrip1);
+
+        }
+
+
+        private void BtnBuscar_Click(object sender, EventArgs e)
+        {
+            ConsultarPrecios();
+        }
+
+        private void BtnProcesar_Click(object sender, EventArgs e)
+        {
+            ProcesarGasolina(sender, e);
+        }
+
+        private void BtnExportarExcel_Click(object sender, EventArgs e)
+        {
+            ExportarExcel(sender, e);
+        }
+
+        private void BtnRenovar_Click(object sender, EventArgs e)
+        {
+            CargarPeriodoActual();
+
+            ConsultarPrecios();
+        }
+        private void BtnSalir_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         public FrmReporteGasolina()
         {
             InitializeComponent();
+            ConfigurarToolStrip();
 
             _gasolinaService = new GasolinaService();
             
@@ -58,7 +214,7 @@ namespace ReporteGasolina
            _excelReporteGasolinaService = new ExcelReporteGasolinaService();
 
 
-            this.Text = "Reporte de Gasolina";
+            this.Text = "Reporte Precio de Gasolina Por Viudad";
             this.WindowState = FormWindowState.Maximized;
 
             txtFechaProceso.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
@@ -67,14 +223,20 @@ namespace ReporteGasolina
             txtUsuario.Text = AppSettings.Usuario;
 
 
-            toolTip1.SetToolTip(btnConsultar, "Consultar precios de gasolina");
-            toolTip1.SetToolTip(btnImportarExcel, "Importar precios desde Excel");
+            btnConsultar.ToolTipText =
+                "Consultar precios de gasolina por Ciudad";
 
-            toolTip1.SetToolTip(btnExcel,"Exportar a Excel");
+            btnCargarExcel.ToolTipText =
+                "Importar precios gasolina desde Excel";
 
-            toolTip1.SetToolTip(btnProcesar, "Procesar reporte mensual");
+            btnExportarExcel.ToolTipText = "Reporte de Precios Gasolina por Zona";
 
-            toolTip1.SetToolTip(btnSalir, "Salir del sistema");
+            btnProcesar.ToolTipText = "Reporte Asignación Gasolina Mes";
+
+            btnRenovar.ToolTipText = "Inicializar Parámetros de Pantalla";
+
+            btnSalir.ToolTipText =
+                "Salir del sistema";
 
             try
             {
@@ -419,7 +581,7 @@ namespace ReporteGasolina
             }
         }
 
-        private void btnImportarExcel_Click(
+        private void btnCargarExcel_Click(
             object sender,
             EventArgs e)
         {
@@ -485,6 +647,7 @@ namespace ReporteGasolina
                     }
                 }
 
+
                 if (existenErrores)
                 {
                     cmbMes.SelectedIndex =
@@ -493,22 +656,73 @@ namespace ReporteGasolina
                     nudAnio.Text =
                         carga.Anio.ToString();
 
+                    grpCostoGasolina.Text = "Validación de Archivo Excel";
+
                     dvgPrecios.AutoGenerateColumns =
                         true;
 
                     dvgPrecios.DataSource = null;
 
-                    dvgPrecios.DataSource =
-                        carga.Registros;
+                    dvgPrecios.DataSource = carga.Registros;
 
                     if (dvgPrecios.Columns["FilaExcel"] != null)
                     {
                         dvgPrecios.Columns["FilaExcel"].Visible = false;
                     }
 
+
                     if (dvgPrecios.Columns["EsValido"] != null)
                     {
+                        
                         dvgPrecios.Columns["EsValido"].Visible = false;
+
+                    }
+
+                    if (dvgPrecios.Columns["Ciudad"] != null)
+                    {
+                        dvgPrecios.Columns["Ciudad"].Width = 150;
+                        dvgPrecios.Columns["Ciudad"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                        dvgPrecios.Columns["Ciudad"].HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleLeft;
+                    }
+
+                    if (dvgPrecios.Columns["Precio"] != null)
+                    {
+                        dvgPrecios.Columns["Precio"].Width = 100;
+                    }
+
+                    if (dvgPrecios.Columns["Mensaje"] != null)
+                    {
+                        dvgPrecios.Columns["Mensaje"].AutoSizeMode =
+                            DataGridViewAutoSizeColumnMode.Fill;
+                    }
+
+                    foreach (DataGridViewRow row in dvgPrecios.Rows)
+                    {
+                        string mensaje =
+                            Convert.ToString(
+                                row.Cells["Mensaje"].Value);
+
+                        if (!string.IsNullOrWhiteSpace(mensaje) &&
+                            mensaje != "Registro Valido")
+                        {
+                            row.DefaultCellStyle.BackColor =
+                                Color.MistyRose;
+
+                            row.DefaultCellStyle.ForeColor =
+                                Color.DarkRed;
+
+                            row.DefaultCellStyle.SelectionBackColor =
+                                Color.IndianRed;
+
+                            row.DefaultCellStyle.SelectionForeColor =
+                                Color.White;
+
+                            row.DefaultCellStyle.Font =
+                                new Font(
+                                    dvgPrecios.Font,
+                                    FontStyle.Bold);
+                        }
                     }
 
                     MessageBox.Show(
@@ -578,7 +792,7 @@ namespace ReporteGasolina
 
         }
 
-        private void btnExcel_Click(
+        private void ExportarExcel(
             object sender,
             EventArgs e)
         {
@@ -648,7 +862,7 @@ namespace ReporteGasolina
                     MessageBoxIcon.Error);
             }
         }
-        private void btnProcesar_Click(
+        private void ProcesarGasolina(
             object sender,
             EventArgs e)
         {
@@ -677,9 +891,10 @@ namespace ReporteGasolina
                 }
 
                 btnConsultar.Enabled = false;
-                btnImportarExcel.Enabled = false;
+                btnCargarExcel.Enabled = false;
                 btnProcesar.Enabled = false;
-                btnExcel.Enabled = false;
+                btnExportarExcel.Enabled = false;
+                btnRenovar.Enabled = false;
 
                 Cursor = Cursors.WaitCursor;
 
@@ -802,9 +1017,11 @@ namespace ReporteGasolina
                 Cursor = Cursors.Default;
 
                 btnConsultar.Enabled = true;
-                btnImportarExcel.Enabled = true;
+                btnCargarExcel.Enabled = true;
                 btnProcesar.Enabled = true;
-                btnExcel.Enabled = true;
+                btnExportarExcel.Enabled = true;
+                btnRenovar.Enabled = true;
+
             }
         }
     }

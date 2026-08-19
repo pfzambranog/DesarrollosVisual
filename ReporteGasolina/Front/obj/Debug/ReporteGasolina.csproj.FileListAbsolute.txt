@@ -71,3 +71,4 @@ C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteG.BDF2C5B4.Up2Date
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.exe
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.pdb
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\Debug\ReporteGasolina.exe.config
