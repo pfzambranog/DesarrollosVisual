@@ -1,35 +1,45 @@
 ﻿using System.Configuration;
 
-namespace ReporteGasolina.Infrastructure
+namespace ReporteGasolina
 {
     public static class AppSettings
     {
-        /// <summary>
-        /// Compañía configurada en App.config
-        /// </summary>
-        public static string Compania =>
-            ConfigurationManager.AppSettings["Compania"];
+        private static readonly object _sync = new object();
 
-        /// <summary>
-        /// Operación de seguridad
-        /// </summary>
-        public static string Operacion =>
-            ConfigurationManager.AppSettings["Operacion"];
+        static AppSettings()
+        {
+            _compania = ConfigurationManager.AppSettings["Compania"] ?? string.Empty;
+            _operacion = ConfigurationManager.AppSettings["Operacion"] ?? string.Empty;
+            _usuario = ConfigurationManager.AppSettings["Usuario"] ?? string.Empty;
+        }
 
-        /// <summary>
-        /// Usuario de la aplicación
-        /// </summary>
-        public static string Usuario =>
-            ConfigurationManager.AppSettings["Usuario"];
+        private static string _compania;
+        public static string Compania
+        {
+            get { lock (_sync) { return _compania; } }
+            set { lock (_sync) { _compania = value; } }
+        }
 
-        /// <summary>
-        /// Cadena de conexión a SQL Server
-        /// </summary>
-        public static string ConnectionString =>
-            ConfigurationManager
-                .ConnectionStrings["AdamDb"]
-                .ConnectionString;
+        private static string _operacion;
+        public static string Operacion
+        {
+            get { lock (_sync) { return _operacion; } }
+            set { lock (_sync) { _operacion = value; } }
+        }
 
+        private static string _usuario;
+        public static string Usuario
+        {
+            get { lock (_sync) { return _usuario; } }
+            set { lock (_sync) { _usuario = value; } }
+        }
 
+        // Exponer ConnectionString por compatibilidad con el código existente
+        public static string ConnectionString => ConfigurationManager.ConnectionStrings["AdamDb"]?.ConnectionString ?? string.Empty;
+
+        public static string GetConnectionString(string name = "AdamDb")
+        {
+            return ConfigurationManager.ConnectionStrings[name]?.ConnectionString ?? string.Empty;
+        }
     }
 }

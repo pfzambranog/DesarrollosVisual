@@ -63,6 +63,26 @@ namespace ReporteGasolina.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Acepta_con1 {
+            get {
+                object obj = ResourceManager.GetObject("Acepta_con1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Cancela_con1 {
+            get {
+                object obj = ResourceManager.GetObject("Cancela_con1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap consultar {
             get {
                 object obj = ResourceManager.GetObject("consultar", resourceCulture);

@@ -2,17 +2,14 @@
 using ReporteGasolina.Models;
 using ReporteGasolina.Services;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+
 
 
 
@@ -30,6 +27,9 @@ namespace ReporteGasolina
         private readonly ReporteGasolinaService _reporteService;
 
         private readonly ExcelReporteGasolinaService _excelReporteGasolinaService;
+
+        private readonly string _usuario;
+        private readonly string _compania;
 
         // 
         // Definicioón del ToolStrip y sus botones
@@ -198,21 +198,25 @@ namespace ReporteGasolina
             Close();
         }
 
-        public FrmReporteGasolina()
+        // constructor por defecto (retrocompatibilidad)
+        public FrmReporteGasolina() : this(AppSettings.Usuario, AppSettings.Compania)
+        {
+        }
+
+        // nuevo constructor que recibe usuario y compañía
+        public FrmReporteGasolina(string usuario, string compania)
         {
             InitializeComponent();
             ConfigurarToolStrip();
 
             _gasolinaService = new GasolinaService();
-            
-           _excelService = new ExcelGasolinaService();
+            _excelService = new ExcelGasolinaService();
+            _excelExportService = new ExcelExportService();
+            _reporteService = new ReporteGasolinaService();
+            _excelReporteGasolinaService = new ExcelReporteGasolinaService();
 
-           _excelExportService = new ExcelExportService();
-
-           _reporteService = new ReporteGasolinaService();
-     
-           _excelReporteGasolinaService = new ExcelReporteGasolinaService();
-
+            _usuario = usuario ?? string.Empty;
+            _compania = compania ?? string.Empty;
 
             this.Text = "Reporte Precio de Gasolina Por Viudad";
             this.WindowState = FormWindowState.Maximized;
@@ -220,14 +224,13 @@ namespace ReporteGasolina
             txtFechaProceso.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
             txtOperacion.Text = AppSettings.Operacion;
-            txtUsuario.Text = AppSettings.Usuario;
+            txtUsuario.Text = _usuario;
 
 
             btnConsultar.ToolTipText =
                 "Consultar precios de gasolina por Ciudad";
 
-            btnCargarExcel.ToolTipText =
-                "Importar precios gasolina desde Excel";
+            btnCargarExcel.ToolTipText = "Importar precios gasolina desde Excel";
 
             btnExportarExcel.ToolTipText = "Reporte de Precios Gasolina por Zona";
 
@@ -235,8 +238,7 @@ namespace ReporteGasolina
 
             btnRenovar.ToolTipText = "Inicializar Parámetros de Pantalla";
 
-            btnSalir.ToolTipText =
-                "Salir del sistema";
+            btnSalir.ToolTipText = "Salir del sistema";
 
             try
             {
@@ -246,13 +248,13 @@ namespace ReporteGasolina
             }
             catch (Exception ex)
             {
-            MessageBox.Show(
+                MessageBox.Show(
                     ex.Message,
                     "Error al iniciar",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
-                }
             }
+        }
 
         private void FormatearGridReporte()
         {
@@ -423,9 +425,7 @@ namespace ReporteGasolina
                             "@compania",
                             AppSettings.Compania),
 
-                        new SqlParameter(
-                            "@anio",
-                            Convert.ToInt32(anio)));
+                        new SqlParameter("@anio", Convert.ToInt32(anio)));
 
                 if (mes == null ||
                     mes == DBNull.Value)
@@ -433,8 +433,7 @@ namespace ReporteGasolina
                     return;
                 }
 
-                int numeroMes =
-                    Convert.ToInt32(mes);
+                int numeroMes = Convert.ToInt32(mes);
 
                 cmbMes.SelectedIndex =
                     numeroMes - 1;

@@ -11,7 +11,18 @@ namespace ReporteGasolina
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            Application.Run(new FrmReporteGasolina());
+            using (var login = new FrmConexion())
+            {
+                var dr = login.ShowDialog();
+                if (dr != DialogResult.OK)
+                {
+                    // Si el usuario cierra o no valida, salir de la aplicación
+                    return;
+                }
+
+                // Arrancar formulario principal con credenciales provistas
+                Application.Run(new FrmReporteGasolina(login.SelectedUsuario, login.SelectedCompania));
+            }
         }
     }
 }
