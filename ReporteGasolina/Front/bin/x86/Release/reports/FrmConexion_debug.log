@@ -1,0 +1,20 @@
+2026-08-20 10:33:44.227 [T:1] Ctor: Inicializando FrmConexion
+2026-08-20 10:33:53.393 [T:1] TxtPassword_Leave: usuario=Adam
+2026-08-20 10:33:53.414 [T:1] TryLoadCompanias: abriendo conexión. usuario=Adam
+2026-08-20 10:33:53.600 [T:1] SelectedIndexChanged: index=0, value=System.Data.DataRowView
+2026-08-20 10:33:53.615 [T:1] TxtPassword_Leave: usuario=Adam
+2026-08-20 10:33:53.615 [T:1] TryLoadCompanias: abriendo conexión. usuario=Adam
+2026-08-20 10:33:53.621 [T:1] SelectedIndexChanged: index=0, value=0   
+2026-08-20 10:33:53.634 [T:1] TxtPassword_Leave: compañías cargadas. requireSelection=True
+2026-08-20 10:33:53.634 [T:1] TxtPassword_Leave: compañías cargadas. requireSelection=True
+2026-08-20 10:33:55.672 [T:1] SelectedIndexChanged: index=1, value=1   
+2026-08-20 10:34:23.162 [T:1] Ctor: Inicializando FrmConexion
+2026-08-20 10:34:31.070 [T:1] TxtPassword_Leave: usuario=Adam
+2026-08-20 10:34:31.084 [T:1] TryLoadCompanias: abriendo conexión. usuario=Adam
+2026-08-20 10:34:31.180 [T:1] SelectedIndexChanged: index=0, value=System.Data.DataRowView
+2026-08-20 10:34:31.191 [T:1] TxtPassword_Leave: usuario=Adam
+2026-08-20 10:34:31.196 [T:1] TryLoadCompanias: abriendo conexión. usuario=Adam
+2026-08-20 10:34:31.205 [T:1] SelectedIndexChanged: index=0, value=0   
+2026-08-20 10:34:31.214 [T:1] TxtPassword_Leave: compañías cargadas. requireSelection=True
+2026-08-20 10:34:31.214 [T:1] TxtPassword_Leave: compañías cargadas. requireSelection=True
+2026-08-20 10:34:33.885 [T:1] SelectedIndexChanged: index=1, value=1   

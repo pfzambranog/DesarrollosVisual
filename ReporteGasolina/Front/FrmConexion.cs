@@ -3,6 +3,9 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace ReporteGasolina
@@ -15,9 +18,70 @@ namespace ReporteGasolina
         // Flag que indica que el usuario debe escoger explícitamente una compañía
         private bool _requireCompanySelection;
 
+        // Logging configurable
+        private static readonly object _logLock = new object();
+        private static readonly string _logDir;
+        private static readonly string _logFile;
+        private static readonly bool _loggingEnabled;
+
+        static FrmConexion()
+        {
+            try
+            {
+                // Leer flag desde appSettings (EnableDebugLogs = "true" para activar)
+                bool enabled = false;
+                bool.TryParse(ConfigurationManager.AppSettings["EnableDebugLogs"], out enabled);
+                _loggingEnabled = enabled;
+
+                // Obtener directorio de reports desde appSettings (ReportsDirectory)
+                var reportsDirSetting = ConfigurationManager.AppSettings["ReportsDirectory"];
+                if (string.IsNullOrWhiteSpace(reportsDirSetting))
+                {
+                    reportsDirSetting = "reports";
+                }
+
+                // Si la ruta es relativa, combinar con la base del app domain
+                _logDir = Path.IsPathRooted(reportsDirSetting)
+                    ? reportsDirSetting
+                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? ".", reportsDirSetting);
+
+                // Asegurar consistencia del nombre de archivo
+                _logFile = Path.Combine(_logDir, "FrmConexion_debug.log");
+            }
+            catch
+            {
+                // En caso de cualquier error, deshabilitar logging para no afectar runtime
+                _loggingEnabled = false;
+                _logDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? ".", "reports");
+                _logFile = Path.Combine(_logDir, "FrmConexion_debug.log");
+            }
+        }
+
+        private static void LogDebug(string message)
+        {
+            if (!_loggingEnabled) return;
+
+            try
+            {
+                lock (_logLock)
+                {
+                    Directory.CreateDirectory(_logDir);
+                    var line = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} [T:{Thread.CurrentThread.ManagedThreadId}] {message}";
+                    File.AppendAllText(_logFile, line + Environment.NewLine);
+                    Debug.WriteLine(line);
+                }
+            }
+            catch
+            {
+                // Nunca lanzar desde logging; si falla, omitimos para no afectar la aplicación.
+            }
+        }
+
         public FrmConexion()
         {
             InitializeComponent();
+            LogDebug("Ctor: Inicializando FrmConexion");
+
             // Evitamos que Enter dispare automáticamente el botón Aceptar hasta que corresponda
             AcceptButton = null;
 
@@ -41,11 +105,11 @@ namespace ReporteGasolina
 
         private void CmbCompanias_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Si el usuario selecciona una compañía, quitamos la obligación de confirmarla
             if (cmbCompanias.SelectedIndex >= 0)
             {
                 _requireCompanySelection = false;
                 AcceptButton = BtnConectar;
+                LogDebug($"SelectedIndexChanged: index={cmbCompanias.SelectedIndex}, value={cmbCompanias.SelectedValue}");
             }
         }
 
@@ -53,30 +117,28 @@ namespace ReporteGasolina
         {
             if (e.KeyCode == Keys.Enter)
             {
-                // Suprimimos la pulsación de Enter para que no active ningún botón.
                 e.SuppressKeyPress = true;
                 e.Handled = true;
 
-                // Ejecutamos la misma lógica que al salir del control: cargar compañías.
-                // Pero NO mostramos MessageBox informativo aquí (mejor UX).
                 string usuario = txtUsuario.Text?.Trim() ?? string.Empty;
                 string password = txtPassword.Text ?? string.Empty;
+
+                LogDebug("TxtPassword_KeyDown: Enter pulsado. usuario=" + usuario);
 
                 if (!string.IsNullOrWhiteSpace(usuario) && !string.IsNullOrEmpty(password))
                 {
                     if (!TryLoadCompanias(usuario, password, out string mensaje))
                     {
+                        LogDebug("TxtPassword_KeyDown: TryLoadCompanias falló: " + mensaje);
                         MessageBox.Show(mensaje, "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                     else
                     {
-                        // Si se cargaron compañías, ponemos foco en el combo y permitimos Enter para conectar.
                         if (cmbCompanias.Visible)
                         {
                             cmbCompanias.Focus();
-                            // Si hay que seleccionar explícitamente, AcceptButton queda asignado
-                            // cuando el usuario elija (ver SelectedIndexChanged).
                             if (!_requireCompanySelection) AcceptButton = BtnConectar;
+                            LogDebug("TxtPassword_KeyDown: compañías cargadas. requireSelection=" + _requireCompanySelection);
                         }
                     }
                 }
@@ -85,24 +147,26 @@ namespace ReporteGasolina
 
         private void TxtPassword_Leave(object sender, EventArgs e)
         {
-            // Mantener comportamiento similar a KeyDown pero sin forzar MessageBox informativo.
             string usuario = txtUsuario.Text?.Trim() ?? string.Empty;
             string password = txtPassword.Text ?? string.Empty;
+
+            LogDebug("TxtPassword_Leave: usuario=" + usuario);
 
             if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrEmpty(password))
                 return;
 
             if (!TryLoadCompanias(usuario, password, out string mensaje))
             {
+                LogDebug("TxtPassword_Leave: TryLoadCompanias falló: " + mensaje);
                 MessageBox.Show(mensaje, "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (cmbCompanias.Visible)
             {
-                // Colocar foco en el combo; AcceptButton se activa cuando haya selección
                 cmbCompanias.Focus();
                 if (!_requireCompanySelection) AcceptButton = BtnConectar;
+                LogDebug("TxtPassword_Leave: compañías cargadas. requireSelection=" + _requireCompanySelection);
             }
         }
 
@@ -112,38 +176,44 @@ namespace ReporteGasolina
             {
                 e.SuppressKeyPress = true;
                 e.Handled = true;
-                // Simular clic en conectar (se reusar validaciones existentes)
                 BtnConectar.PerformClick();
             }
         }
 
-        /// <summary>
-        /// Intenta conectar con las credenciales y cargar las compañías del usuario en el combo.
-        /// No realiza el cierre del formulario: deja al usuario pulsar Conectar.
-        /// </summary>
         private bool TryLoadCompanias(string usuario, string password, out string mensaje)
         {
             mensaje = string.Empty;
+
+            // obtener la parte base (sin credenciales) desde connectionStrings
+            var baseConn = ConfigurationManager.ConnectionStrings["AdamDb"]?.ConnectionString;
+            if (string.IsNullOrWhiteSpace(baseConn))
+            {
+                MessageBox.Show("Cadena de conexión base no configurada.", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false; // o return según contexto
+            }
+
             SqlConnectionStringBuilder builder;
             try
             {
-                builder = new SqlConnectionStringBuilder(AppSettings.ConnectionString)
+                builder = new SqlConnectionStringBuilder(baseConn)
                 {
                     IntegratedSecurity = false,
-                    UserID = usuario,
-                    Password = password
+                    UserID = usuario,       // desde txtUsuario
+                    Password = password     // desde txtPassword (NO registrar)
                 };
             }
             catch (Exception ex)
             {
-                mensaje = $"Error en la cadena de configuración: {ex.Message}";
+                // no loguear la cadena completa ni la contraseña
+                LogDebug("Error al crear SqlConnectionStringBuilder: " + ex.Message);
+                mensaje = "Error en la configuración de conexión.";
                 return false;
             }
-
             string connStr = builder.ToString();
 
             try
             {
+                LogDebug("TryLoadCompanias: abriendo conexión. usuario=" + usuario);
                 using (SqlConnection cn = new SqlConnection(connStr))
                 {
                     cn.Open();
@@ -341,9 +411,26 @@ AND usuario = @usuario;";
             }
             catch { }
 
+            // Establecer la cadena de conexión en memoria (no persistir en disco)
+            try
+            {
+                AppSettings.SetRuntimeConnectionString(connStr);
+#if DEBUG
+                LogDebug("BtnConectar_Click: connection string set in memory (password masked).");
+#endif
+            }
+            catch { /* no crítico */ }
+
+            // Propagar usuario y compañía al AppSettings en memoria para que todos los servicios los usen
+            AppSettings.Usuario = usuario;
+            AppSettings.Compania = companiaSeleccionada;
+
             SelectedUsuario = usuario;
             SelectedCompania = companiaSeleccionada;
 
+#if DEBUG
+            LogDebug($"BtnConectar_Click: éxito. Usuario={SelectedUsuario}, Compania={SelectedCompania}. Cerrando formulario.");
+#endif
             DialogResult = DialogResult.OK;
             Close();
         }

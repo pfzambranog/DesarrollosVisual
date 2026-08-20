@@ -34,8 +34,31 @@ namespace ReporteGasolina
             set { lock (_sync) { _usuario = value; } }
         }
 
-        // Exponer ConnectionString por compatibilidad con el código existente
-        public static string ConnectionString => ConfigurationManager.ConnectionStrings["AdamDb"]?.ConnectionString ?? string.Empty;
+        // override en memoria para la connection string (no se persiste en disco)
+        private static string _overrideConnectionString;
+
+        public static void SetRuntimeConnectionString(string connectionString)
+        {
+            lock (_sync)
+            {
+                _overrideConnectionString = connectionString;
+            }
+        }
+
+        // Exponer ConnectionString: si hay override en memoria, usarlo; si no, leer del config
+        public static string ConnectionString
+        {
+            get
+            {
+                lock (_sync)
+                {
+                    if (!string.IsNullOrEmpty(_overrideConnectionString))
+                        return _overrideConnectionString;
+
+                    return ConfigurationManager.ConnectionStrings["AdamDb"]?.ConnectionString ?? string.Empty;
+                }
+            }
+        }
 
         public static string GetConnectionString(string name = "AdamDb")
         {
