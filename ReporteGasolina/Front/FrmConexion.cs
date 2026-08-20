@@ -12,6 +12,9 @@ namespace ReporteGasolina
         public string SelectedUsuario { get; private set; }
         public string SelectedCompania { get; private set; }
 
+        // Flag que indica que el usuario debe escoger explícitamente una compañía
+        private bool _requireCompanySelection;
+
         public FrmConexion()
         {
             InitializeComponent();
@@ -31,6 +34,19 @@ namespace ReporteGasolina
             // Permitir Enter en el combo para confirmar la conexión
             cmbCompanias.KeyDown += CmbCompanias_KeyDown;
             cmbCompanias.GotFocus += (s, e) => AcceptButton = BtnConectar;
+
+            // Cuando el usuario selecciona una compañía, ya no es necesario obligarlo de nuevo
+            cmbCompanias.SelectedIndexChanged += CmbCompanias_SelectedIndexChanged;
+        }
+
+        private void CmbCompanias_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Si el usuario selecciona una compañía, quitamos la obligación de confirmarla
+            if (cmbCompanias.SelectedIndex >= 0)
+            {
+                _requireCompanySelection = false;
+                AcceptButton = BtnConectar;
+            }
         }
 
         private void TxtPassword_KeyDown(object sender, KeyEventArgs e)
@@ -58,7 +74,9 @@ namespace ReporteGasolina
                         if (cmbCompanias.Visible)
                         {
                             cmbCompanias.Focus();
-                            AcceptButton = BtnConectar;
+                            // Si hay que seleccionar explícitamente, AcceptButton queda asignado
+                            // cuando el usuario elija (ver SelectedIndexChanged).
+                            if (!_requireCompanySelection) AcceptButton = BtnConectar;
                         }
                     }
                 }
@@ -82,9 +100,9 @@ namespace ReporteGasolina
 
             if (cmbCompanias.Visible)
             {
-                // Colocar foco en el combo y permitir Enter para conectar; no mostrar diálogo.
+                // Colocar foco en el combo; AcceptButton se activa cuando haya selección
                 cmbCompanias.Focus();
-                AcceptButton = BtnConectar;
+                if (!_requireCompanySelection) AcceptButton = BtnConectar;
             }
         }
 
@@ -163,15 +181,30 @@ ORDER BY 2;";
                         lblCompanias.Visible = false;
                         cmbCompanias.DataSource = null;
                         AcceptButton = null;
+                        _requireCompanySelection = false;
                         return false;
                     }
 
-                    // Presentamos el combo para que el usuario confirme la compañía,
-                    // incluso si sólo hay una compañía.
+                    // Presentamos el combo para que el usuario confirme la compañía.
                     cmbCompanias.DataSource = dt;
                     cmbCompanias.DisplayMember = "nombre_cia";
                     cmbCompanias.ValueMember = "compania";
-                    cmbCompanias.SelectedIndex = 0;
+
+                    if (dt.Rows.Count == 1)
+                    {
+                        // Si solo hay una compañía, seleccionarla automáticamente
+                        cmbCompanias.SelectedIndex = 0;
+                        _requireCompanySelection = false;
+                        AcceptButton = BtnConectar;
+                    }
+                    else
+                    {
+                        // Si hay varias, forzar que el usuario seleccione explícitamente
+                        cmbCompanias.SelectedIndex = -1;
+                        _requireCompanySelection = true;
+                        // No asignar AcceptButton hasta que el usuario seleccione
+                        AcceptButton = null;
+                    }
 
                     lblCompanias.Visible = true;
                     cmbCompanias.Visible = true;
@@ -211,6 +244,20 @@ ORDER BY 2;";
                     MessageBox.Show(msgLoad, "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
+
+                // Si cargamos varias compañías y pedimos selección explícita, no continuar ahora
+                if (_requireCompanySelection && cmbCompanias.SelectedIndex < 0)
+                {
+                    MessageBox.Show("Seleccione la compañía y vuelva a pulsar Conectar.", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+            }
+
+            // Si requerimos selección explícita pero el usuario no ha elegido, detener
+            if (_requireCompanySelection && cmbCompanias.SelectedIndex < 0)
+            {
+                MessageBox.Show("Seleccione la compañía y vuelva a pulsar Conectar.", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
 
             string companiaSeleccionada = null;
@@ -302,4 +349,3 @@ AND usuario = @usuario;";
         }
     }
 }
-
