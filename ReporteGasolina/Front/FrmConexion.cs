@@ -1,5 +1,4 @@
-﻿using ReporteGasolina.Infrastructure;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -85,8 +84,9 @@ namespace ReporteGasolina
             // Evitamos que Enter dispare automáticamente el botón Aceptar hasta que corresponda
             AcceptButton = null;
 
-            BtnConectar.Click += BtnConectar_Click;
-            btnCancelar.Click += (s, e) => Close();
+              BtnConectar.Click += BtnConectar_Click;
+         //   btnCancelar.Click += (s, e) => Close();
+
             cmbCompanias.Visible = false;
             lblCompanias.Visible = false;
 
@@ -176,7 +176,8 @@ namespace ReporteGasolina
             {
                 e.SuppressKeyPress = true;
                 e.Handled = true;
-                BtnConectar.PerformClick();
+                this.BtnConectar.PerformClick();
+
             }
         }
 

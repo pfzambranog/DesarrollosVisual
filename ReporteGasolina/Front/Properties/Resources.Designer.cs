@@ -73,9 +73,29 @@ namespace ReporteGasolina.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ACEPTA1 {
+            get {
+                object obj = ResourceManager.GetObject("ACEPTA1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Cancela_con1 {
             get {
                 object obj = ResourceManager.GetObject("Cancela_con1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap CANCELA1 {
+            get {
+                object obj = ResourceManager.GetObject("CANCELA1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -126,6 +146,16 @@ namespace ReporteGasolina.Properties {
         internal static System.Drawing.Bitmap logo_1 {
             get {
                 object obj = ResourceManager.GetObject("logo_1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Logo_adam_3 {
+            get {
+                object obj = ResourceManager.GetObject("Logo_adam_3", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
