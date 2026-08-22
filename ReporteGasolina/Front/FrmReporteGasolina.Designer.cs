@@ -283,6 +283,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudAnio)).EndInit();
             this.grpCostoGasolina.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dvgPrecios)).EndInit();
+            this.Load += new System.EventHandler(this.FrmReporteGasolina_Load);
             this.ResumeLayout(false);
 
         }

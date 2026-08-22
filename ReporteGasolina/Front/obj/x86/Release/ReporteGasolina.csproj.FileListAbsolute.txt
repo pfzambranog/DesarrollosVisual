@@ -35,3 +35,4 @@ C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\System.Ru
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteG.BDF2C5B4.Up2Date
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.exe
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.pdb
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.exe.config
