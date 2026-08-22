@@ -123,7 +123,9 @@
       <DependentUpon>FrmReporteGasolina.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\AppSettings.cs" />
+    <Compile Include="Infrastructure\Logger.cs" />
     <Compile Include="Infrastructure\SqlHelper.cs" />
+
     <Compile Include="Models\CargaPrecioGasolinaResult.cs" />
     <Compile Include="Models\PrecioGasolinaModel.cs" />
     <Compile Include="Models\SpResult.cs" />

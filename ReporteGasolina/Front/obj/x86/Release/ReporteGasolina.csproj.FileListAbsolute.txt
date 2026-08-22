@@ -1,3 +1,9 @@
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.AssemblyReference.cache
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.FrmConexion.resources
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.FrmReporteGasolina.resources
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.Properties.Resources.resources
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.GenerateResource.cache
+C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.CoreCompileInputs.cache
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\ReporteGasolina.exe.config
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\ReporteGasolina.exe
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\ReporteGasolina.pdb
@@ -26,13 +32,6 @@ C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\System.Bu
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\System.Memory.xml
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\System.Numerics.Vectors.xml
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\bin\x86\Release\System.Runtime.CompilerServices.Unsafe.xml
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.AssemblyReference.cache
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.FrmConexion.resources
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.FrmReporteGasolina.resources
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.Properties.Resources.resources
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.GenerateResource.cache
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.csproj.CoreCompileInputs.cache
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteG.BDF2C5B4.Up2Date
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.exe
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.pdb
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\ReporteGasolina.exe.config
