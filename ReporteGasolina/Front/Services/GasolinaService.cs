@@ -1,10 +1,10 @@
-﻿using ReporteGasolina.Infrastructure;
-using ReporteGasolina.Models;
+﻿using RepGas.Infrastructure;
+using RepGas.Models;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ReporteGasolina.Services
+namespace RepGas.Services
 {
     public class GasolinaService
     {
@@ -23,17 +23,17 @@ namespace ReporteGasolina.Services
         /// 
 
         public SpResult DepurarPeriodo(
-    string compania,
-    int anio,
-    int mes,
-    string usuario,
-    string operacion)
+                         string compania,
+                         int anio,
+                         int mes,
+                         string usuario,
+                         string operacion)
         {
-            SpResult resultado =
-                new SpResult();
+            SpResult resultado = new SpResult();
 
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            Logger.Debug(nameof(GasolinaService), $"SP INICIO: spd_Ls_HistPrecioGasolinaTbl");
+
+            using (SqlConnection cn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd =
                     new SqlCommand(
@@ -63,10 +63,7 @@ namespace ReporteGasolina.Services
                         "@PsOperacion",
                         operacion);
 
-                    SqlParameter pStatus =
-                        new SqlParameter(
-                            "@PnEstatus",
-                            SqlDbType.Int);
+                    SqlParameter pStatus = new SqlParameter("@PnEstatus", SqlDbType.Int);
 
                     pStatus.Direction =
                         ParameterDirection.Output;
@@ -79,14 +76,18 @@ namespace ReporteGasolina.Services
                             SqlDbType.VarChar,
                             250);
 
-                    pMensaje.Direction =
-                        ParameterDirection.Output;
+                    pMensaje.Direction = ParameterDirection.Output;
 
                     cmd.Parameters.Add(pMensaje);
 
                     cn.Open();
 
                     cmd.ExecuteNonQuery();
+
+
+                    Logger.Debug(nameof(GasolinaService), "SP FIN: spd_Ls_HistPrecioGasolinaTbl");
+
+
 
                     resultado.IdError =
                         Convert.ToInt32(
@@ -111,8 +112,9 @@ namespace ReporteGasolina.Services
             string usuario,
             string operacion)
         {
-            SpResult resultado =
-                new SpResult();
+            SpResult resultado = new SpResult();
+
+            Logger.Debug(nameof(GasolinaService), $"SP INICIO: spv_Ls_HistPrecioGasolinaTbl");
 
             using (SqlConnection cn =
                 new SqlConnection(_connectionString))
@@ -171,6 +173,12 @@ namespace ReporteGasolina.Services
 
                     cmd.ExecuteNonQuery();
 
+                    resultado.IdError = Convert.ToInt32(pEstatus.Value ?? 0);
+
+                    resultado.MensajeError = Convert.ToString(pMensaje.Value ?? "");
+
+                    Logger.Debug(nameof(GasolinaService), $"ESTATUS={resultado.IdError}");
+
                     resultado.IdError =
                         Convert.ToInt32(
                             pEstatus.Value ?? 0);
@@ -197,11 +205,11 @@ namespace ReporteGasolina.Services
             string usuario,
             string operacion)
         {
-            SpResult resultado =
-                new SpResult();
+            SpResult resultado = new SpResult();
 
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            Logger.Debug(nameof(GasolinaService), $"SP INICIO: spa_Ls_HistPrecioGasolinaTbl");
+
+            using (SqlConnection cn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd =
                     new SqlCommand(
@@ -257,13 +265,15 @@ namespace ReporteGasolina.Services
 
                     cmd.ExecuteNonQuery();
 
-                    resultado.IdError =
-                        Convert.ToInt32(
-                            pEstatus.Value ?? 0);
+                    resultado.IdError = Convert.ToInt32(pEstatus.Value ?? 0);
 
-                    resultado.MensajeError =
-                        Convert.ToString(
-                            pMensaje.Value ?? "");
+                    resultado.MensajeError = Convert.ToString( pMensaje.Value ?? "");
+
+                    Logger.Debug(nameof(GasolinaService), $"MENSAJE={resultado.MensajeError}");
+
+                    resultado.IdError = Convert.ToInt32(pEstatus.Value ?? 0);
+
+                    resultado.MensajeError = Convert.ToString(pMensaje.Value ?? "");
                 }
             }
 

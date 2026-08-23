@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
-namespace ReporteGasolina.Infrastructure
+namespace RepGas.Infrastructure
 {
     public class SqlHelper
     {
@@ -22,32 +23,80 @@ namespace ReporteGasolina.Infrastructure
         {
             DataTable dt = new DataTable();
 
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            Stopwatch sw = Stopwatch.StartNew();
+
+            try
             {
-                using (SqlCommand cmd =
-                    new SqlCommand(sql, cn))
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL INICIO. CommandType={commandType}, Command={sql}");
+
+                using (SqlConnection cn =
+                    new SqlConnection(_connectionString))
                 {
-                    cmd.CommandType = commandType;
-
-                    if (parameters != null &&
-                        parameters.Length > 0)
+                    using (SqlCommand cmd =
+                        new SqlCommand(sql, cn))
                     {
-                        cmd.Parameters.AddRange(parameters);
-                    }
+                        cmd.CommandType = commandType;
 
-                    using (SqlDataAdapter da =
-                        new SqlDataAdapter(cmd))
-                    {
-                        da.Fill(dt);
+                        if (parameters != null &&
+                            parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+
+                            foreach (SqlParameter p in parameters)
+                            {
+                                Logger.Debug(
+                                    "SqlHelper",
+                                    $"PARAM {p.ParameterName}={p.Value}");
+                            }
+                        }
+
+                        using (SqlDataAdapter da =
+                            new SqlDataAdapter(cmd))
+                        {
+                            da.Fill(dt);
+                        }
                     }
                 }
-            }
 
-            return dt;
+                sw.Stop();
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL FIN. Command={sql}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"REGISTROS={dt.Rows.Count}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                return dt;
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL ERROR. Command={sql}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"MENSAJE={ex.Message}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                throw;
+            }
         }
 
-        #endregion
+        #endregion DataTable
 
         #region Scalar
 
@@ -56,28 +105,79 @@ namespace ReporteGasolina.Infrastructure
             CommandType commandType,
             params SqlParameter[] parameters)
         {
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            Stopwatch sw = Stopwatch.StartNew();
+
+            try
             {
-                cn.Open();
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL INICIO. CommandType={commandType}, Command={sql}");
 
-                using (SqlCommand cmd =
-                    new SqlCommand(sql, cn))
+                using (SqlConnection cn =
+                    new SqlConnection(_connectionString))
                 {
-                    cmd.CommandType = commandType;
+                    cn.Open();
 
-                    if (parameters != null &&
-                        parameters.Length > 0)
+                    using (SqlCommand cmd =
+                        new SqlCommand(sql, cn))
                     {
-                        cmd.Parameters.AddRange(parameters);
-                    }
+                        cmd.CommandType = commandType;
 
-                    return cmd.ExecuteScalar();
+                        if (parameters != null &&
+                            parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+
+                            foreach (SqlParameter p in parameters)
+                            {
+                                Logger.Debug(
+                                    "SqlHelper",
+                                    $"PARAM {p.ParameterName}={p.Value}");
+                            }
+                        }
+
+                        object result =
+                            cmd.ExecuteScalar();
+
+                        sw.Stop();
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"SQL FIN. Command={sql}");
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"RESULTADO={result}");
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                        return result;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL ERROR. Command={sql}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"MENSAJE={ex.Message}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                throw;
             }
         }
 
-        #endregion
+        #endregion Scalar
 
         #region NonQuery
 
@@ -86,27 +186,78 @@ namespace ReporteGasolina.Infrastructure
             CommandType commandType,
             params SqlParameter[] parameters)
         {
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            Stopwatch sw = Stopwatch.StartNew();
+
+            try
             {
-                cn.Open();
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL INICIO. CommandType={commandType}, Command={sql}");
 
-                using (SqlCommand cmd =
-                    new SqlCommand(sql, cn))
+                using (SqlConnection cn =
+                    new SqlConnection(_connectionString))
                 {
-                    cmd.CommandType = commandType;
+                    cn.Open();
 
-                    if (parameters != null &&
-                        parameters.Length > 0)
+                    using (SqlCommand cmd =
+                        new SqlCommand(sql, cn))
                     {
-                        cmd.Parameters.AddRange(parameters);
-                    }
+                        cmd.CommandType = commandType;
 
-                    return cmd.ExecuteNonQuery();
+                        if (parameters != null &&
+                            parameters.Length > 0)
+                        {
+                            cmd.Parameters.AddRange(parameters);
+
+                            foreach (SqlParameter p in parameters)
+                            {
+                                Logger.Debug(
+                                    "SqlHelper",
+                                    $"PARAM {p.ParameterName}={p.Value}");
+                            }
+                        }
+
+                        int rowsAffected =
+                            cmd.ExecuteNonQuery();
+
+                        sw.Stop();
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"SQL FIN. Command={sql}");
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"ROWS_AFFECTED={rowsAffected}");
+
+                        Logger.Debug(
+                            "SqlHelper",
+                            $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                        return rowsAffected;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                sw.Stop();
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"SQL ERROR. Command={sql}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"MENSAJE={ex.Message}");
+
+                Logger.Debug(
+                    "SqlHelper",
+                    $"TIEMPO_MS={sw.ElapsedMilliseconds}");
+
+                throw;
             }
         }
 
-        #endregion
+        #endregion NonQuery
     }
 }

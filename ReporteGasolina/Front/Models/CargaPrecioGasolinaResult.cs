@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ReporteGasolina.Models
+namespace RepGas.Models
 {
     public sealed class CargaPrecioGasolinaResult
     {

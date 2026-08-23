@@ -1,9 +1,9 @@
 ﻿using ClosedXML.Excel;
-using ReporteGasolina.Models;
+using RepGas.Models;
 using System;
 using System.Windows.Forms;
 
-namespace ReporteGasolina.Services
+namespace RepGas.Services
 {
     public class ExcelGasolinaService
     {

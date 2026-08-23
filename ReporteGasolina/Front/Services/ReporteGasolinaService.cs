@@ -1,16 +1,16 @@
-﻿using ReporteGasolina.Infrastructure;
-using ReporteGasolina.Models;
+﻿using RepGas.Infrastructure;
+using RepGas.Models;
 using System;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ReporteGasolina.Services
+namespace RepGas.Services
 {
-    public class ReporteGasolinaService
+    public class RepGasService
     {
         private readonly string _connectionString;
 
-        public ReporteGasolinaService()
+        public RepGasService()
         {
             _connectionString =
                 AppSettings.ConnectionString;
@@ -181,11 +181,11 @@ ORDER BY a.trabajador
             string usuario,
             string operacion)
         {
-            SpResult resultado =
-                new SpResult();
+            Logger.Debug(nameof(RepGasService), "SP INICIO: spp_Ls_RepPrecioGasolinaTbl");
 
-            using (SqlConnection cn =
-                new SqlConnection(_connectionString))
+            SpResult resultado = new SpResult();
+
+            using (SqlConnection cn = new SqlConnection(_connectionString))
             {
                 using (SqlCommand cmd =
                     new SqlCommand(
@@ -244,13 +244,15 @@ ORDER BY a.trabajador
 
                     cmd.ExecuteNonQuery();
 
-                    resultado.IdError =
-                        Convert.ToInt32(
-                            pStatus.Value ?? 0);
+                    Logger.Debug(nameof(RepGasService), "SP FIN: spp_Ls_RepPrecioGasolinaTbl");
 
-                    resultado.MensajeError =
-                        Convert.ToString(
-                            pMensaje.Value ?? "");
+                    resultado.IdError = Convert.ToInt32(pStatus.Value ?? 0);
+
+                    Logger.Debug(nameof(RepGasService), $"ESTATUS={resultado.IdError}");
+
+                    resultado.MensajeError = Convert.ToString(pMensaje.Value ?? "");
+
+                    Logger.Debug( nameof(RepGasService),$"MENSAJE={resultado.MensajeError}");
                 }
             }
 

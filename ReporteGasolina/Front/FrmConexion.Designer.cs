@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 
-namespace ReporteGasolina
+namespace RepGas
 {
     partial class FrmConexion
     {
@@ -31,12 +31,8 @@ namespace ReporteGasolina
 
         private void InitializeComponent()
         {
-
-            this.picLogo = new System.Windows.Forms.PictureBox();
-
-            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
-
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmConexion));
+            this.picLogo = new System.Windows.Forms.PictureBox();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.txtUsuario = new System.Windows.Forms.TextBox();
             this.lblContrasena = new System.Windows.Forms.Label();
@@ -45,75 +41,65 @@ namespace ReporteGasolina
             this.cmbCompanias = new System.Windows.Forms.ComboBox();
             this.BtnConectar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             this.SuspendLayout();
-
+            // 
             // picLogo
-
-            this.picLogo.Location = new Point(5, 5);
-            this.picLogo.BackColor = Color.Transparent;
-            this.picLogo.Image = Properties.Resources.Logo_adam_3;
-            this.picLogo.SizeMode = PictureBoxSizeMode.Zoom;
-            this.picLogo.Size = new Size(180, 50);
-            this.picLogo.BorderStyle = BorderStyle.None;
-          //  this.picLogo.SizeMode = PictureBoxSizeMode.AutoSize;
-            
-
+            // 
+            this.picLogo.BackColor = System.Drawing.Color.Transparent;
+            this.picLogo.Image = global::RepGas.Properties.Resources.Logo_adam_3;
+            this.picLogo.Location = new System.Drawing.Point(5, 5);
+            this.picLogo.Name = "picLogo";
+            this.picLogo.Size = new System.Drawing.Size(180, 50);
+            this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.picLogo.TabIndex = 0;
+            this.picLogo.TabStop = false;
             // 
             // lblUsuario
-            //
-
+            // 
             this.lblUsuario.AutoSize = true;
             this.lblUsuario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.lblUsuario.Location = new Point(40, 105);
+            this.lblUsuario.Location = new System.Drawing.Point(40, 105);
             this.lblUsuario.Name = "lblUsuario";
             this.lblUsuario.Size = new System.Drawing.Size(54, 13);
             this.lblUsuario.TabIndex = 0;
             this.lblUsuario.Text = "Usuario:";
-
-
             // 
             // txtUsuario
-            //
-
-            this.txtUsuario.AutoSize = false;
-            this.txtUsuario.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this.txtUsuario.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtUsuario.Location = new Point(140, 100);
+            this.txtUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtUsuario.Location = new System.Drawing.Point(140, 100);
             this.txtUsuario.Name = "txtUsuario";
+            this.txtUsuario.Size = new System.Drawing.Size(100, 23);
             this.txtUsuario.TabIndex = 1;
-            this.txtUsuario.Font = new Font("Segoe UI", 9F);
-            this.txtUsuario.Height = 24;
-        
-
             // 
             // lblContrasena
             // 
             this.lblContrasena.AutoSize = true;
             this.lblContrasena.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.lblContrasena.Location = new Point(40, 140);
+            this.lblContrasena.Location = new System.Drawing.Point(40, 140);
             this.lblContrasena.Name = "lblContrasena";
             this.lblContrasena.Size = new System.Drawing.Size(75, 13);
             this.lblContrasena.TabIndex = 2;
             this.lblContrasena.Text = "Contraseña:";
             // 
             // txtPassword
-            //
-
-            this.txtPassword.AutoSize = false;
-            this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this.txtPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtPassword.Location = new Point(140, 135);
+            this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtPassword.Location = new System.Drawing.Point(140, 135);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.Size = new System.Drawing.Size(100, 23);
             this.txtPassword.TabIndex = 3;
             this.txtPassword.UseSystemPasswordChar = true;
-            this.txtPassword.Font = new Font("Segoe UI", 9F);
-            this.txtPassword.Height = 24;
             // 
             // lblCompanias
             // 
-            this.lblCompanias.AutoSize = false;
             this.lblCompanias.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.lblCompanias.Location = new Point(40, 175);
+            this.lblCompanias.Location = new System.Drawing.Point(40, 175);
             this.lblCompanias.Name = "lblCompanias";
             this.lblCompanias.Size = new System.Drawing.Size(68, 13);
             this.lblCompanias.TabIndex = 4;
@@ -121,60 +107,57 @@ namespace ReporteGasolina
             this.lblCompanias.Visible = false;
             // 
             // cmbCompanias
-            //
-
-            this.cmbCompanias.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            // 
+            this.cmbCompanias.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbCompanias.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbCompanias.Location = new Point(140, 170);
+            this.cmbCompanias.Location = new System.Drawing.Point(140, 170);
             this.cmbCompanias.Name = "cmbCompanias";
-            this.cmbCompanias.Size = new Size(280, 24);
+            this.cmbCompanias.Size = new System.Drawing.Size(280, 21);
             this.cmbCompanias.TabIndex = 5;
             this.cmbCompanias.Visible = false;
-
-            // Conectar
-
-            this.BtnConectar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            this.BtnConectar.FlatStyle = FlatStyle.Flat;
+            // 
+            // BtnConectar
+            // 
+            this.BtnConectar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.BtnConectar.FlatAppearance.BorderSize = 0;
-            this.BtnConectar.FlatAppearance.MouseDownBackColor = Color.Transparent;
-            this.BtnConectar.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            this.BtnConectar.Location = new Point(450, 230);
-            this.BtnConectar.Size = new Size(40, 36);
-            this.BtnConectar.Image = Properties.Resources.ACEPTA1;
-            this.BtnConectar.ImageAlign = ContentAlignment.MiddleCenter;
+            this.BtnConectar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.BtnConectar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.BtnConectar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BtnConectar.ForeColor = System.Drawing.Color.LightSteelBlue;
+            this.BtnConectar.Image = global::RepGas.Properties.Resources.ACEPTA1;
+            this.BtnConectar.Location = new System.Drawing.Point(450, 230);
+            this.BtnConectar.Name = "BtnConectar";
+            this.BtnConectar.Size = new System.Drawing.Size(40, 36);
             this.BtnConectar.TabIndex = 7;
-            this.AcceptButton = this.BtnConectar;
             this.BtnConectar.TabStop = false;
-
-            // Cancelar
-
-            this.btnCancelar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            this.btnCancelar.DialogResult = DialogResult.Cancel;
-            this.btnCancelar.FlatStyle = FlatStyle.Flat;
+            // 
+            // btnCancelar
+            // 
+            this.btnCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancelar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancelar.FlatAppearance.BorderSize = 0;
-            this.btnCancelar.FlatAppearance.MouseDownBackColor = Color.Transparent;
-            this.btnCancelar.FlatAppearance.MouseOverBackColor = Color.Transparent;
-            this.btnCancelar.Location = new Point(400, 230);
-            this.btnCancelar.Size = new Size(40, 36);
-            this.btnCancelar.Image = Properties.Resources.CANCELA1;
-            this.btnCancelar.ImageAlign = ContentAlignment.MiddleCenter;
-            this.CancelButton = this.btnCancelar;
+            this.btnCancelar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnCancelar.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
+            this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnCancelar.Image = global::RepGas.Properties.Resources.CANCELA1;
+            this.btnCancelar.Location = new System.Drawing.Point(400, 230);
+            this.btnCancelar.Name = "btnCancelar";
+            this.btnCancelar.Size = new System.Drawing.Size(40, 36);
             this.btnCancelar.TabIndex = 6;
-             this.btnCancelar.TabStop = false;
-
+            this.btnCancelar.TabStop = false;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
             // FrmConexion
-            //
-
+            // 
+            this.AcceptButton = this.BtnConectar;
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(176)))), ((int)(((byte)(196)))), ((int)(((byte)(222)))));
             this.CancelButton = this.btnCancelar;
             this.ClientSize = new System.Drawing.Size(540, 280);
-
             this.Controls.Add(this.picLogo);
-
             this.Controls.Add(this.lblUsuario);
             this.Controls.Add(this.txtUsuario);
             this.Controls.Add(this.lblContrasena);
@@ -190,6 +173,8 @@ namespace ReporteGasolina
             this.Name = "FrmConexion";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Credenciales de Conexión";
+            this.Load += new System.EventHandler(this.FrmConexion_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

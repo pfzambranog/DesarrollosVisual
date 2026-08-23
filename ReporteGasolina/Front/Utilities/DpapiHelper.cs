@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace ReporteGasolina.Utilities
+namespace RepGas.Utilities
 {
     public static class DpapiHelper
     {

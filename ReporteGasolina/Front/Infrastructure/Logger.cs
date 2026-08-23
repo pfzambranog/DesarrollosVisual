@@ -3,7 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Threading;
 
-namespace ReporteGasolina.Infrastructure
+namespace RepGas.Infrastructure
 {
     public static class Logger
     {
@@ -44,7 +44,7 @@ namespace ReporteGasolina.Infrastructure
                     string file =
                         Path.Combine(
                             _logDir,
-                            $"{DateTime.Now:yyyyMMdd}.log");
+                            $"RepGas_{DateTime.Now:yyyyMMdd}.log");
 
                     string line =
                         $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}" +

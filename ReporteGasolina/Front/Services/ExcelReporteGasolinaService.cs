@@ -1,8 +1,8 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ReporteGasolina.Infrastructure;
-using ReporteGasolina.Services;
+using RepGas.Infrastructure;
+using RepGas.Services;
 
 using System;
 using System.Data;
@@ -12,9 +12,9 @@ using System.IO;
 using System.Windows.Forms;
 
 
-namespace ReporteGasolina.Services
+namespace RepGas.Services
 {
-    public class ExcelReporteGasolinaService
+    public class ExcelRepGasService
     {
 
         private void AgregarLogo(IXLWorksheet ws, string ciaCodigo)

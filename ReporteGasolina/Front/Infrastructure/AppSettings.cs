@@ -1,6 +1,6 @@
 ﻿using System.Configuration;
 
-namespace ReporteGasolina
+namespace RepGas
 {
     public static class AppSettings
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace ReporteGasolina
+namespace RepGas
 {
     internal static class Program
     {
@@ -21,7 +21,7 @@ namespace ReporteGasolina
                 }
 
                 // Arrancar formulario principal con credenciales provistas
-                Application.Run(new FrmReporteGasolina(login.SelectedUsuario, login.SelectedCompania));
+                Application.Run(new FrmRepGas(login.SelectedUsuario, login.SelectedCompania));
             }
         }
     }

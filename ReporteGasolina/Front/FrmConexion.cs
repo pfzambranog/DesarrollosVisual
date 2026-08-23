@@ -3,10 +3,10 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using ReporteGasolina.Infrastructure;
+using RepGas.Infrastructure;
      
 
-namespace ReporteGasolina
+namespace RepGas
 {
     public partial class FrmConexion : Form
     {
@@ -15,12 +15,13 @@ namespace ReporteGasolina
 
         // Flag que indica que el usuario debe escoger explícitamente una compañía
         private bool _requireCompanySelection;
+        private bool _loadingCompanies;
 
         public FrmConexion()
         {
             InitializeComponent();
 
-            ReporteGasolina.Infrastructure.Logger.Debug(nameof(FrmConexion), "Ctor: Inicializando FrmConexion");
+            RepGas.Infrastructure.Logger.Debug(nameof(FrmConexion), "Ctor: Inicializando FrmConexion");
 
 
             // Evitamos que Enter dispare automáticamente el botón Aceptar hasta que corresponda
@@ -33,7 +34,8 @@ namespace ReporteGasolina
             lblCompanias.Visible = false;
 
             // Validar compañías cuando el usuario termine de introducir la contraseña (al perder foco)
-            txtPassword.Leave += TxtPassword_Leave;
+            // txtPassword.Leave += TxtPassword_Leave;
+
             // Y también cuando el usuario pulsa Enter en el campo contraseña:
             txtPassword.KeyDown += TxtPassword_KeyDown;
 
@@ -47,7 +49,7 @@ namespace ReporteGasolina
 
         private void CmbCompanias_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbCompanias.SelectedIndex > 1)
+            if (cmbCompanias.SelectedIndex >= 0)
             {
                 _requireCompanySelection = false;
                 AcceptButton = BtnConectar;
@@ -58,10 +60,14 @@ namespace ReporteGasolina
 
         private void TxtPassword_KeyDown(object sender, KeyEventArgs e)
         {
+
+            Logger.Debug(nameof(FrmConexion), $"EVENTO: TxtPassword_KeyDown Key={e.KeyCode}");
+
             if (e.KeyCode == Keys.Enter)
             {
                 e.SuppressKeyPress = true;
                 e.Handled = true;
+
 
                 string usuario = txtUsuario.Text?.Trim() ?? string.Empty;
                 string password = txtPassword.Text ?? string.Empty;
@@ -94,9 +100,12 @@ namespace ReporteGasolina
             string usuario = txtUsuario.Text?.Trim() ?? string.Empty;
             string password = txtPassword.Text ?? string.Empty;
 
+            Logger.Debug(nameof(FrmConexion), "EVENTO TxtPassword_Leave");
+
             if (string.IsNullOrWhiteSpace(usuario) || string.IsNullOrEmpty(password))
 
             return;
+
 
             if (!TryLoadCompanias(usuario, password, out string mensaje))
             {
@@ -125,123 +134,160 @@ namespace ReporteGasolina
             }
         }
 
-        private bool TryLoadCompanias(string usuario, string password, out string mensaje)
+        private bool TryLoadCompanias(
+           string usuario,
+           string password,
+           out string mensaje)
         {
             mensaje = string.Empty;
 
-            // obtener la parte base (sin credenciales) desde connectionStrings
-            var baseConn = ConfigurationManager.ConnectionStrings["AdamDb"]?.ConnectionString;
+            var baseConn =
+                ConfigurationManager
+                    .ConnectionStrings["AdamDb"]?
+                    .ConnectionString;
+
             if (string.IsNullOrWhiteSpace(baseConn))
             {
-                MessageBox.Show("Cadena de conexión base no configurada.", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false; // o return según contexto
+                MessageBox.Show(
+                    "Cadena de conexión base no configurada.",
+                    "Conexión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
+                return false;
             }
 
             SqlConnectionStringBuilder builder;
+
             try
             {
-                builder = new SqlConnectionStringBuilder(baseConn)
-                {
-                    IntegratedSecurity = false,
-                    UserID = usuario,       // desde txtUsuario
-                    Password = password     // desde txtPassword (NO registrar)
-                };
+                builder =
+                    new SqlConnectionStringBuilder(baseConn)
+                    {
+                        IntegratedSecurity = false,
+                        UserID = usuario,
+                        Password = password
+                    };
             }
             catch (Exception ex)
             {
-                // no loguear la cadena completa ni la contraseña
-                Logger.Debug(nameof(FrmConexion), "Error al crear SqlConnectionStringBuilder: " + ex.Message);
-                mensaje = "Error en la configuración de conexión.";
+                Logger.Debug(
+                    nameof(FrmConexion),
+                    "Error al crear SqlConnectionStringBuilder: "
+                    + ex.Message);
+
+                mensaje =
+                    "Error en la configuración de conexión.";
+
                 return false;
             }
+
             string connStr = builder.ToString();
 
             try
             {
-                Logger.Debug(nameof(FrmConexion), "TryLoadCompanias: abriendo conexión");
-                using (SqlConnection cn = new SqlConnection(connStr))
-                {
-                    cn.Open();
+                Logger.Debug(
+                    nameof(FrmConexion),
+                    "TryLoadCompanias: abriendo conexión");
 
-                    const string sqlCompanias = @"
-SELECT a.compania, b.nombre_cia
+                const string sqlCompanias = @"
+SELECT a.compania,
+       b.nombre_cia
 FROM dbo.aut_companias a
-JOIN dbo.companias b ON b.compania = a.compania
+INNER JOIN dbo.companias b
+    ON b.compania = a.compania
 WHERE a.usuario = @usuario
 ORDER BY 2;";
 
-                    var dt = new DataTable();
-                    dt.Columns.Add("compania", typeof(string));
-                    dt.Columns.Add("nombre_cia", typeof(string));
+                _loadingCompanies = true;
 
-                    using (var cmd = new SqlCommand(sqlCompanias, cn))
-                    {
-                        cmd.Parameters.AddWithValue("@usuario", usuario);
-                        using (var rdr = cmd.ExecuteReader())
-                        {
-                            while (rdr.Read())
-                            {
-                                string comp = rdr.IsDBNull(0) ? string.Empty : rdr.GetString(0);
-                                string nombre = rdr.FieldCount > 1 && !rdr.IsDBNull(1) ? rdr.GetString(1) : comp;
-                                dt.Rows.Add(comp, nombre);
-                            }
-                        }
-                    }
+                SqlHelper sqlHelper =new SqlHelper(connStr);
 
-                    if (dt.Rows.Count == 0)
-                    {
-                        mensaje = "El usuario no tiene permiso a ninguna empresa.";
-                        // Ocultamos el combo si no hay compañías
-                        cmbCompanias.Visible = false;
-                        lblCompanias.Visible = false;
-                        cmbCompanias.DataSource = null;
-                        AcceptButton = null;
-                        _requireCompanySelection = false;
-                        return false;
-                    }
+                DataTable dt =
+                    sqlHelper.Execute(
+                        sqlCompanias,
+                        CommandType.Text,
+                        new SqlParameter(
+                            "@usuario",
+                            usuario));
 
-                    // Presentamos el combo para que el usuario confirme la compañía.
-                    cmbCompanias.DataSource = dt;
-                    cmbCompanias.DisplayMember = "nombre_cia";
-                    cmbCompanias.ValueMember = "compania";
+                Logger.Debug(nameof(FrmConexion), $"Companias={dt.Rows.Count}");
 
-                    if (dt.Rows.Count == 1)
-                    {
-                        // Si solo hay una compañía, seleccionarla automáticamente
-                        cmbCompanias.SelectedIndex = 0;
-                        _requireCompanySelection = false;
-                        AcceptButton = BtnConectar;
-                    }
-                    else
-                    {
-                        // Si hay varias, forzar que el usuario seleccione explícitamente
-                        cmbCompanias.SelectedIndex = -1;
-                        _requireCompanySelection = true;
-                        // No asignar AcceptButton hasta que el usuario seleccione
-                        AcceptButton = null;
-                    }
+                if (dt.Rows.Count == 0)
+                {
+                    mensaje =
+                        "El usuario no tiene permiso a ninguna empresa.";
 
-                    lblCompanias.Visible = true;
-                    cmbCompanias.Visible = true;
+                    cmbCompanias.Visible = false;
+                    lblCompanias.Visible = false;
+                    cmbCompanias.DataSource = null;
 
-                    return true;
+                    AcceptButton = null;
+
+                    _requireCompanySelection = false;
+
+                    return false;
                 }
+
+                cmbCompanias.DataSource = null;
+
+                cmbCompanias.DisplayMember = "nombre_cia";
+                cmbCompanias.ValueMember = "compania";
+
+                cmbCompanias.DataSource = dt;
+
+                cmbCompanias.SelectedIndex = -1;
+                cmbCompanias.Text = string.Empty;
+
+
+                if (dt.Rows.Count == 1)
+                {
+                    cmbCompanias.SelectedIndex = 0;
+
+                    _requireCompanySelection = false;
+
+                    AcceptButton = BtnConectar;
+                }
+                else
+                {
+                    cmbCompanias.SelectedIndex = -1;
+
+                    _requireCompanySelection = true;
+
+                    AcceptButton = null;
+                }
+
+                lblCompanias.Visible = true;
+                cmbCompanias.Visible = true;
+
+                _loadingCompanies = false;
+
+                return true;
+
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmConexion), $"TryLoadCompanias ERROR. Usuario={usuario}. {ex.Message}");
-                
-                mensaje = $"No fue posible validar las credenciales o cargar compañías.\r\n\r\n{ex.Message}";
+                Logger.Debug(
+                    nameof(FrmConexion),
+                    $"TryLoadCompanias ERROR. Usuario={usuario}. {ex.Message}");
+
+                mensaje =
+                    $"No fue posible validar las credenciales o cargar compañías.\r\n\r\n{ex.Message}";
 
                 return false;
             }
+
         }
 
 
         private void BtnConectar_Click(object sender, EventArgs e)
         {
+
+
             string usuario = txtUsuario.Text?.Trim() ?? string.Empty;
             string password = txtPassword.Text ?? string.Empty;
+
+            Logger.Debug(nameof(FrmConexion),  "EVENTO BtnConectar_Click");
 
             if (string.IsNullOrWhiteSpace(usuario))
             {
@@ -313,38 +359,59 @@ ORDER BY 2;";
 
             try
             {
-                using (SqlConnection cn = new SqlConnection(connStr))
-                {
-                    cn.Open();
-
-                    const string sqlOperacion = @"
+                const string sqlOperacion = @"
 SELECT nivel_seguridad
 FROM aut_operaciones
 WHERE operacion = @operacion
 AND usuario = @usuario;";
 
-                    int nivelSeguridad = 0;
-                    using (var cmdOp = new SqlCommand(sqlOperacion, cn))
-                    {
-                        cmdOp.Parameters.AddWithValue("@operacion", AppSettings.Operacion ?? string.Empty);
-                        cmdOp.Parameters.AddWithValue("@usuario", usuario);
-                        var res = cmdOp.ExecuteScalar();
-                        if (res != null && res != DBNull.Value)
-                        {
-                            int.TryParse(res.ToString(), out nivelSeguridad);
-                        }
-                    }
+                SqlHelper sqlHelper =
+                    new SqlHelper(connStr);
 
-                    if (nivelSeguridad == 0)
-                    {
-                        MessageBox.Show("El usuario no tiene permisos para la operación configurada.", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
+                object result =
+                    sqlHelper.ExecuteScalar(
+                        sqlOperacion,
+                        CommandType.Text,
+                        new SqlParameter(
+                            "@operacion",
+                            AppSettings.Operacion ?? string.Empty),
+                        new SqlParameter(
+                            "@usuario",
+                            usuario));
+
+                int nivelSeguridad = 0;
+
+                if (result != null &&
+                    result != DBNull.Value)
+                {
+                    int.TryParse(
+                        result.ToString(),
+                        out nivelSeguridad);
+                }
+
+                if (nivelSeguridad == 0)
+                {
+                    MessageBox.Show(
+                        "El usuario no tiene permisos para la operación configurada.",
+                        "Conexión",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    return;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"No fue posible conectar o validar permisos.\r\n\r\n{ex.Message}", "Conexión", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.Debug(
+                    nameof(FrmConexion),
+                    $"Validación de permisos ERROR. Usuario={usuario}. {ex.Message}");
+
+                MessageBox.Show(
+                    $"No fue posible conectar o validar permisos.\r\n\r\n{ex.Message}",
+                    "Conexión",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+
                 return;
             }
 
@@ -382,6 +449,16 @@ AND usuario = @usuario;";
 #endif
             DialogResult = DialogResult.OK;
             Close();
+        }
+
+        private void FrmConexion_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

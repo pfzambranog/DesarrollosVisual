@@ -1,7 +1,7 @@
 ﻿using ClosedXML.Excel;
 using ClosedXML.Excel.Drawings;
 using DocumentFormat.OpenXml.ExtendedProperties;
-using ReporteGasolina.Infrastructure;
+using RepGas.Infrastructure;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,7 +10,7 @@ using System.Linq;
 using System.Windows.Forms;
 
 
-namespace ReporteGasolina.Services
+namespace RepGas.Services
 {
     public class ExcelExportService
     {

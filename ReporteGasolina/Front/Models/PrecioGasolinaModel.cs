@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ReporteGasolina.Models
+namespace RepGas.Models
 {
     /// <summary>
     /// Representa un registro de precio de gasolina

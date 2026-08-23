@@ -1,6 +1,6 @@
-﻿using ReporteGasolina.Infrastructure;
-using ReporteGasolina.Models;
-using ReporteGasolina.Services;
+﻿using RepGas.Infrastructure;
+using RepGas.Models;
+using RepGas.Services;
 using System;
 
 using System.Data;
@@ -13,10 +13,10 @@ using System.Windows.Forms;
 
 
 
-namespace ReporteGasolina
+namespace RepGas
 {
 
-    public partial class FrmReporteGasolina : Form
+    public partial class FrmRepGas : Form
     {
         private readonly GasolinaService _gasolinaService;
 
@@ -24,9 +24,9 @@ namespace ReporteGasolina
 
         private readonly ExcelExportService  _excelExportService;
 
-        private readonly ReporteGasolinaService _reporteService;
+        private readonly RepGasService _reporteService;
 
-        private readonly ExcelReporteGasolinaService _excelReporteGasolinaService;
+        private readonly ExcelRepGasService _excelRepGasService;
 
         private readonly string _usuario;
         private readonly string _compania;
@@ -43,11 +43,11 @@ namespace ReporteGasolina
         private ToolStripButton btnRenovar;
         private ToolStripButton btnSalir;
 
-        private void FrmReporteGasolina_Load(object sender, EventArgs e)
+        private void FrmRepGas_Load(object sender, EventArgs e)
         {
             try
             {
-                Logger.Debug(nameof(FrmReporteGasolina), "Load: Inicializando pantalla");
+                Logger.Debug(nameof(FrmRepGas), "Load: Inicializando pantalla");
 
                 CargarMeses();
 
@@ -56,14 +56,14 @@ namespace ReporteGasolina
                 ConsultarPrecios();
 
                 Logger.Debug(
-                    nameof(FrmReporteGasolina), "Load: Pantalla inicial cargada correctamente");
+                    nameof(FrmRepGas), "Load: Pantalla inicial cargada correctamente");
             }
             catch (Exception ex)
             {
                 Logger.Debug(
-                    nameof(FrmReporteGasolina), $"Load ERROR: {ex}");
+                    nameof(FrmRepGas), $"Load ERROR: {ex}");
 
-                    MessageBox.Show($"Error en carga de pantalla inicial.\r\n\r\n{ex.Message}", "FrmReporteGasolina_Load",
+                    MessageBox.Show($"Error en carga de pantalla inicial.\r\n\r\n{ex.Message}", "FrmRepGas_Load",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
@@ -193,14 +193,14 @@ namespace ReporteGasolina
             {
                
                 Logger.Debug(
-                    nameof(FrmReporteGasolina),
+                    nameof(FrmRepGas),
                     $"ConsultarPrecios. Año={nudAnio.Text}, Mes={cmbMes.SelectedIndex + 1}");
 
                 ConsultarPrecios();
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"ConsultarPrecios ERROR: {ex}");
+                Logger.Debug(nameof(FrmRepGas), $"ConsultarPrecios ERROR: {ex}");
 
                 MessageBox.Show(ex.Message, "Error",  MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -220,7 +220,7 @@ namespace ReporteGasolina
         {
             try
             {
-                Logger.Debug(nameof(FrmReporteGasolina), "BtnRenovar_Click");
+                Logger.Debug(nameof(FrmRepGas), "BtnRenovar_Click");
 
                 CargarPeriodoActual();
 
@@ -228,7 +228,7 @@ namespace ReporteGasolina
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"BtnRenovar_Click ERROR: {ex}");
+                Logger.Debug(nameof(FrmRepGas), $"BtnRenovar_Click ERROR: {ex}");
 
                 MessageBox.Show(
                     ex.Message,
@@ -244,12 +244,12 @@ namespace ReporteGasolina
         }
 
         // constructor por defecto (retrocompatibilidad)
-        public FrmReporteGasolina() : this(AppSettings.Usuario, AppSettings.Compania)
+        public FrmRepGas() : this(AppSettings.Usuario, AppSettings.Compania)
         {
         }
 
         // nuevo constructor que recibe usuario y compañía
-        public FrmReporteGasolina(string usuario, string compania)
+        public FrmRepGas(string usuario, string compania)
         {
             InitializeComponent();
             ConfigurarToolStrip();
@@ -257,8 +257,8 @@ namespace ReporteGasolina
             _gasolinaService = new GasolinaService();
             _excelService = new ExcelGasolinaService();
             _excelExportService = new ExcelExportService();
-            _reporteService = new ReporteGasolinaService();
-            _excelReporteGasolinaService = new ExcelReporteGasolinaService();
+            _reporteService = new RepGasService();
+            _excelRepGasService = new ExcelRepGasService();
 
             _usuario = usuario ?? string.Empty;
             _compania = compania ?? string.Empty;
@@ -284,7 +284,7 @@ namespace ReporteGasolina
 
             btnSalir.ToolTipText = "Salir del sistema";
 
-            Logger.Debug(nameof(FrmReporteGasolina), $"Ctor. Usuario={_usuario}, Compania={_compania}");
+            Logger.Debug(nameof(FrmRepGas), $"Ctor. Usuario={_usuario}, Compania={_compania}");
 
         }
 
@@ -472,7 +472,7 @@ namespace ReporteGasolina
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"CargarPeriodoActual ERROR: {ex}");
+                Logger.Debug(nameof(FrmRepGas), $"CargarPeriodoActual ERROR: {ex}");
 
                 MessageBox.Show(ex.Message,
                     "Error al obtener período",
@@ -484,7 +484,7 @@ namespace ReporteGasolina
         private void ConsultarPrecios()
         {
 
-            Logger.Debug(nameof(FrmReporteGasolina), $"ConsultarPrecios INICIO. Compania={AppSettings.Compania}, Año={nudAnio.Text}, Mes={cmbMes.SelectedIndex + 1}");
+            Logger.Debug(nameof(FrmRepGas), $"ConsultarPrecios INICIO. Compania={AppSettings.Compania}, Año={nudAnio.Text}, Mes={cmbMes.SelectedIndex + 1}");
 
             SqlHelper sql =
                 new SqlHelper(
@@ -516,7 +516,7 @@ namespace ReporteGasolina
 
             dvgPrecios.DataSource = dt;
 
-            Logger.Debug(nameof(FrmReporteGasolina), $"ConsultarPrecios FIN. Registros={dt.Rows.Count}");
+            Logger.Debug(nameof(FrmRepGas), $"ConsultarPrecios FIN. Registros={dt.Rows.Count}");
 
             // Encabezados
             dvgPrecios.Columns["ciudad"].HeaderText = "Ciudad";
@@ -618,7 +618,7 @@ namespace ReporteGasolina
 
                 if (ofd.ShowDialog() != DialogResult.OK)
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"Archivo seleccionado: {ofd.FileName}");
+                    Logger.Debug(nameof(FrmRepGas), $"Archivo seleccionado: {ofd.FileName}");
                     return;
                 }
 
@@ -626,7 +626,7 @@ namespace ReporteGasolina
 
                 CargaPrecioGasolinaResult carga = _excelService.LeerArchivo(ofd.FileName);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Excel leído. Año={carga.Anio}, Mes={carga.Mes}, Registros={carga.Registros.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"Excel leído. Año={carga.Anio}, Mes={carga.Mes}, Registros={carga.Registros.Count}");
 
                 SpResult depuracion = _gasolinaService.DepurarPeriodo(
                              AppSettings.Compania,
@@ -676,8 +676,7 @@ namespace ReporteGasolina
                     cmbMes.SelectedIndex =
                         carga.Mes - 1;
 
-                    nudAnio.Text =
-                        carga.Anio.ToString();
+                    nudAnio.Value = carga.Anio;
 
                     grpCostoGasolina.Text = "Validación de Archivo Excel";
 
@@ -786,9 +785,19 @@ namespace ReporteGasolina
                     registrosGuardados++;
                 }
 
+                // Posicionar la pantalla en el periodo leído del Excel
+                cmbMes.SelectedIndex =
+                    carga.Mes - 1;
+
+                nudAnio.Value = carga.Anio;
+
+                // Refrescar precios para el periodo cargado
                 ConsultarPrecios();
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Carga Excel exitosa. RegistrosGuardados={registrosGuardados}");
+                Logger.Debug(nameof(FrmRepGas),
+                    $"Carga Excel exitosa. Año={carga.Anio}, Mes={carga.Mes}, RegistrosGuardados={registrosGuardados}");
+
+                Logger.Debug(nameof(FrmRepGas), $"Carga Excel exitosa. RegistrosGuardados={registrosGuardados}");
             
                 MessageBox.Show(
                     string.Format(
@@ -801,7 +810,7 @@ namespace ReporteGasolina
             catch (Exception ex)
             {
                 Logger.Debug(
-                    nameof(FrmReporteGasolina),
+                    nameof(FrmRepGas),
                     $"btnCargarExcel_Click ERROR: {ex}");
 
                 MessageBox.Show(
@@ -828,17 +837,17 @@ namespace ReporteGasolina
         {
             try
             {
-                Logger.Debug(nameof(FrmReporteGasolina), "ExportarExcel INICIO");
+                Logger.Debug(nameof(FrmRepGas), "ExportarExcel INICIO");
 
                 string directorioSalida =
                     _reporteService.ObtenerDirectorioSalida();
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Directorio de salida configurado: {directorioSalida}");
+                Logger.Debug(nameof(FrmRepGas), $"Directorio de salida configurado: {directorioSalida}");
 
                 if (string.IsNullOrWhiteSpace(
                         directorioSalida))
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"No existe configuración del directorio de salida (dirsalgas)");
+                    Logger.Debug(nameof(FrmRepGas), $"No existe configuración del directorio de salida (dirsalgas)");
 
                     MessageBox.Show(
                         "No existe configuración del directorio de salida (dirsalgas).",
@@ -861,7 +870,7 @@ namespace ReporteGasolina
                         directorioSalida,
                         $"Precio Gasolina por Zona {cmbMes.SelectedIndex + 1:00}-{nudAnio.Text}.xlsx");
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Archivo destino: {archivo}");
+                Logger.Debug(nameof(FrmRepGas), $"Archivo destino: {archivo}");
 
                 _excelExportService.ExportarPreciosGasolina(
                         archivo,
@@ -872,7 +881,7 @@ namespace ReporteGasolina
                         txtOperacion.Text,
                         txtUsuario.Text);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Exportación completada correctamente. Archivo={archivo}");
+                Logger.Debug(nameof(FrmRepGas), $"Exportación completada correctamente. Archivo={archivo}");
 
                 MessageBox.Show(
                     $"Exportación realizada correctamente.\r\n\r\n" +
@@ -884,7 +893,7 @@ namespace ReporteGasolina
                 if (System.IO.File.Exists(
                         archivo))
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"Abriendo archivo generado: {archivo}");
+                    Logger.Debug(nameof(FrmRepGas), $"Abriendo archivo generado: {archivo}");
 
                     Process.Start(
                         new ProcessStartInfo()
@@ -896,7 +905,7 @@ namespace ReporteGasolina
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"ExportarExcel ERROR: {ex}");
+                Logger.Debug(nameof(FrmRepGas), $"ExportarExcel ERROR: {ex}");
 
                 MessageBox.Show(
                     ex.Message,
@@ -911,7 +920,7 @@ namespace ReporteGasolina
         {
             try
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"ProcesarGasolina INICIO. Año={nudAnio.Text}, Mes={cmbMes.SelectedIndex + 1}");
+                Logger.Debug(nameof(FrmRepGas), $"ProcesarGasolina INICIO. Año={nudAnio.Text}, Mes={cmbMes.SelectedIndex + 1}");
 
                 if (cmbMes.SelectedIndex < 0)
                 {
@@ -950,11 +959,11 @@ namespace ReporteGasolina
                 string directorioSalida =
                     _reporteService.ObtenerDirectorioSalida();
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"DirectorioSalida={directorioSalida}");
+                Logger.Debug(nameof(FrmRepGas), $"DirectorioSalida={directorioSalida}");
 
                 if (string.IsNullOrWhiteSpace(directorioSalida))
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"Error en Validacion de Directorio de Salida={directorioSalida}");
+                    Logger.Debug(nameof(FrmRepGas), $"Error en Validacion de Directorio de Salida={directorioSalida}");
 
                     MessageBox.Show(
                         "No existe configuración del directorio de salida (dirsalgas).",
@@ -970,7 +979,7 @@ namespace ReporteGasolina
                     if (!System.IO.Directory.Exists(directorioSalida))
                     {
                         Logger.Debug(
-                            nameof(FrmReporteGasolina),
+                            nameof(FrmRepGas),
                             $"Creando directorio: {directorioSalida}");
 
                         System.IO.Directory.CreateDirectory(
@@ -984,7 +993,7 @@ namespace ReporteGasolina
                         directorioSalida,
                         $"AsignacionGasolina {mes:00}-{anio}.xlsx");
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"ArchivoDestino={archivo}");
+                Logger.Debug(nameof(FrmRepGas), $"ArchivoDestino={archivo}");
 
                 SpResult resultado =
                     _reporteService.ProcesarReporte(
@@ -994,12 +1003,12 @@ namespace ReporteGasolina
                         AppSettings.Usuario,
                         AppSettings.Operacion);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"ProcesarReporte resultado. IdError={resultado.IdError}, Mensaje={resultado.MensajeError}");
+                Logger.Debug(nameof(FrmRepGas), $"SP=spp_Ls_RepPrecioGasolinaTbl, IdError={resultado.IdError}, Mensaje={resultado.MensajeError}");
 
 
                 if (resultado.IdError > 0)
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"Error en Proceso de Gasolina. IdError={resultado.IdError}, Mensaje={resultado.MensajeError}");
+                    Logger.Debug(nameof(FrmRepGas), $"Error en Proceso de Gasolina. IdError={resultado.IdError}, Mensaje={resultado.MensajeError}");
 
                     MessageBox.Show(
                         resultado.MensajeError,
@@ -1016,7 +1025,7 @@ namespace ReporteGasolina
                         anio,
                         mes);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"ProcesarGasolina Reporte. Registros={dt.Rows.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"ProcesarGasolina Reporte. Registros={dt.Rows.Count}");
 
                 dvgPrecios.AutoGenerateColumns = true;
                 dvgPrecios.DataSource = null;
@@ -1029,14 +1038,14 @@ namespace ReporteGasolina
                         anio,
                         mes);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Altas={dtAltas.Rows.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"Altas={dtAltas.Rows.Count}");
 
                 DataTable dtFaltas = _reporteService.ObtenerFaltas(
                      AppSettings.Compania,
                                  anio,
                                  mes);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Faltas={dtFaltas.Rows.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"Faltas={dtFaltas.Rows.Count}");
 
               
                 //
@@ -1045,7 +1054,7 @@ namespace ReporteGasolina
                      AppSettings.Compania,
                                  anio,
                                  mes);
-                _excelReporteGasolinaService
+                _excelRepGasService
                     .ExportarReporteCompleto(
                         archivo,
                         dt,
@@ -1057,11 +1066,24 @@ namespace ReporteGasolina
                         txtOperacion.Text,
                         txtUsuario.Text);
 
-                Logger.Debug(nameof(FrmReporteGasolina), $"Incapacidades={dtIncapacidades.Rows.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"Incapacidades={dtIncapacidades.Rows.Count}");
 
                 //
 
-                Logger.Debug( nameof(FrmReporteGasolina), $"ProcesarGasolina OK. Archivo={archivo}");
+                Logger.Debug(nameof(FrmRepGas), "RESUMEN PROCESAR GASOLINA");
+
+                Logger.Debug(nameof(FrmRepGas), $"Periodo={mes:00}-{anio}");
+
+                Logger.Debug(nameof(FrmRepGas), $"Registros={dt.Rows.Count}");
+
+                Logger.Debug(nameof(FrmRepGas), $"Altas={dtAltas.Rows.Count}");
+
+                Logger.Debug(nameof(FrmRepGas), $"Faltas={dtFaltas.Rows.Count}");
+
+                Logger.Debug(nameof(FrmRepGas), $"Incapacidades={dtIncapacidades.Rows.Count}");
+                Logger.Debug(nameof(FrmRepGas), $"SP=spp_Ls_RepPrecioGasolinaTbl");
+
+                Logger.Debug(nameof(FrmRepGas), $"Archivo={archivo}");
 
                 MessageBox.Show(
                     "Proceso de gasolina concluido correctamente.\r\n\r\n" +
@@ -1073,7 +1095,7 @@ namespace ReporteGasolina
 
                 if (System.IO.File.Exists(archivo))
                 {
-                    Logger.Debug(nameof(FrmReporteGasolina), $"Abriendo archivo: {archivo}");
+                    Logger.Debug(nameof(FrmRepGas), $"Abriendo archivo: {archivo}");
                     Process.Start(
                         new ProcessStartInfo()
                         {
@@ -1084,7 +1106,7 @@ namespace ReporteGasolina
             }
             catch (Exception ex)
             {
-                Logger.Debug(nameof(FrmReporteGasolina), $"ProcesarGasolina ERROR: {ex}");
+                Logger.Debug(nameof(FrmRepGas), $"ProcesarGasolina ERROR: {ex}");
 
                 MessageBox.Show(
                     ex.Message,
@@ -1103,6 +1125,11 @@ namespace ReporteGasolina
                 btnRenovar.Enabled = true;
 
             }
+        }
+
+        private void grpParametros_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 
