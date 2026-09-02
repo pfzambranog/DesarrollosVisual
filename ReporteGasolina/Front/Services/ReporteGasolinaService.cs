@@ -187,10 +187,7 @@ ORDER BY a.trabajador
 
             using (SqlConnection cn = new SqlConnection(_connectionString))
             {
-                using (SqlCommand cmd =
-                    new SqlCommand(
-                        "spp_Ls_RepPrecioGasolinaTbl",
-                        cn))
+                using (SqlCommand cmd = new SqlCommand("spp_Ls_RepPrecioGasolinaTbl", cn))
                 {
                     cmd.CommandType =
                         CommandType.StoredProcedure;
@@ -240,7 +237,10 @@ ORDER BY a.trabajador
 
                     cmd.Parameters.Add(pMensaje);
 
+                    cmd.CommandTimeout = 300; // 5 minutos
+
                     cn.Open();
+
 
                     cmd.ExecuteNonQuery();
 

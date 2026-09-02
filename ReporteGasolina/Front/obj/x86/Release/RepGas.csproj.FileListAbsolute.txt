@@ -35,4 +35,3 @@ C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\RepGas.cs
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\RepGas.csproj.Up2Date
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\RepGas.exe
 C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\RepGas.pdb
-C:\Desarrollos\DesarrollosVisual\ReporteGasolina\Front\obj\x86\Release\RepGas.exe.config

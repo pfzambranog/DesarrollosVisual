@@ -190,14 +190,12 @@ namespace RepGas
                     nameof(FrmConexion),
                     "TryLoadCompanias: abriendo conexión");
 
-                const string sqlCompanias = @"
-SELECT a.compania,
-       b.nombre_cia
-FROM dbo.aut_companias a
-INNER JOIN dbo.companias b
-    ON b.compania = a.compania
-WHERE a.usuario = @usuario
-ORDER BY 2;";
+                const string sqlCompanias = @"SELECT a.compania, b.nombre_cia
+                                              FROM   dbo.aut_companias a
+                                              INNER  JOIN dbo.companias b
+                                              ON     b.compania = a.compania
+                                              WHERE a.usuario = @usuario
+                                              ORDER BY 2;";
 
                 _loadingCompanies = true;
 

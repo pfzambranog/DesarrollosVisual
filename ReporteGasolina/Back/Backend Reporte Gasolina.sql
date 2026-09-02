@@ -4062,9 +4062,9 @@ Salida:
 End;
 Go
 
-Grant  Execute spd_Ls_RepFaltasIncapacidadTbl to Public;
+Grant  Execute on spd_Ls_RepFaltasIncapacidadTbl to Public;
 
-
+-- 
 --
 -- Comentarios
 --
