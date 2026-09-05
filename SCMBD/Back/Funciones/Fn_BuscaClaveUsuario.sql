@@ -1,57 +1,35 @@
-/*
+--
+-- Select dbo.Fn_BuscaClaveUsuario (1)
+--
 
-Declare
-   @PnIdUsuario         Integer = 3
-Begin
-   Select dbo.Fn_ValidaUsuario(@PnIdUsuario)
-   Return
-End
-
-Go
-
-*/
-
-Create Or ALter Function dbo.Fn_ValidaUsuario
-  (@PnIdUsuario         Integer)
-Returns Integer
+Create Or Alter Function dbo.Fn_BuscaClaveUsuario
+  (@PnIdUsuario      Integer)
+Returns Varchar(260)
 As
 
 Begin
-/*
-Objetivo: Valida existencia y Estatus de Usuario de Seguridad Corporativa
-Versión:  1
-
-*/
+-- =============================================
+-- Autor:          Pedro Zambrano
+-- Fecha:          2026-09-03
+-- Descripción:    Consulta el Código del Usuario Seleccionado.
+-- Uso:            Select dbo.Fn_BuscaClaveUsuario(@PnIdUsuario)
+-- Version:        1.0
+-- =============================================
 
    Declare
-      @w_idEstatus      Tinyint,
-      @o_salida         Integer
+      @o_salida           Varchar(260);
 
    Begin
-      Set @o_salida = 0
-
---
-
-      Select @w_idEstatus = idEstatus
+      Select Top 1 @o_salida = claveUsuario
       From   dbo.segUsuariosTbl
-      Where  idUsuario    = @PnIdUsuario
+      Where  idUsuario  = @PnIdUsuario;
       If @@Rowcount = 0
          Begin
-            Set @o_salida = 9997
-            Goto Salida
+            Set @o_salida = 'Usuario No Registrado '
          End
-
-      If @w_idEstatus = 0
-         Begin
-            Set  @o_salida = 9996
-            Goto Salida
-         End
-
    End
 
-Salida:
-
-   Set @o_salida = Isnull(@o_salida, 0)
+   Set @o_salida = Isnull(@o_salida, ' ')
 
    Return(@o_salida)
 
@@ -63,8 +41,8 @@ Go
 --
 
 Declare
-   @w_valor          Nvarchar(250) = 'Función que Valida la Existencia y Estatus de Usuario de Seguridad Corporativa.',
-   @w_procedimiento  NVarchar(250) = 'Fn_ValidaUsuario';
+   @w_valor          Nvarchar(250) = 'Función que Consulta el Código del Usuario Seleccionado.',
+   @w_procedimiento  NVarchar(250) = 'Fn_BuscaClaveUsuario';
 
 If Not Exists (Select Top 1 1
                From   sys.extended_properties a
@@ -77,7 +55,7 @@ If Not Exists (Select Top 1 1
                                       @value      = @w_valor,
                                       @level0type = 'Schema',
                                       @level0name = N'dbo',
-                                      @level1type = 'Function', 
+                                      @level1type = 'Function',
                                       @level1name = @w_procedimiento
 
    End
@@ -87,7 +65,7 @@ Else
                                         @value      = @w_valor,
                                         @level0type = 'Schema',
                                         @level0name = N'dbo',
-                                        @level1type = 'Function', 
+                                        @level1type = 'Function',
                                         @level1name = @w_procedimiento
    End
-Go 
+Go

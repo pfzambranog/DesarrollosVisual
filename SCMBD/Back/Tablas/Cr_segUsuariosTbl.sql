@@ -26,8 +26,8 @@ Create Table dbo.segUsuariosTbl
    ipAct               Varchar(30)        Null,
    macAddressAct       Varchar(30)        Null,
 Constraint SegUsuariosFk Primary Key Clustered
-(idUsuario)
-On [MgrPostgreIndices])
+(idUsuario),
+Index SegUsuariosIdX01 Unique (claveUsuario) )
 On [Primary]
 Go
 

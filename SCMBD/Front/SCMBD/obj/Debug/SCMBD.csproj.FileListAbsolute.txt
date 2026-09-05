@@ -1,0 +1,10 @@
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.csproj.AssemblyReference.cache
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.Properties.Resources.resources
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.csproj.GenerateResource.cache
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.csproj.CoreCompileInputs.cache
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\SCMBD.exe.config
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\SCMBD.exe
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\SCMBD.pdb
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.exe
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.pdb
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.exe.config

@@ -1,7 +1,24 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|c:\\desarrollos\\desarrollosvisual\\reportegasolina\\front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\frmconexion.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:frmconexion.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\infrastructure\\appsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:infrastructure\\appsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +26,60 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "FrmConexion.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs",
+              "RelativeDocumentMoniker": "FrmConexion.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs [Dise\u00F1o]",
+              "RelativeToolTip": "FrmConexion.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-04T23:16:34.12Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "FrmConexion.Designer.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.Designer.cs",
+              "RelativeDocumentMoniker": "FrmConexion.Designer.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.Designer.cs",
+              "RelativeToolTip": "FrmConexion.Designer.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-04T23:16:29.989Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AppSettings.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\Infrastructure\\AppSettings.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\AppSettings.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\Infrastructure\\AppSettings.cs",
+              "RelativeToolTip": "Infrastructure\\AppSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-04T23:16:15.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "FrmConexion.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs",
+              "RelativeDocumentMoniker": "FrmConexion.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs",
+              "RelativeToolTip": "FrmConexion.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAowB4AAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-04T23:15:17.8Z",
+              "EditorCaption": ""
             }
           ]
         },

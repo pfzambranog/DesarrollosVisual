@@ -1,12 +1,13 @@
 /*
 Declare
-   @PnIdUsuario              Integer          = 2,
-   @PsClaveUsuario           Varchar (50)     = 'AlbertoM@empresa.com',
+   @PnIdUsuario              Integer          = 3,
+   @PsClaveUsuario           Varchar ( 50)    = 'AlbertoM',
+   @PsPassword               Varchar (Max)    = 'Alber2026!',
    @PnIdTipoUsuario          Integer          = 0,
    @PsPrimerApellido         Varchar (100)    = 'Mendez',
    @PsSegundoApellido        Varchar (100)    = 'Pelado',
    @PsNombres                Varchar (100)    = 'Alberto Jose',
-   @PsCorreo                 Varchar (260)    = 'AlbertoM@empresa',
+   @PsCorreo                 Varchar (260)    = 'AlbertoM@empresa.com',
    @PnIdOperacion            Integer          = 4,
    @PnIdUsuarioAct           Integer          = 1,
    @PsIpAct                  Varchar ( 30),
@@ -15,8 +16,12 @@ Declare
    @PsMensaje                Varchar (250)  = Null;
 
 Begin
+
+   Set @PsPassword = dbo.fn_EncryptBase64 (@PsPassword );
+   
    Execute dbo.Spa_segUsuariosTbl @PnIdUsuario       = @PnIdUsuario,
                                   @PsClaveUsuario    = @PsClaveUsuario,
+                                  @PsPassword        = @PsPassword,
                                   @PnIdTipoUsuario   = @PnIdTipoUsuario,
                                   @PsPrimerApellido  = @PsPrimerApellido,
                                   @PsSegundoApellido = @PsSegundoApellido,
@@ -37,7 +42,8 @@ Go
 */
 Create Or Alter Procedure dbo.Spa_segUsuariosTbl
   (@PnIdUsuario              Integer,
-   @PsClaveUsuario           Varchar (50),
+   @PsClaveUsuario           Varchar ( 50),
+   @PsPassword               Varchar (Max),
    @PnIdTipoUsuario          Integer,
    @PsPrimerApellido         Varchar (100),
    @PsSegundoApellido        Varchar (100),
@@ -71,7 +77,7 @@ Begin
 
    Select @PnEstatus         = 0,
           @PsMensaje         = Char(32),
-          @PsIpAct           = Isnull(@PsIpAct, dbo.Fn_BuscaDireccionIP()),
+          @PsIpAct           = Isnull(@PsIpAct,         dbo.Fn_BuscaDireccionIP()),
           @PsMacAddressAct   = Isnull(@PsMacAddressAct, dbo.Fn_Busca_DireccionMAC());
 
 
@@ -131,32 +137,96 @@ Begin
          Return
       End
 
-   Begin Try
-      Insert Into dbo.segUsuariosTbl
-      (idUsuario,       claveUsuario,    idTipoUsuario, primerApellido,
-       segundoApellido, nombres,         correo, idUsuarioAct,
-       ipAct,           macAddressAct)
-      Select @PnIdUsuario,       @PsClaveUsuario,  @PnIdTipoUsuario, @PsPrimerApellido,
-             @PsSegundoApellido, @PsNombres,       @PsCorreo,        @PnIdUsuarioAct,
-             @PsIpAct,           @PsMacAddressAct
-
-   End Try
-
-   Begin Catch
-      Select  @w_Error      = @@Error,
-              @w_desc_error = Substring (Error_Message(), 1, 230)
-   End   Catch
-
-   If Isnull(@w_Error, 0) <> 0
+   If @PsPassword Is Null
       Begin
-         Select @PnEstatus = @w_Error,
-                @PsMensaje = Concat('Error.: ', @w_Error, ' ',  @w_desc_error )
+         Select @PnEstatus = 10007,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
 
          Set Xact_Abort Off
          Return
       End
 
+--
+-- Validacion de Password
+--
 
+   Set @PnEstatus = dbo.Fn_ValidaReglasContrasena(@PnIdUsuario, @PsPassword, 0);
+   If @PnEstatus > 0
+      Begin
+         Set @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End  
+
+--
+-- Alta de Usuario en la Aplicación
+--
+
+   Begin Transaction
+      Begin Try
+         Insert Into dbo.segUsuariosTbl
+         (idUsuario,       claveUsuario,    idTipoUsuario, primerApellido,
+          segundoApellido, nombres,         correo, idUsuarioAct,
+          ipAct,           macAddressAct)
+         Select @PnIdUsuario,       @PsClaveUsuario,  @PnIdTipoUsuario, @PsPrimerApellido,
+                @PsSegundoApellido, @PsNombres,       @PsCorreo,        @PnIdUsuarioAct,
+                @PsIpAct,           @PsMacAddressAct
+   
+      End Try
+   
+      Begin Catch
+         Select  @w_Error      = @@Error,
+                 @w_desc_error = Substring (Error_Message(), 1, 230)
+      End   Catch
+   
+      If Isnull(@w_Error, 0) <> 0
+         Begin
+            Select @PnEstatus = @w_Error,
+                   @PsMensaje = Concat('Error.: ', @w_Error, ' ',  @w_desc_error )
+
+            Rollback Transaction
+            Set Xact_Abort Off
+            Return
+         End
+      
+--
+-- Generación de Usuario en Base de Datos.
+--
+
+      Execute dbo.Spp_GeneraUserBD @PsIdUsuarioBD  = @PsClaveUsuario,
+                                   @PsPasswordBD   = @PsPassword,
+                                   @PsBaseDatos    = Null,
+                                   @PnIdOperacion  = @PnIdOperacion,
+                                   @PnIdUsuarioAct = @PnIdUsuarioAct,
+                                   @PnEstatus      = @PnEstatus  Output,
+                                   @PsMensaje      = @PsMensaje  Output;
+   
+   
+      If @PnEstatus != 0
+         Begin
+            Rollback TRansaction
+            Set Xact_Abort Off
+            Return
+         End
+
+--
+-- Alta En el Historico de COntraseñas
+--
+  
+      Execute dbo.Spa_histUserPassTbl @PnIdUsuario       = @PnIdUsuario,
+                                      @PsContrasenia     = @PsPassword,
+                                      @PnEstatus         = @PnEstatus Output,
+                                      @PsMensaje         = @PsMensaje Output;
+
+      If @PnEstatus != 0
+         Begin
+            Rollback TRansaction
+            Set Xact_Abort Off
+            Return
+         End
+
+   Commit Transaction
    Set Xact_Abort Off
    Return
 

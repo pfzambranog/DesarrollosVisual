@@ -1,15 +1,35 @@
-Create Or Alter Function dbo.Fn_BuscaDireccionIP()
-Returns Varchar(30)
+--
+-- Select dbo.Fn_BuscaIdUsuario ('albertom')
+--
 
+Create Or Alter Function dbo.Fn_BuscaIdUsuario
+  (@PsClaveUsuario      Varchar(260))
+Returns Integer
 As
 
 Begin
+-- =============================================
+-- Autor:          Pedro Zambrano
+-- Fecha:          2026-09-04
+-- Descripción:    Consulta el Código del Usuario Seleccionado.
+-- Uso:            Select dbo.Fn_BuscaIdUsuario(@PsClaveUsuario)
+-- Version:        1.0
+-- =============================================
+
    Declare
-      @o_salida           Varchar(30)
+      @o_salida           Integer;
 
    Begin
-      Set @o_salida = Cast(ConnectionProperty('client_net_address') As Varchar(30))
+      Select Top 1 @o_salida = idUsuario
+      From   dbo.segUsuariosTbl
+      Where  claveUsuario  = @PsClaveUsuario;
+      If @@Rowcount = 0
+         Begin
+            Set @o_salida = 9999;
+         End
    End
+
+   Set @o_salida = @o_salida;
 
    Return(@o_salida)
 
@@ -21,8 +41,8 @@ Go
 --
 
 Declare
-   @w_valor          Nvarchar(250) = 'Función que Consulta la Dirección IP de la sesión.',
-   @w_procedimiento  NVarchar(250) = 'Fn_BuscaDireccionIP';
+   @w_valor          Nvarchar(250) = 'Función que Consulta el Código del Usuario Seleccionado.',
+   @w_procedimiento  NVarchar(250) = 'Fn_BuscaIdUsuario';
 
 If Not Exists (Select Top 1 1
                From   sys.extended_properties a
@@ -35,7 +55,7 @@ If Not Exists (Select Top 1 1
                                       @value      = @w_valor,
                                       @level0type = 'Schema',
                                       @level0name = N'dbo',
-                                      @level1type = 'Function', 
+                                      @level1type = 'Function',
                                       @level1name = @w_procedimiento
 
    End
@@ -45,7 +65,7 @@ Else
                                         @value      = @w_valor,
                                         @level0type = 'Schema',
                                         @level0name = N'dbo',
-                                        @level1type = 'Function', 
+                                        @level1type = 'Function',
                                         @level1name = @w_procedimiento
    End
-Go 
+Go
