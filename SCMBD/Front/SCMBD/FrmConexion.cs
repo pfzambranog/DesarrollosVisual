@@ -1,182 +1,221 @@
 ﻿using System;
-using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-
+using System.Data.SqlClient;
 
 namespace SCMBD
 {
     public partial class FrmConexion : Form
     {
-        // Datos públicos para pasar al Menú
+        // ? SOLO las propiedades de datos — NO declarar controles aquí
         public int IdUsuario { get; private set; }
         public string ClaveUsuario { get; private set; }
-        public int IdTipoUsuario { get; private set; }
+        public DataTable Permisos { get; private set; }
         public string CadenaConexion { get; private set; }
 
         public FrmConexion()
         {
             InitializeComponent();
+            this.Load += FrmConexion_Load;
         }
 
         private void FrmConexion_Load(object sender, EventArgs e)
         {
-            txtUsuario.Text = string.Empty;
-            txtPassword.Text = string.Empty;
-            txtUsuario.Focus();
+            CargarLogo();
+            CargarImagenesBotones();
+            CargarIconoVentana();
+        }
 
+        private void CargarLogo()
+        {
             try
             {
-                // 📋 Leer rutas desde App.config
-                string rutaImagenes = ConfigurationManager.AppSettings["Imagenes"];
-                string rutaLogo = Path.Combine(rutaImagenes, "LogoSCMBD.png");
+                string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
 
-                // ✅ VERIFICAR SI EXISTE EL ARCHIVO
                 if (File.Exists(rutaLogo))
                 {
-                    picLogo.Image = Image.FromFile(rutaLogo);
-                    picLogo.Visible = true;
+                    using (Image imgOriginal = Image.FromFile(rutaLogo))
+                    {
+                        Bitmap imgNueva = new Bitmap(imgOriginal.Width, imgOriginal.Height);
 
-                    // ✅ ASIGNAR ÍCONO DEL FORMULARIO DESDE EL MISMO ARCHIVO
+                        using (Graphics g = Graphics.FromImage(imgNueva))
+                        {
+                            Color colorFondo = Color.LightSteelBlue;
+                            g.Clear(colorFondo);
+                            g.DrawImage(imgOriginal, 0, 0, imgOriginal.Width, imgOriginal.Height);
+                        }
+
+                        picLogo.Image = imgNueva;
+                    }
+
+                    picLogo.SizeMode = PictureBoxSizeMode.Zoom;
+                    picLogo.BorderStyle = BorderStyle.None;
+                    picLogo.Padding = new Padding(0);
+                    picLogo.Margin = new Padding(0);
+                    picLogo.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+                    picLogo.BackColor = Color.LightSteelBlue; // ✅ Coincide con formulario
+                    picLogo.Location = new Point(0, 0);
+                }
+            }
+            catch
+            {
+                // ✅ Solo si necesitas depurar; en producción déjalo vacío
+                // MessageBox.Show("No se pudo cargar el logo");
+            }
+        }
+        private void CargarIconoVentana()
+        {
+            try
+            {
+                string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
+                if (File.Exists(rutaLogo))
+                {
                     using (Bitmap bmp = new Bitmap(rutaLogo))
                     {
+                        // ✅ Convertir PNG a Icono y asignarlo a la ventana
                         this.Icon = Icon.FromHandle(bmp.GetHicon());
                     }
                 }
-                else
+            }
+            catch { }
+        }
+
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+        private void CargarImagenesBotones()
+        {
+            try
+            {
+                if (Properties.Resources.ACEPTA1 != null)
                 {
-                    MessageBox.Show($"No se encontró el archivo:\n{rutaLogo}\n\nVerifica que la carpeta Imagenes existe junto al ejecutable.",
-                                    "Archivo No Encontrado",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    BtnConectar.Image = Properties.Resources.ACEPTA1.ToBitmap();
+                    BtnConectar.ImageAlign = ContentAlignment.MiddleLeft;
+                    BtnConectar.TextImageRelation = TextImageRelation.ImageBeforeText;
+                }
+
+                if (Properties.Resources.CANCELA1 != null)
+                {
+                    btnCancelar.Image = Properties.Resources.CANCELA1.ToBitmap();
+                    btnCancelar.ImageAlign = ContentAlignment.MiddleLeft;
+                    btnCancelar.TextImageRelation = TextImageRelation.ImageBeforeText;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error cargando imágenes: {ex.Message}",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"No se pudieron cargar las imágenes: {ex.Message}", "Nota", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            // ✅ Validar recursos de botones
-            if (global::SCMBD.Properties.Resources.ACEPTA1 == null)
-            {
-                MessageBox.Show("Recurso ACEPTA1 no está registrado.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-            if (global::SCMBD.Properties.Resources.CANCELA1 == null)
-            {
-                MessageBox.Show("Recurso CANCELA1 no está registrado.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        }
-
-        // ✅ Corregido nombre: B mayúscula
-        private void BtnCancelar_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
         }
 
         private void BtnConectar_Click(object sender, EventArgs e)
         {
+            // ✅ Validar campos obligatorios
+            if (string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
+            {
+                MessageBox.Show("Ingrese Usuario y Contraseña", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             try
             {
-                if (string.IsNullOrWhiteSpace(txtUsuario.Text))
+                // ✅ Construir cadena con credenciales
+
+                string cadenaBase = AppSettings.GetConnectionString("SCMBD");
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(cadenaBase)
                 {
-                    MessageBox.Show("Debe ingresar el Usuario.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtUsuario.Focus();
-                    return;
-                }
-                if (string.IsNullOrWhiteSpace(txtPassword.Text))
+                    UserID = txtUsuario.Text.Trim(),
+                    Password = txtPassword.Text.Trim()
+                };
+                string cadena = builder.ConnectionString;
+
+                using (SqlConnection cn = new SqlConnection(cadena))
                 {
-                    MessageBox.Show("Debe ingresar la Contraseña.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    txtPassword.Focus();
-                    return;
-                }
+                    cn.Open();
 
-                // 📌 Armar cadena con credenciales
-                string strBase = ConfigurationManager.ConnectionStrings["SCMBD"].ConnectionString;
-                CadenaConexion = $"{strBase};User ID={txtUsuario.Text.Trim()};Password={txtPassword.Text};";
+                    // Consulta de validación del usuario
 
-                using (SqlConnection cn = new SqlConnection(CadenaConexion))
-                {
-                    cn.Open(); // Prueba conexión
+                    string sqlUsuario = "Select  idUsuario, idEstatus As Bloqueado " +
+                                        "From    dbo.segUsuariosTbl " +
+                                        "Where   ClaveUsuario = @ClaveUsuario ";
 
-                    // =============================================
-                    // 1. Validar que el usuario exista en la app
-                    // =============================================
-                    string sqlUsuario = @"
-                        SELECT idUsuario, idTipoUsuario, idEstatus
-                        FROM dbo.segUsuariosTbl
-                        WHERE claveUsuario = @ClaveUsuario";
-
-                    int idEstatus;
                     using (SqlCommand cmd = new SqlCommand(sqlUsuario, cn))
                     {
                         cmd.Parameters.AddWithValue("@ClaveUsuario", txtUsuario.Text.Trim());
+
                         using (SqlDataReader dr = cmd.ExecuteReader())
                         {
                             if (!dr.Read())
                             {
-                                MessageBox.Show("Usuario no registrado en la aplicación.", "Validación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                MessageBox.Show("El usuario no está relacionado en la aplicación.",
+                                                "Acceso Denegado",
+                                                MessageBoxButtons.OK,
+                                                MessageBoxIcon.Hand);
                                 return;
                             }
+
+                            // Validar estatus (ajusta el número si es distinto en tu tabla)
+                            int estatus = Convert.ToInt32(dr["Bloqueado"]);
+                            bool bloqueado = (estatus == 0);
+
+                            if (bloqueado)
+                            {
+                                MessageBox.Show("Usuario se encuentra BLOQUEADO",
+                                                "Acceso Denegado",
+                                                MessageBoxButtons.OK,
+                                                MessageBoxIcon.Stop);
+                                return;
+                            }
+
                             IdUsuario = Convert.ToInt32(dr["idUsuario"]);
-                            IdTipoUsuario = Convert.ToInt32(dr["idTipoUsuario"]);
-                            idEstatus = Convert.ToInt32(dr["idEstatus"]);
                             ClaveUsuario = txtUsuario.Text.Trim();
+                            CadenaConexion = cadena;
+                            AppSettings.SetRuntimeConnectionString(cadena);
                         }
                     }
 
-                    // =============================================
-                    // 2. Validar Estatus = 0 → Bloqueado
-                    // =============================================
-                    if (idEstatus == 0)
-                    {
-                        MessageBox.Show("Usuario Bloqueado.", "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        return;
-                    }
+                    // permisos a operaciones del usuario en el menu
+                    Permisos = new DataTable();
+                    string sqlPermisos = "Select idMenu, Menu, idOperacion, Operacion, idAutorizacion, llamada " +
+                                         "FROM   dbo.MenuUsuariosVw " +
+                                         "WHERE idUsuario = @IdUsuario " +
+                                         "Order  by idMenu, idOperacion";
 
-                    // =============================================
-                    // 3. Obtener permisos del menú
-                    // =============================================
-                    string sqlMenu = @"
-                        SELECT claveUsuario, idMenu, Menu, idOperacion, Operacion, idAutorizacion
-                        FROM dbo.MenuUsuariosVw
-                        WHERE IdEstatus = 1 AND idUsuario = @IdUsuario";
-
-                    DataTable dtPermisos = new DataTable();
-                    using (SqlCommand cmd = new SqlCommand(sqlMenu, cn))
+                    using (SqlCommand cmd = new SqlCommand(sqlPermisos, cn))
                     {
                         cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
                         using (SqlDataAdapter da = new SqlDataAdapter(cmd))
                         {
-                            da.Fill(dtPermisos);
+                            da.Fill(Permisos);
                         }
                     }
 
-                    if (dtPermisos.Rows.Count == 0)
+                    if (Permisos.Rows.Count == 0)
                     {
-                        MessageBox.Show("Usuario no Tiene Permisos a Operaciones de la aplicación.", "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                        return;
+                        MessageBox.Show("El usuario no tiene permiso a ninguna operación.", "Acceso Denegado", MessageBoxButtons.OK,
+                                        MessageBoxIcon.Stop);
+                        return; // ⛔ NO continúa, NO abre el menú
                     }
-
-                    // =============================================
-                    // ✅ TODO OK → Abrir Menú Principal
-                    // =============================================
-                    this.Hide();
-                    FrmMenuPrincipal frmMenu = new FrmMenuPrincipal(IdUsuario, ClaveUsuario, dtPermisos, CadenaConexion);
-                    frmMenu.ShowDialog();
-                    this.Close();
                 }
-            }
-            catch (SqlException ex)
-            {
-                MessageBox.Show($"Error de Conexión: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                this.ClaveUsuario = txtUsuario.Text.Trim().ToUpper();
+
+                FrmMenuPrincipal frm = new FrmMenuPrincipal(IdUsuario, ClaveUsuario, Permisos, CadenaConexion);
+                this.Hide();
+                frm.ShowDialog();
+                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void txtUsuario_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

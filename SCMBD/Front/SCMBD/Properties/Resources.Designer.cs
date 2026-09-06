@@ -73,9 +73,39 @@ namespace SCMBD.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Icon similar a (Icono).
         /// </summary>
+        internal static System.Drawing.Icon cambio {
+            get {
+                object obj = ResourceManager.GetObject("cambio", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Icon similar a (Icono).
+        /// </summary>
         internal static System.Drawing.Icon CANCELA1 {
             get {
                 object obj = ResourceManager.GetObject("CANCELA1", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ccontra {
+            get {
+                object obj = ResourceManager.GetObject("ccontra", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Icon similar a (Icono).
+        /// </summary>
+        internal static System.Drawing.Icon Ccontra1 {
+            get {
+                object obj = ResourceManager.GetObject("Ccontra1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

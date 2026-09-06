@@ -1,7 +1,7 @@
 /*
 Declare
    @PnIdUsuario              Integer          = 1,
-   @PnIdOperacion            Integer          = 6,
+   @PnIdOperacion            Integer          = 7,
    @PnIdAutorizacion         Tinyint          = 4,
    @PnIdUsuarioAct           Integer          = 1,
    @PsIpAct                  Varchar ( 30)    = Null,

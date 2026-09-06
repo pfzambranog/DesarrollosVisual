@@ -1,10 +1,10 @@
 /*
 Declare
-   @PsOperacion              Varchar ( 20)    = 'SU1011',
-   @PsDescripcion            Varchar (100)    = 'Asignacion de Permisos la Relacion Usuarios - Operaciones',
-   @PsLlamada                Varchar ( 20)    = Null,
-   @PsRutas                  Varchar (512)    = Null,
-   @PnIdOperacion            Integer          = 5,
+   @PsOperacion              Varchar ( 20)    = 'SU1999',
+   @PsDescripcion            Varchar (100)    = 'Cambio de Contraseña',
+   @PsLlamada                Varchar ( 20)    = 'FrmCambioContrasenia',
+   @PsRutas                  Varchar (512)    = 'SCMBD',
+   @PnIdOperacion            Integer          = 3,
    @PnIdUsuarioAct           Integer          = 1,
    @PsIpAct                  Varchar ( 30)    = Null,
    @PsMacAddressAct          Varchar ( 30)    = Null,
@@ -32,7 +32,7 @@ Go
 Create Or Alter Procedure dbo.Spa_catOperacionesTbl
   (@PsOperacion              Varchar ( 20),
    @PsDescripcion            Varchar (100),
-   @PsLlamada                Varchar ( 20),
+   @PsLlamada                Varchar ( 40),
    @PsRutas                  Varchar (512),
    @PnIdOperacion            Integer,
    @PnIdUsuarioAct           Integer,
@@ -75,18 +75,21 @@ Begin
          Return
       End
 
-   If Not Exists (Select Top 1 1
-                  From   dbo.segAutOperacionesTbl
-                  Where  idUsuario       = @PnIdUsuarioAct
-                  And    idOperacion     = @PnIdOperacion
-                  And    idAutorizacion >= 2)
+   If @PnIdUsuarioAct != 1
       Begin
-         Select @PnEstatus = 9985,
-                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
-
-         Set Xact_Abort Off
-         Return
-      End
+         If Not Exists (Select Top 1 1
+                        From   dbo.segAutOperacionesTbl
+                        Where  idUsuario       = @PnIdUsuarioAct
+                        And    idOperacion     = @PnIdOperacion
+                        And    idAutorizacion >= 2)
+            Begin
+               Select @PnEstatus = 9985,
+                      @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+      
+               Set Xact_Abort Off
+               Return
+            End
+    End
 
    Begin Try
       Insert Into dbo.catOperacionesTbl

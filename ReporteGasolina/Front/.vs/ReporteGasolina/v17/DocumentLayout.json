@@ -3,11 +3,15 @@
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|c:\\desarrollos\\desarrollosvisual\\reportegasolina\\front\\infrastructure\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:infrastructure\\logger.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|c:\\desarrollos\\desarrollosvisual\\reportegasolina\\front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|c:\\desarrollos\\desarrollosvisual\\reportegasolina\\front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{5677DD38-ED12-4E41-AD1E-C7BAEB2D4CF0}|RepGas.csproj|solutionrelative:frmconexion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
@@ -26,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -34,7 +38,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 0,
+              "Title": "Logger.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\Infrastructure\\Logger.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Logger.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\Infrastructure\\Logger.cs",
+              "RelativeToolTip": "Infrastructure\\Logger.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-09-05T15:05:07.407Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "FrmConexion.cs [Dise\u00F1o]",
               "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs",
               "RelativeDocumentMoniker": "FrmConexion.cs",
@@ -46,7 +63,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "FrmConexion.Designer.cs",
               "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.Designer.cs",
               "RelativeDocumentMoniker": "FrmConexion.Designer.cs",
@@ -54,11 +71,12 @@
               "RelativeToolTip": "FrmConexion.Designer.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-04T23:16:29.989Z"
+              "WhenOpened": "2026-09-04T23:16:29.989Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "AppSettings.cs",
               "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\Infrastructure\\AppSettings.cs",
               "RelativeDocumentMoniker": "Infrastructure\\AppSettings.cs",
@@ -70,7 +88,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "FrmConexion.cs",
               "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\ReporteGasolina\\Front\\FrmConexion.cs",
               "RelativeDocumentMoniker": "FrmConexion.cs",

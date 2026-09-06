@@ -59,11 +59,26 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmCambioContrasenia.resx">
+      <DependentUpon>FrmCambioContrasenia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmConexion.resx">
+      <DependentUpon>FrmConexion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmMenuPrincipal.resx">
+      <DependentUpon>FrmMenuPrincipal.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <Compile Include="FrmCambioContrasenia.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Properties\infrastructure\AppSettings.cs" />
+    <Compile Include="Properties\infrastructure\Logger.cs" />
+    <Compile Include="Properties\infrastructure\SqlHelper.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -84,9 +99,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\ACEPTA1.ICO" />
+    <None Include="Resources\cambio.ICO" />
     <Content Include="Resources\CANCELA1.ICO" />
     <Content Include="Resources\CANCELA1.png" />
     <Content Include="Resources\Cancela_con1.bmp" />
+    <None Include="Resources\ccontra.bmp" />
+    <None Include="Resources\Ccontra.ico" />
     <Content Include="Resources\Consultar.jpeg" />
     <Content Include="Resources\Consultar.png" />
     <Content Include="Resources\Excel.png" />

@@ -12,7 +12,7 @@ Create Table dbo.catOperacionesTbl
   (idOperacion         Integer        Not Null    Identity(1, 1),
    operacion           Varchar(  20)  Not Null,
    descripcion         Varchar( 100)  Not Null,
-   llamada             Varchar(  20)      Null,
+   llamada             Varchar(  40)      Null,
    ruta                Varchar( 512)      Null,
    idEstatus           Bit            Not Null Default(1),
    idUsuarioAct        INteger        Not Null,
