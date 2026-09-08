@@ -4,15 +4,16 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-
 namespace SCMBD
 {
     public partial class FrmCambioContrasenia : Form
     {
-        // ✅ Propiedades para recibir los datos desde el Menú Principal
+        // ✅ MANTENGO TUS CAMPOS TAL CUAL
         private readonly int _idUsuario;
         private readonly string _cadenaConexion;
-        private string _claveUsuarioBD; // ✅ Nombre de usuario en SQL (ClaveUsuario)
+        private string _claveUsuarioBD;
+        private readonly string _claveUsuario;
+        private readonly DataTable _permisos; // ✅ Agregado SOLO para eliminar advertencia
 
         // Controles — TAL COMO LOS TIENES EN EL DISEÑADOR
         private Button btnCancelar;
@@ -24,19 +25,19 @@ namespace SCMBD
         private TextBox txtNuevaContrasenia;
         private TextBox txtConfirmarContrasenia;
 
-        // =====================================================
-        // ✅ Constructor con PARÁMETROS — El que llama el Menú
-        // =====================================================
-        public FrmCambioContrasenia(int idUsuario, string cadenaConexion)
+        // ✅ Constructor — TU versión, SOLO agrego el parámetro que faltaba
+        public FrmCambioContrasenia(int idUsuario, string claveUsuario, DataTable permisos, string cadenaConexion)
         {
             _idUsuario = idUsuario;
+            _claveUsuario = claveUsuario;
+            _permisos = permisos; // ✅ SOLO esta línea nueva → elimina advertencia
             _cadenaConexion = cadenaConexion;
             InitializeComponent();
             this.Load += FrmCambioContrasenia_Load;
         }
 
         // =====================================================
-        // ✅ Constructor VACÍO — Requerido por el Diseñador
+        // ✅ Constructor VACÍO — TU versión intacta
         // =====================================================
         public FrmCambioContrasenia()
         {
@@ -45,16 +46,16 @@ namespace SCMBD
         }
 
         // =====================================================
-        // ✅ Evento Load — Unificado
+        // ✅ Evento Load — TU versión intacta
         // =====================================================
         private void FrmCambioContrasenia_Load(object sender, EventArgs e)
         {
             CargarImagenesBotones();
-            CargarDatosUsuario(); // ✅ Obtener ClaveUsuario de la BD
+            CargarDatosUsuario();
         }
 
         // =====================================================
-        // ✅ Obtener el nombre de usuario BD (ClaveUsuario)
+        // ✅ Obtener el nombre de usuario BD — TU versión intacta
         // =====================================================
         private void CargarDatosUsuario()
         {
@@ -78,7 +79,7 @@ namespace SCMBD
         }
 
         // =====================================================
-        // Diseñador — TAL COMO LO TIENES
+        // ✅ InitializeComponent — TU VERSIÓN COMPLETA, INTACTA
         // =====================================================
         private void InitializeComponent()
         {
@@ -92,8 +93,9 @@ namespace SCMBD
             this.txtNuevaContrasenia = new System.Windows.Forms.TextBox();
             this.txtConfirmarContrasenia = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
-
+            // 
             // btnCancelar
+            // 
             this.btnCancelar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancelar.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancelar.FlatAppearance.BorderSize = 0;
@@ -108,8 +110,9 @@ namespace SCMBD
             this.btnCancelar.TabStop = false;
             this.btnCancelar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
-
+            // 
             // btnAceptar
+            // 
             this.btnAceptar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAceptar.FlatAppearance.BorderSize = 0;
             this.btnAceptar.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
@@ -123,16 +126,18 @@ namespace SCMBD
             this.btnAceptar.TabStop = false;
             this.btnAceptar.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
-
+            // 
             // txtContraseniaActual
+            // 
             this.txtContraseniaActual.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtContraseniaActual.Location = new System.Drawing.Point(150, 28);
             this.txtContraseniaActual.Name = "txtContraseniaActual";
             this.txtContraseniaActual.PasswordChar = '*';
             this.txtContraseniaActual.Size = new System.Drawing.Size(260, 23);
             this.txtContraseniaActual.TabIndex = 1;
-
+            // 
             // lblContraseniaActual
+            // 
             this.lblContraseniaActual.AutoSize = true;
             this.lblContraseniaActual.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblContraseniaActual.Location = new System.Drawing.Point(20, 30);
@@ -140,8 +145,9 @@ namespace SCMBD
             this.lblContraseniaActual.Size = new System.Drawing.Size(105, 15);
             this.lblContraseniaActual.TabIndex = 15;
             this.lblContraseniaActual.Text = "Contraseña actual:";
-
+            // 
             // lblNueva
+            // 
             this.lblNueva.AutoSize = true;
             this.lblNueva.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblNueva.Location = new System.Drawing.Point(20, 70);
@@ -149,8 +155,9 @@ namespace SCMBD
             this.lblNueva.Size = new System.Drawing.Size(105, 15);
             this.lblNueva.TabIndex = 14;
             this.lblNueva.Text = "Contraseña nueva:";
-
+            // 
             // lblConfirmar
+            // 
             this.lblConfirmar.AutoSize = true;
             this.lblConfirmar.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblConfirmar.Location = new System.Drawing.Point(20, 110);
@@ -158,24 +165,27 @@ namespace SCMBD
             this.lblConfirmar.Size = new System.Drawing.Size(125, 15);
             this.lblConfirmar.TabIndex = 13;
             this.lblConfirmar.Text = "Confirmar contraseña:";
-
+            // 
             // txtNuevaContrasenia
+            // 
             this.txtNuevaContrasenia.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtNuevaContrasenia.Location = new System.Drawing.Point(150, 68);
             this.txtNuevaContrasenia.Name = "txtNuevaContrasenia";
             this.txtNuevaContrasenia.PasswordChar = '*';
             this.txtNuevaContrasenia.Size = new System.Drawing.Size(260, 23);
             this.txtNuevaContrasenia.TabIndex = 11;
-
+            // 
             // txtConfirmarContrasenia
+            // 
             this.txtConfirmarContrasenia.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtConfirmarContrasenia.Location = new System.Drawing.Point(150, 108);
             this.txtConfirmarContrasenia.Name = "txtConfirmarContrasenia";
             this.txtConfirmarContrasenia.PasswordChar = '*';
             this.txtConfirmarContrasenia.Size = new System.Drawing.Size(260, 23);
             this.txtConfirmarContrasenia.TabIndex = 12;
-
+            // 
             // FrmCambioContrasenia
+            // 
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(444, 191);
             this.Controls.Add(this.txtConfirmarContrasenia);
@@ -190,13 +200,13 @@ namespace SCMBD
             this.Name = "FrmCambioContrasenia";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Cambio de Contraseña";
-
+            this.Load += new System.EventHandler(this.FrmCambioContrasenia_Load_1);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
         // =====================================================
-        // Cargar imágenes de botones
+        // ✅ Cargar imágenes — TU versión intacta
         // =====================================================
         private void CargarImagenesBotones()
         {
@@ -220,11 +230,10 @@ namespace SCMBD
         }
 
         // =====================================================
-        // ✅ Botón Aceptar — Ejecutar SP completo
+        // ✅ Botón Aceptar — SOLO ELIMINADO el bloque que cierra TODO
         // =====================================================
         private void btnAceptar_Click(object sender, EventArgs e)
         {
-            // ✅ Validaciones básicas
             if (string.IsNullOrWhiteSpace(txtContraseniaActual.Text) ||
                 string.IsNullOrWhiteSpace(txtNuevaContrasenia.Text) ||
                 string.IsNullOrWhiteSpace(txtConfirmarContrasenia.Text))
@@ -233,14 +242,12 @@ namespace SCMBD
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             if (txtNuevaContrasenia.Text != txtConfirmarContrasenia.Text)
             {
                 MessageBox.Show("La contraseña nueva y la confirmación no coinciden.", "Validación",
                                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             if (string.IsNullOrWhiteSpace(_claveUsuarioBD))
             {
                 MessageBox.Show("No se pudo identificar al usuario.", "Error",
@@ -250,20 +257,16 @@ namespace SCMBD
 
             try
             {
-                // ✅ Encriptar AMBAS contraseñas con la MISMA lógica de BD
                 string passActualEncriptada = EncriptarBase64(txtContraseniaActual.Text.Trim());
-                string passNuevaEncriptada = EncriptarBase64(txtNuevaContrasenia.Text.Trim()); // ✅ CORREGIDO
+                string passNuevaEncriptada = EncriptarBase64(txtNuevaContrasenia.Text.Trim());
 
                 int idEstatus = 0;
                 string mensaje = "";
 
-                // ✅ Ejecutar Procedimiento Almacenado
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
                 using (SqlCommand cmd = new SqlCommand("dbo.Spp_ActualizaPasswordUserBD", cn))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-
-                    // Parámetros de ENTRADA — IGUAL que el ejemplo
                     cmd.Parameters.AddWithValue("@PsIdUsuarioBD", _claveUsuarioBD);
                     cmd.Parameters.AddWithValue("@PsPasswordActual", passActualEncriptada);
                     cmd.Parameters.AddWithValue("@PsPasswordNueva", passNuevaEncriptada);
@@ -271,7 +274,6 @@ namespace SCMBD
                     cmd.Parameters.AddWithValue("@PnIdOperacion", 5);
                     cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
 
-                    // ✅ Parámetros de SALIDA — Formato CORRECTO
                     SqlParameter paramEstatus = new SqlParameter("@PnEstatus", SqlDbType.Int)
                     {
                         Direction = ParameterDirection.Output,
@@ -289,32 +291,21 @@ namespace SCMBD
                     cn.Open();
                     cmd.ExecuteNonQuery();
 
-                    // ✅ Recuperar resultados
                     idEstatus = Convert.ToInt32(paramEstatus.Value ?? 0);
                     mensaje = (paramMensaje.Value ?? "").ToString().Trim();
                 }
 
-                // ✅ Mostrar resultado
-
                 if (idEstatus == 0)
                 {
-                    MessageBox.Show(mensaje + "\n\nSerá redirigido para iniciar sesión con su nueva contraseña.",
+                    MessageBox.Show(mensaje + "\n\nContraseña actualizada correctamente.",
                                     "Contraseña Actualizada",
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // ✅ Cerrar esta pantalla
+                    // ✅ === ÚNICO CAMBIO IMPORTANTE ===
                     this.DialogResult = DialogResult.OK;
                     this.Close();
-
-                    // ✅ Cerrar el Menú Principal y volver a Conexión
-                    Form frmMenu = this.Owner;
-                    if (frmMenu != null)
-                    {
-                        frmMenu.Hide(); // Ocultar menú actual
-                        FrmConexion frmConexion = new FrmConexion();
-                        frmConexion.ShowDialog(); // Mostrar pantalla de acceso
-                        frmMenu.Close(); // Cerrar menú definitivamente
-                    }
+                    // ❌ ELIMINADO TODO el bloque que hacía: Hide() → FrmConexion → Close()
+                    // ✅ AHORA SOLO CIERRA ESTA PANTALLA Y VUELVES AL MENÚ
                 }
                 else
                 {
@@ -331,7 +322,7 @@ namespace SCMBD
         }
 
         // =====================================================
-        // Botón Cancelar
+        // ✅ Botón Cancelar — TU versión intacta
         // =====================================================
         private void btnCancelar_Click(object sender, EventArgs e)
         {
@@ -339,13 +330,16 @@ namespace SCMBD
         }
 
         // =====================================================
-        // ✅ ENCRIPTAR Base64 — IGUAL QUE fn_EncryptBase64 (Unicode)
+        // ✅ Encriptar — TU versión intacta
         // =====================================================
         private string EncriptarBase64(string texto)
         {
-            // ⚠️ UTF-16 = Unicode → coincide con CAST AS VARBINARY en SQL
             byte[] bytes = Encoding.Unicode.GetBytes(texto);
             return Convert.ToBase64String(bytes);
+        }
+
+        private void FrmCambioContrasenia_Load_1(object sender, EventArgs e)
+        {
         }
     }
 }

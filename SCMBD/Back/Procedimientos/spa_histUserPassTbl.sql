@@ -43,6 +43,10 @@ Begin
    Set Xact_Abort    On
    Set Ansi_Nulls    On
 
+Insert Into pf_debug
+Select 'paso 1'
+
+
    Select @PnEstatus         = dbo.Fn_ValidaUsuario(@PnIdUsuario),
           @PsMensaje         = Char(32)
 

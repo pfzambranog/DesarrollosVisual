@@ -38,6 +38,7 @@ Create Or Alter Procedure dbo.Spp_ActualizaPasswordUserBD
    @PsMensaje               Varchar( 250)  = Null  Output)
 With Execute AS Owner
 As
+
 Declare
     @w_desc_error              Varchar( 250),
     @w_Error                   Integer,
@@ -59,8 +60,6 @@ Begin
    Set Nocount       On
    Set Xact_Abort    On
    Set Ansi_Nulls    On
-   Set Ansi_Warnings On
-   Set Ansi_Padding  On
 
    Select @PnEstatus   = 0,
           @PsMensaje   = Char(32),
@@ -134,11 +133,12 @@ Begin
    -- VALIDAR QUE LA CONTRASEÑA ACTUAL SEA CORRECTA
    -- =========================================================
 
+
    Begin Try
       Set @w_sql = 'Declare @w_existe Bit ' +
                    'Select @w_existe = 1 ' +
                    'From   master.sys.sql_logins '           +
-                   'Where  name = ' + @w_comilla + @PsIdUsuarioBD + @w_comilla + ' '   +
+                   'Where  name = '     + @w_comilla + @PsIdUsuarioBD     + @w_comilla + ' '   +
                    'And    Pwdcompare(' + @w_comilla + @w_password_actual + @w_comilla + ', password_hash) = 1 ';
 
       Execute Sp_ExecuteSQL @w_sql;
@@ -189,7 +189,7 @@ Begin
 
 
 --
--- Alta En el Historico de COntraseñas
+-- Alta En el Historico de Contraseñas
 --
   
    Execute dbo.Spa_histUserPassTbl @PnIdUsuario       = @w_idUsuario,

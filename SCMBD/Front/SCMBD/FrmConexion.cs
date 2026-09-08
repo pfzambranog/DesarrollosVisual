@@ -4,12 +4,13 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Configuration;
 
 namespace SCMBD
 {
     public partial class FrmConexion : Form
     {
-        // ? SOLO las propiedades de datos — NO declarar controles aquí
+        // ✅ SOLO las propiedades de datos — NO declarar controles aquí
         public int IdUsuario { get; private set; }
         public string ClaveUsuario { get; private set; }
         public DataTable Permisos { get; private set; }
@@ -30,41 +31,9 @@ namespace SCMBD
 
         private void CargarLogo()
         {
-            try
-            {
-                string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
-
-                if (File.Exists(rutaLogo))
-                {
-                    using (Image imgOriginal = Image.FromFile(rutaLogo))
-                    {
-                        Bitmap imgNueva = new Bitmap(imgOriginal.Width, imgOriginal.Height);
-
-                        using (Graphics g = Graphics.FromImage(imgNueva))
-                        {
-                            Color colorFondo = Color.LightSteelBlue;
-                            g.Clear(colorFondo);
-                            g.DrawImage(imgOriginal, 0, 0, imgOriginal.Width, imgOriginal.Height);
-                        }
-
-                        picLogo.Image = imgNueva;
-                    }
-
-                    picLogo.SizeMode = PictureBoxSizeMode.Zoom;
-                    picLogo.BorderStyle = BorderStyle.None;
-                    picLogo.Padding = new Padding(0);
-                    picLogo.Margin = new Padding(0);
-                    picLogo.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-                    picLogo.BackColor = Color.LightSteelBlue; // ✅ Coincide con formulario
-                    picLogo.Location = new Point(0, 0);
-                }
-            }
-            catch
-            {
-                // ✅ Solo si necesitas depurar; en producción déjalo vacío
-                // MessageBox.Show("No se pudo cargar el logo");
-            }
+            RecursosCompartidos.CargarLogo(picLogo);
         }
+
         private void CargarIconoVentana()
         {
             try
@@ -74,7 +43,6 @@ namespace SCMBD
                 {
                     using (Bitmap bmp = new Bitmap(rutaLogo))
                     {
-                        // ✅ Convertir PNG a Icono y asignarlo a la ventana
                         this.Icon = Icon.FromHandle(bmp.GetHicon());
                     }
                 }
@@ -82,10 +50,11 @@ namespace SCMBD
             catch { }
         }
 
-        private void btnCancelar_Click(object sender, EventArgs e)
+        private void BtnCancelar_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+
         private void CargarImagenesBotones()
         {
             try
@@ -96,12 +65,11 @@ namespace SCMBD
                     BtnConectar.ImageAlign = ContentAlignment.MiddleLeft;
                     BtnConectar.TextImageRelation = TextImageRelation.ImageBeforeText;
                 }
-
                 if (Properties.Resources.CANCELA1 != null)
                 {
-                    btnCancelar.Image = Properties.Resources.CANCELA1.ToBitmap();
-                    btnCancelar.ImageAlign = ContentAlignment.MiddleLeft;
-                    btnCancelar.TextImageRelation = TextImageRelation.ImageBeforeText;
+                    this.btnCancelar.Image = Properties.Resources.CANCELA1.ToBitmap();
+                    this.btnCancelar.ImageAlign = ContentAlignment.MiddleLeft;
+                    this.btnCancelar.TextImageRelation = TextImageRelation.ImageBeforeText;
                 }
             }
             catch (Exception ex)
@@ -122,8 +90,7 @@ namespace SCMBD
             try
             {
                 // ✅ Construir cadena con credenciales
-
-                string cadenaBase = AppSettings.GetConnectionString("SCMBD");
+                string cadenaBase = ConfigurationManager.ConnectionStrings["SCMBD"].ConnectionString;
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(cadenaBase)
                 {
                     UserID = txtUsuario.Text.Trim(),
@@ -135,18 +102,19 @@ namespace SCMBD
                 {
                     cn.Open();
 
-                    // Consulta de validación del usuario
-
-                    string sqlUsuario = "Select  idUsuario, idEstatus As Bloqueado " +
-                                        "From    dbo.segUsuariosTbl " +
-                                        "Where   ClaveUsuario = @ClaveUsuario ";
+                    // ✅ Consulta: valida usuario y obtiene estatus + tipo de usuario
+                    string sqlUsuario = @"SELECT idUsuario, 
+                                                  idEstatus AS Bloqueado, 
+                                                  idTipoUsuario
+                                           FROM   dbo.segUsuariosTbl 
+                                           WHERE  ClaveUsuario = @ClaveUsuario";
 
                     using (SqlCommand cmd = new SqlCommand(sqlUsuario, cn))
                     {
                         cmd.Parameters.AddWithValue("@ClaveUsuario", txtUsuario.Text.Trim());
-
                         using (SqlDataReader dr = cmd.ExecuteReader())
                         {
+                            // ❌ Usuario NO existe en la tabla
                             if (!dr.Read())
                             {
                                 MessageBox.Show("El usuario no está relacionado en la aplicación.",
@@ -156,11 +124,10 @@ namespace SCMBD
                                 return;
                             }
 
-                            // Validar estatus (ajusta el número si es distinto en tu tabla)
+                            // ✅ Usuario existe → validar estatus
                             int estatus = Convert.ToInt32(dr["Bloqueado"]);
-                            bool bloqueado = (estatus == 0);
-
-                            if (bloqueado)
+                            bool estaBloqueado = (estatus == 0); // 0 = Inactivo/Bloqueado
+                            if (estaBloqueado)
                             {
                                 MessageBox.Show("Usuario se encuentra BLOQUEADO",
                                                 "Acceso Denegado",
@@ -169,39 +136,42 @@ namespace SCMBD
                                 return;
                             }
 
+                            // ✅ Usuario válido y ACTIVO → guardar datos
                             IdUsuario = Convert.ToInt32(dr["idUsuario"]);
-                            ClaveUsuario = txtUsuario.Text.Trim();
+                            ClaveUsuario = txtUsuario.Text.Trim().ToUpper(); // ✅ Convertir a Mayúsculas
                             CadenaConexion = cadena;
-                            AppSettings.SetRuntimeConnectionString(cadena);
                         }
                     }
 
-                    // permisos a operaciones del usuario en el menu
+                    // ✅ PERMISOS — DENTRO del using, donde cn existe
                     Permisos = new DataTable();
-                    string sqlPermisos = "Select idMenu, Menu, idOperacion, Operacion, idAutorizacion, llamada " +
-                                         "FROM   dbo.MenuUsuariosVw " +
-                                         "WHERE idUsuario = @IdUsuario " +
-                                         "Order  by idMenu, idOperacion";
+                    string sqlPermisos = @"SELECT idMenu, Menu, idOperacion, 
+                                                  Operacion, idAutorizacion, llamada
+                                           FROM   dbo.MenuUsuariosVw 
+                                           WHERE  idUsuario = @IdUsuario 
+                                           ORDER BY idMenu, idOperacion";
 
-                    using (SqlCommand cmd = new SqlCommand(sqlPermisos, cn))
+                    using (SqlCommand cmdPerm = new SqlCommand(sqlPermisos, cn))
                     {
-                        cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
-                        using (SqlDataAdapter da = new SqlDataAdapter(cmd))
+                        cmdPerm.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        using (SqlDataAdapter da = new SqlDataAdapter(cmdPerm))
                         {
                             da.Fill(Permisos);
                         }
                     }
 
+                    // ⛔ Sin permisos → NO abre el menú
                     if (Permisos.Rows.Count == 0)
                     {
-                        MessageBox.Show("El usuario no tiene permiso a ninguna operación.", "Acceso Denegado", MessageBoxButtons.OK,
+                        MessageBox.Show("El usuario no tiene permiso a ninguna operación.",
+                                        "Acceso Denegado",
+                                        MessageBoxButtons.OK,
                                         MessageBoxIcon.Stop);
-                        return; // ⛔ NO continúa, NO abre el menú
+                        return;
                     }
-                }
+                } // ✅ Cierra using (cn)
 
-                this.ClaveUsuario = txtUsuario.Text.Trim().ToUpper();
-
+                // ✅ Todo OK → abrir Menú Principal
                 FrmMenuPrincipal frm = new FrmMenuPrincipal(IdUsuario, ClaveUsuario, Permisos, CadenaConexion);
                 this.Hide();
                 frm.ShowDialog();
@@ -213,9 +183,8 @@ namespace SCMBD
             }
         }
 
-        private void txtUsuario_TextChanged(object sender, EventArgs e)
+        private void TxtUsuario_TextChanged(object sender, EventArgs e)
         {
-
         }
     }
 }

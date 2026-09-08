@@ -154,6 +154,19 @@ namespace SCMBD
             this.PerformLayout();
 
         }
+        // ✅ Cambiar de: private void txtUsuario_TextChanged
+        //    A:
+        private void txtUsuario_TextChanged(object sender, EventArgs e)
+        {
+            // Vacío o tu lógica
+        }
+
+        // ✅ Cambiar de: private void BtnCancelar_Click
+        //    A:
+        private void btnCancelar_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
 
         private PictureBox picLogo;
     }

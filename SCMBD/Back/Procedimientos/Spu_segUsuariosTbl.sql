@@ -1,7 +1,7 @@
 /*
 Declare
    @PnIdUsuario              Integer          = 2,
-   @PsClaveUsuario           Varchar (50)     = 'AlbertoM@empresa.com',
+   @PsPassword               Varchar (Max)    = '************',
    @PnIdTipoUsuario          Integer          = 1,
    @PsPrimerApellido         Varchar (100)    = 'Mendez',
    @PsSegundoApellido        Varchar (100)    = 'Pelado',
@@ -17,6 +17,7 @@ Declare
 
 Begin
    Execute dbo.Spu_segUsuariosTbl @PnIdUsuario       = @PnIdUsuario,
+                                  @PsPassword        = @PsPassword,
                                   @PnIdTipoUsuario   = @PnIdTipoUsuario,
                                   @PsPrimerApellido  = @PsPrimerApellido,
                                   @PsSegundoApellido = @PsSegundoApellido,
@@ -36,8 +37,10 @@ End;
 Go
 
 */
+
 Create Or Alter Procedure dbo.Spu_segUsuariosTbl
   (@PnIdUsuario              Integer,
+   @PsPassword               Varchar (Max)   = Null,
    @PnIdTipoUsuario          Integer         = Null,
    @PsPrimerApellido         Varchar (100)   = Null,
    @PsSegundoApellido        Varchar (100)   = Null,
@@ -55,10 +58,13 @@ As
 Declare
    @w_desc_error              Varchar( 250),
    @w_sql                     Varchar( Max),
+   @w_PasswordActual          Varchar( Max),
    @w_Error                   Integer,
+   @w_registros               Integer,
    @w_fechaAct                Datetime,
    @w_comilla                 Char(1),
-   @w_nombre                  Varchar(400);;
+   @w_claveUsuario            Varchar( 50),
+   @w_nombre                  Varchar(400);
 
 Begin
 /*
@@ -75,9 +81,9 @@ Begin
    Select @PnEstatus         = 0,
           @PsMensaje         = Char(32),
           @w_comilla         = Char(39),
+          @w_claveUsuario    = dbo.Fn_BuscaClaveUsuario(@PnIdUsuario),
           @PsIpAct           = Isnull(@PsIpAct, dbo.Fn_BuscaDireccionIP()),
           @PsMacAddressAct   = Isnull(@PsMacAddressAct, dbo.Fn_Busca_DireccionMAC());
-
 
    Select @PnEstatus = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct)
    If @PnEstatus != 0
@@ -87,6 +93,22 @@ Begin
          Set Xact_Abort Off
          Return
       End
+
+--
+-- Validacion de Password
+--
+
+   If @PsPassword Is NOt Null
+      Begin
+         Set @PnEstatus = dbo.Fn_ValidaReglasContrasena(@PnIdUsuario, @PsPassword, 0);
+         If @PnEstatus > 0
+            Begin
+               Set @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+               Set Xact_Abort Off
+               Return
+            End
+     End
 
    If @PnIdTipoUsuario Is Not Null
       Begin
@@ -103,7 +125,6 @@ Begin
                Return
             End
      End
-
 
    If @PnIdEstatus Is Not Null
       Begin
@@ -132,6 +153,7 @@ Begin
                Return
             End
      End
+
 
    If Not Exists (Select Top 1 1
                   From   dbo.segUsuariosTbl
@@ -195,32 +217,75 @@ Begin
 
    Set @w_sql = Concat(@w_sql, ' Where idUsuario = ', @PnIdUsuario)
 
-   Begin Try
 
-      Execute (@w_sql);
+   Begin Transaction
+      Begin Try
 
-   End Try
+         Execute (@w_sql);
+         Set @w_registros = Isnull(@w_registros, 0) + 1
+      End Try
 
-   Begin Catch
-      Select  @w_Error      = @@Error,
-              @w_desc_error = Substring (Error_Message(), 1, 230)
-   End   Catch
+      Begin Catch
+         Select  @w_Error      = @@Error,
+                 @w_desc_error = Substring (Error_Message(), 1, 230)
+      End   Catch
 
-   If Isnull(@w_Error, 0) <> 0
-      Begin
-         Select @PnEstatus = @w_Error,
-                @PsMensaje = Concat('Error.: ', @w_Error, ' ',  @w_desc_error )
+      If Isnull(@w_Error, 0) <> 0
+         Begin
+            Select @PnEstatus = @w_Error,
+                   @PsMensaje = Concat('Error.: ', @w_Error, ' ',  @w_desc_error )
 
-         Set Xact_Abort Off
-         Return
-      End
+            Rollback Transaction
+            Set Xact_Abort Off
+            Return
+         End
+
+--
+-- Actualización de la contraseña.
+--
 
 
+      If @PsPassword Is Not Null
+         Begin
+            Select @w_PasswordActual = contrasenia
+            From   dbo.histUserPassTbl a
+            Where  idUsuario = @PnIdUsuario
+            And    secuencia = (Select Max(Secuencia)
+                                From   dbo.histUserPassTbl
+                                Where  idUsuario = a.idUsuario );
+           Set @w_registros = @@Rowcount;
+
+            If @w_registros = 0
+               Begin
+                  Select @PnEstatus = 5013,
+                         @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+                  Rollback Transaction
+                  Set Xact_Abort Off
+                  Return
+               End
+
+
+            Execute dbo.Spp_ActualizaPasswordUserBD @PsIdUsuarioBD     = @w_claveUsuario,
+                                                    @PsPasswordActual  = @w_PasswordActual,
+                                                    @PsPasswordNueva   = @PsPassword,
+                                                    @PsBaseDatos       = Null,
+                                                    @PnIdOperacion     = @PnIdOperacion,
+                                                    @PnIdUsuarioAct    = @PnIdUsuarioAct,
+                                                    @PnEstatus         = @PnEstatus      Output,
+                                                    @PsMensaje         = @PsMensaje      Output;
+
+
+
+         End;
+
+   Commit Transaction
    Set Xact_Abort Off
    Return
 
 End
 Go
+
+Grant Execute on Spp_ActualizaPasswordUserBD to Public;
 
 --
 -- Comentarios.

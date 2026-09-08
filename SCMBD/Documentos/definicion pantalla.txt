@@ -1,0 +1,821 @@
+BUenos días.
+
+Continuamos con el mantenimiento de usuarios en la appilcacion SCMBD
+
+Ya genere una nueva pantalla denominada  FrmManUser.cs.
+
+Este nombre se obtiene del campo llamada de la consulta en FrmConexion
+
+                    string sqlPermisos = "Select idMenu, Menu, idOperacion, Operacion, idAutorizacion, llamada " +
+                                         "FROM   dbo.MenuUsuariosVw " +
+                                         "WHERE idUsuario = @IdUsuario " +
+                                         "Order  by idMenu, idOperacion";
+
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace SCMBD
+{
+    public partial class FrmManUser : Form
+    {
+        private readonly int _idUsuario;
+        private readonly string _claveUsuario;
+        private readonly DataTable _dtPermisos;
+        private readonly string _cadenaConexion;
+        private readonly string _operacion;
+
+        public FrmManUser(int idUsuario, string claveUsuario, DataTable dtPermisos, string cadenaConexion)
+        {
+            _idUsuario = idUsuario;
+            _claveUsuario = claveUsuario;
+            _dtPermisos = dtPermisos;
+            _cadenaConexion = cadenaConexion;
+ 
+            InitializeComponent();
+        }
+
+        private void FrmManUser_Load(object sender, EventArgs e)
+        {
+            CargarLogo();
+
+            this.txtOperacion.Text = _operacion;
+            this.txtUsuario.Text = _claveUsuario;
+
+            CargarEstatus();
+            CargarTipoUsuario();
+        }
+
+        private void CargarLogo()
+        {
+            // picLogo.Image = FrmConexion.pi  -- Traer el logo desde FrmConexion
+
+        }
+
+
+        private void BtnRefrescar_Click(object sender, EventArgs e)
+        {
+           
+        }
+
+        private void BtnSalir_Click(object sender, EventArgs e)
+        {
+            return;
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void TxtPrimerNombre_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void LblPrimerNombre_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void CargarEstatus()
+        {
+            this.cmbEstatus.Items.Clear();
+
+            this.cmbEstatus.Items.Add("Inactivo");
+            this.cmbEstatus.Items.Add("Activo");
+
+        }
+        private void CargarTipoUsuario()
+        {
+            this.cmbIdTipoUsuario.Items.Clear();
+
+            this.cmbIdTipoUsuario.Items.Add("Funcional");
+            this.cmbIdTipoUsuario.Items.Add("Administrativo");
+            
+
+        }
+        private void BtnProcesar_Click(object sender, EventArgs e)
+        {
+
+            if (this.cmbEstatus.SelectedIndex < 0)
+            {
+                MessageBox.Show(
+                    "Seleccione un estatus.", "Mantenimiento Usuario", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pnlBarrainicial_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+    }
+}
+
+FrmManUser.Designer.cs
+
+namespace SCMBD
+{
+    partial class FrmManUser
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmManUser));
+            this.pnlBarrainicial = new System.Windows.Forms.Panel();
+            this.BtnProcesar = new System.Windows.Forms.Button();
+            this.BtnExcel = new System.Windows.Forms.Button();
+            this.BtnRefrescar = new System.Windows.Forms.Button();
+            this.BtnSalir = new System.Windows.Forms.Button();
+            this.txtUsuario = new System.Windows.Forms.TextBox();
+            this.txtOperacion = new System.Windows.Forms.TextBox();
+            this.picLogo = new System.Windows.Forms.PictureBox();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.cmbIdTipoUsuario = new System.Windows.Forms.ComboBox();
+            this.LblidTipoUsuario = new System.Windows.Forms.Label();
+            this.cmbEstatus = new System.Windows.Forms.ComboBox();
+            this.LblEstatus = new System.Windows.Forms.Label();
+            this.TxtSegundoApellido = new System.Windows.Forms.TextBox();
+            this.lblSegundoApellido = new System.Windows.Forms.Label();
+            this.TxtPrimerApellido = new System.Windows.Forms.TextBox();
+            this.LblPrimerApellido = new System.Windows.Forms.Label();
+            this.TxtNombres = new System.Windows.Forms.TextBox();
+            this.LblNombres = new System.Windows.Forms.Label();
+            this.TextPassw = new System.Windows.Forms.TextBox();
+            this.TxtClaveUsuario = new System.Windows.Forms.TextBox();
+            this.LblContrasenia = new System.Windows.Forms.Label();
+            this.LblClaveUsuario = new System.Windows.Forms.Label();
+            this.TxtIdUsuario = new System.Windows.Forms.TextBox();
+            this.LblIdUsuario = new System.Windows.Forms.Label();
+            this.pnlBarrainicial.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
+            this.panel1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // pnlBarrainicial
+            // 
+            this.pnlBarrainicial.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.pnlBarrainicial.Controls.Add(this.BtnProcesar);
+            this.pnlBarrainicial.Controls.Add(this.BtnExcel);
+            this.pnlBarrainicial.Controls.Add(this.BtnRefrescar);
+            this.pnlBarrainicial.Controls.Add(this.BtnSalir);
+            this.pnlBarrainicial.Controls.Add(this.txtUsuario);
+            this.pnlBarrainicial.Controls.Add(this.txtOperacion);
+            this.pnlBarrainicial.Controls.Add(this.picLogo);
+            this.pnlBarrainicial.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlBarrainicial.Location = new System.Drawing.Point(0, 0);
+            this.pnlBarrainicial.Name = "pnlBarrainicial";
+            this.pnlBarrainicial.Size = new System.Drawing.Size(1077, 92);
+            this.pnlBarrainicial.TabIndex = 2;
+            this.pnlBarrainicial.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlBarrainicial_Paint);
+            // 
+            // BtnProcesar
+            // 
+            this.BtnProcesar.Image = ((System.Drawing.Image)(resources.GetObject("BtnProcesar.Image")));
+            this.BtnProcesar.Location = new System.Drawing.Point(858, 2);
+            this.BtnProcesar.Name = "BtnProcesar";
+            this.BtnProcesar.Size = new System.Drawing.Size(51, 42);
+            this.BtnProcesar.TabIndex = 12;
+            this.BtnProcesar.UseVisualStyleBackColor = true;
+            this.BtnProcesar.Click += new System.EventHandler(this.BtnProcesar_Click);
+            // 
+            // BtnExcel
+            // 
+            this.BtnExcel.Image = global::SCMBD.Properties.Resources.Excel;
+            this.BtnExcel.Location = new System.Drawing.Point(909, 2);
+            this.BtnExcel.Name = "BtnExcel";
+            this.BtnExcel.Size = new System.Drawing.Size(51, 42);
+            this.BtnExcel.TabIndex = 11;
+            this.BtnExcel.UseVisualStyleBackColor = true;
+            // 
+            // BtnRefrescar
+            // 
+            this.BtnRefrescar.Image = global::SCMBD.Properties.Resources.renovar;
+            this.BtnRefrescar.Location = new System.Drawing.Point(956, 2);
+            this.BtnRefrescar.Name = "BtnRefrescar";
+            this.BtnRefrescar.Size = new System.Drawing.Size(51, 42);
+            this.BtnRefrescar.TabIndex = 10;
+            this.BtnRefrescar.UseVisualStyleBackColor = true;
+            this.BtnRefrescar.Click += new System.EventHandler(this.BtnRefrescar_Click);
+            // 
+            // BtnSalir
+            // 
+            this.BtnSalir.Image = global::SCMBD.Properties.Resources.salir;
+            this.BtnSalir.Location = new System.Drawing.Point(1006, 2);
+            this.BtnSalir.Name = "BtnSalir";
+            this.BtnSalir.Size = new System.Drawing.Size(51, 42);
+            this.BtnSalir.TabIndex = 9;
+            this.BtnSalir.UseVisualStyleBackColor = true;
+            this.BtnSalir.Click += new System.EventHandler(this.BtnSalir_Click);
+            // 
+            // txtUsuario
+            // 
+            this.txtUsuario.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.txtUsuario.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtUsuario.Enabled = false;
+            this.txtUsuario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtUsuario.Location = new System.Drawing.Point(3, 66);
+            this.txtUsuario.Name = "txtUsuario";
+            this.txtUsuario.ReadOnly = true;
+            this.txtUsuario.Size = new System.Drawing.Size(126, 13);
+            this.txtUsuario.TabIndex = 8;
+            // 
+            // txtOperacion
+            // 
+            this.txtOperacion.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.txtOperacion.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtOperacion.Enabled = false;
+            this.txtOperacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtOperacion.Location = new System.Drawing.Point(3, 48);
+            this.txtOperacion.Name = "txtOperacion";
+            this.txtOperacion.ReadOnly = true;
+            this.txtOperacion.Size = new System.Drawing.Size(126, 13);
+            this.txtOperacion.TabIndex = 7;
+            // 
+            // picLogo
+            // 
+            this.picLogo.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.picLogo.Location = new System.Drawing.Point(0, 0);
+            this.picLogo.Name = "picLogo";
+            this.picLogo.Size = new System.Drawing.Size(130, 45);
+            this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.picLogo.TabIndex = 1;
+            this.picLogo.TabStop = false;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.panel1.Controls.Add(this.cmbIdTipoUsuario);
+            this.panel1.Controls.Add(this.LblidTipoUsuario);
+            this.panel1.Controls.Add(this.cmbEstatus);
+            this.panel1.Controls.Add(this.LblEstatus);
+            this.panel1.Controls.Add(this.TxtSegundoApellido);
+            this.panel1.Controls.Add(this.lblSegundoApellido);
+            this.panel1.Controls.Add(this.TxtPrimerApellido);
+            this.panel1.Controls.Add(this.LblPrimerApellido);
+            this.panel1.Controls.Add(this.TxtNombres);
+            this.panel1.Controls.Add(this.LblNombres);
+            this.panel1.Controls.Add(this.TextPassw);
+            this.panel1.Controls.Add(this.TxtClaveUsuario);
+            this.panel1.Controls.Add(this.LblContrasenia);
+            this.panel1.Controls.Add(this.LblClaveUsuario);
+            this.panel1.Controls.Add(this.TxtIdUsuario);
+            this.panel1.Controls.Add(this.LblIdUsuario);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 92);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1077, 160);
+            this.panel1.TabIndex = 3;
+            this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
+            // 
+            // cmbIdTipoUsuario
+            // 
+            this.cmbIdTipoUsuario.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.cmbIdTipoUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cmbIdTipoUsuario.FormattingEnabled = true;
+            this.cmbIdTipoUsuario.Location = new System.Drawing.Point(465, 91);
+            this.cmbIdTipoUsuario.Name = "cmbIdTipoUsuario";
+            this.cmbIdTipoUsuario.Size = new System.Drawing.Size(187, 23);
+            this.cmbIdTipoUsuario.TabIndex = 13;
+            this.cmbIdTipoUsuario.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // LblidTipoUsuario
+            // 
+            this.LblidTipoUsuario.AutoSize = true;
+            this.LblidTipoUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblidTipoUsuario.Location = new System.Drawing.Point(370, 91);
+            this.LblidTipoUsuario.Name = "LblidTipoUsuario";
+            this.LblidTipoUsuario.Size = new System.Drawing.Size(77, 15);
+            this.LblidTipoUsuario.TabIndex = 12;
+            this.LblidTipoUsuario.Text = "Tipo Usuario:";
+            // 
+            // cmbEstatus
+            // 
+            this.cmbEstatus.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.cmbEstatus.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cmbEstatus.FormattingEnabled = true;
+            this.cmbEstatus.Location = new System.Drawing.Point(115, 91);
+            this.cmbEstatus.Name = "cmbEstatus";
+            this.cmbEstatus.Size = new System.Drawing.Size(187, 23);
+            this.cmbEstatus.TabIndex = 11;
+            // 
+            // LblEstatus
+            // 
+            this.LblEstatus.AutoSize = true;
+            this.LblEstatus.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblEstatus.Location = new System.Drawing.Point(3, 91);
+            this.LblEstatus.Name = "LblEstatus";
+            this.LblEstatus.Size = new System.Drawing.Size(47, 15);
+            this.LblEstatus.TabIndex = 10;
+            this.LblEstatus.Text = "Estatus:";
+            // 
+            // TxtSegundoApellido
+            // 
+            this.TxtSegundoApellido.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TxtSegundoApellido.Enabled = false;
+            this.TxtSegundoApellido.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TxtSegundoApellido.Location = new System.Drawing.Point(826, 57);
+            this.TxtSegundoApellido.Name = "TxtSegundoApellido";
+            this.TxtSegundoApellido.Size = new System.Drawing.Size(248, 23);
+            this.TxtSegundoApellido.TabIndex = 9;
+            // 
+            // lblSegundoApellido
+            // 
+            this.lblSegundoApellido.AutoSize = true;
+            this.lblSegundoApellido.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblSegundoApellido.Location = new System.Drawing.Point(716, 60);
+            this.lblSegundoApellido.Name = "lblSegundoApellido";
+            this.lblSegundoApellido.Size = new System.Drawing.Size(104, 15);
+            this.lblSegundoApellido.TabIndex = 8;
+            this.lblSegundoApellido.Text = "Segundo Apellido:";
+            // 
+            // TxtPrimerApellido
+            // 
+            this.TxtPrimerApellido.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TxtPrimerApellido.Enabled = false;
+            this.TxtPrimerApellido.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TxtPrimerApellido.Location = new System.Drawing.Point(465, 57);
+            this.TxtPrimerApellido.Name = "TxtPrimerApellido";
+            this.TxtPrimerApellido.Size = new System.Drawing.Size(240, 23);
+            this.TxtPrimerApellido.TabIndex = 7;
+            // 
+            // LblPrimerApellido
+            // 
+            this.LblPrimerApellido.AutoSize = true;
+            this.LblPrimerApellido.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblPrimerApellido.Location = new System.Drawing.Point(367, 60);
+            this.LblPrimerApellido.Name = "LblPrimerApellido";
+            this.LblPrimerApellido.Size = new System.Drawing.Size(92, 15);
+            this.LblPrimerApellido.TabIndex = 6;
+            this.LblPrimerApellido.Text = "Primer Apellido:";
+            // 
+            // TxtNombres
+            // 
+            this.TxtNombres.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TxtNombres.Enabled = false;
+            this.TxtNombres.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TxtNombres.Location = new System.Drawing.Point(115, 54);
+            this.TxtNombres.Name = "TxtNombres";
+            this.TxtNombres.Size = new System.Drawing.Size(240, 23);
+            this.TxtNombres.TabIndex = 5;
+            this.TxtNombres.TextChanged += new System.EventHandler(this.TxtPrimerNombre_TextChanged);
+            // 
+            // LblNombres
+            // 
+            this.LblNombres.AutoSize = true;
+            this.LblNombres.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblNombres.Location = new System.Drawing.Point(3, 57);
+            this.LblNombres.Name = "LblNombres";
+            this.LblNombres.Size = new System.Drawing.Size(54, 15);
+            this.LblNombres.TabIndex = 4;
+            this.LblNombres.Text = "Nombre:";
+            this.LblNombres.Click += new System.EventHandler(this.LblPrimerNombre_Click);
+            // 
+            // TextPassw
+            // 
+            this.TextPassw.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TextPassw.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TextPassw.Location = new System.Drawing.Point(826, 16);
+            this.TextPassw.Name = "TextPassw";
+            this.TextPassw.PasswordChar = '*';
+            this.TextPassw.Size = new System.Drawing.Size(153, 23);
+            this.TextPassw.TabIndex = 3;
+            // 
+            // TxtClaveUsuario
+            // 
+            this.TxtClaveUsuario.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TxtClaveUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TxtClaveUsuario.Location = new System.Drawing.Point(465, 16);
+            this.TxtClaveUsuario.Name = "TxtClaveUsuario";
+            this.TxtClaveUsuario.Size = new System.Drawing.Size(138, 23);
+            this.TxtClaveUsuario.TabIndex = 2;
+            // 
+            // LblContrasenia
+            // 
+            this.LblContrasenia.AutoSize = true;
+            this.LblContrasenia.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblContrasenia.Location = new System.Drawing.Point(716, 24);
+            this.LblContrasenia.Name = "LblContrasenia";
+            this.LblContrasenia.Size = new System.Drawing.Size(70, 15);
+            this.LblContrasenia.TabIndex = 3;
+            this.LblContrasenia.Text = "Contraseña:";
+            // 
+            // LblClaveUsuario
+            // 
+            this.LblClaveUsuario.AutoSize = true;
+            this.LblClaveUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblClaveUsuario.Location = new System.Drawing.Point(367, 24);
+            this.LblClaveUsuario.Name = "LblClaveUsuario";
+            this.LblClaveUsuario.Size = new System.Drawing.Size(50, 15);
+            this.LblClaveUsuario.TabIndex = 2;
+            this.LblClaveUsuario.Text = "Usuario:";
+            // 
+            // TxtIdUsuario
+            // 
+            this.TxtIdUsuario.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.TxtIdUsuario.Enabled = false;
+            this.TxtIdUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.TxtIdUsuario.Location = new System.Drawing.Point(115, 13);
+            this.TxtIdUsuario.Name = "TxtIdUsuario";
+            this.TxtIdUsuario.Size = new System.Drawing.Size(87, 23);
+            this.TxtIdUsuario.TabIndex = 1;
+            // 
+            // LblIdUsuario
+            // 
+            this.LblIdUsuario.AutoSize = true;
+            this.LblIdUsuario.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.LblIdUsuario.Location = new System.Drawing.Point(3, 16);
+            this.LblIdUsuario.Name = "LblIdUsuario";
+            this.LblIdUsuario.Size = new System.Drawing.Size(63, 15);
+            this.LblIdUsuario.TabIndex = 0;
+            this.LblIdUsuario.Text = "Id Usuario:";
+            // 
+            // FrmManUser
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.ClientSize = new System.Drawing.Size(1077, 639);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlBarrainicial);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.Name = "FrmManUser";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.Text = "Administración de Usuarios                                  ";
+            this.Load += new System.EventHandler(this.FrmManUser_Load);
+            this.pnlBarrainicial.ResumeLayout(false);
+            this.pnlBarrainicial.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+
+        private System.Windows.Forms.Panel pnlBarrainicial;
+        private System.Windows.Forms.PictureBox picLogo;
+        private System.Windows.Forms.TextBox txtUsuario;
+        private System.Windows.Forms.TextBox txtOperacion;
+        private System.Windows.Forms.Button BtnRefrescar;
+        private System.Windows.Forms.Button BtnSalir;
+        private System.Windows.Forms.Button BtnExcel;
+        private System.Windows.Forms.Button BtnProcesar;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TextBox TxtIdUsuario;
+        private System.Windows.Forms.Label LblIdUsuario;
+        private System.Windows.Forms.Label LblContrasenia;
+        private System.Windows.Forms.Label LblClaveUsuario;
+        private System.Windows.Forms.TextBox TextPassw;
+        private System.Windows.Forms.TextBox TxtClaveUsuario;
+        private System.Windows.Forms.TextBox TxtNombres;
+        private System.Windows.Forms.Label LblNombres;
+        private System.Windows.Forms.TextBox TxtPrimerApellido;
+        private System.Windows.Forms.Label LblPrimerApellido;
+        private System.Windows.Forms.TextBox TxtSegundoApellido;
+        private System.Windows.Forms.Label lblSegundoApellido;
+        private System.Windows.Forms.Label LblEstatus;
+        private System.Windows.Forms.ComboBox cmbEstatus;
+        private System.Windows.Forms.ComboBox cmbIdTipoUsuario;
+        private System.Windows.Forms.Label LblidTipoUsuario;
+    }
+}
+
+
+
+
+Pendiente:
+
+Generar un grid el cual debe ser llenado con la siguiente consulta:
+
+Select idUsuario, claveUsuario, Isnull(nombres, char(32)) Nombres, primerApellido, Isnull(segundoApellido, char(32)) segundoApellido, 
+       b.descripcion estatus, c.descripcion tipoUsuario
+From   dbo.segUsuariosTbl a
+Join   dbo.catGeneralesTbl b
+On     b.tabla = 'segUsuariosTbl'
+And    b.columna = 'idEstatus'
+And    b.valor   = a.idEstatus
+Join   dbo.catGeneralesTbl c
+On     c.tabla = b.tabla
+And    c.columna = 'idTipoUsuario'
+And    c.valor   = a.idTipoUsuario
+Order by idUsuario
+
+
+
+Esta son las reglas iniciales que se van a generar.
+
+En frmConexion en la consulta a la tabla de segUsuariosTbl se le agrega el campo idTipoUsuario
+
+                    string sqlUsuario = "Select  idUsuario, idEstatus As Bloqueado, idTipoUsuario " +
+                                        "From    dbo.segUsuariosTbl " +
+                                        "Where   ClaveUsuario = @ClaveUsuario ";
+
+El fondo del grid LightSteelBlue
+
+Tamaños de los campos del Grid
+
+idUsuario Integer(100) Alineado a la derecha.
+
+ClaveUsuario String(40) Alineado a la izquierda
+
+Nombres String(100) Alineado a la izquierda
+
+PrimerApellido String(100) Alineado a la izquierda
+
+segundoApellido String(100) Alineado a la izquierda
+
+Estatus String(20) Alineado al Centro
+
+tipoUsuario String(100) Alineado a la izquierda
+
+
+
+En la accion de desplazamiento Up-Down copiar el resultado a los campos del Panel
+
+
+idUsuario --> TxtIdUsuario
+ClaveUsuario --> TxtClaveUsuario
+Nombres --> TxtNombres
+PrimerApellido --> TxtPrimerApellido
+segundoApellido --> TxtSegundoApellido
+Estatus --> cmbEstatus
+tipoUsuario -->  cmbIdTipoUsuario
+
+El campo TextPassw solo e podra habilitar si el tipo de usuario que entro a la aplicación es de tipo Administrativo(idTipoUsuario = 1). Al igual que el boton de Procesar (BtnProcesar).
+El boton BtnRefrescar Limpiara toda la pantalla y recargara el grid.
+
+Si el registro es nuevo se dara de alta es segUsuariosTbl a traves del sp Spa_segUsuariosTbl
+
+Ejemplo:
+
+Declare
+   @PnIdUsuario              Integer          = 3,
+   @PsClaveUsuario           Varchar ( 50)    = 'AlbertoM',
+   @PsPassword               Varchar (Max)    = '*********',
+   @PnIdTipoUsuario          Integer          = 0,
+   @PsPrimerApellido         Varchar (100)    = 'Mendez',
+   @PsSegundoApellido        Varchar (100)    = 'Pelado',
+   @PsNombres                Varchar (100)    = 'Alberto Jose',
+   @PsCorreo                 Varchar (260)    = 'AlbertoM@empresa.com',
+   @PnIdOperacion            Integer          = 4,
+   @PnIdUsuarioAct           Integer          = 1,
+   @PsIpAct                  Varchar ( 30),
+   @PsMacAddressAct          Varchar ( 30),
+   @PnEstatus                Integer        = 0,
+   @PsMensaje                Varchar (250)  = Null;
+
+Begin
+
+   Set @PsPassword = dbo.fn_EncryptBase64 (@PsPassword );
+   
+   Execute dbo.Spa_segUsuariosTbl @PnIdUsuario       = @PnIdUsuario,
+                                  @PsClaveUsuario    = @PsClaveUsuario,
+                                  @PsPassword        = @PsPassword,
+                                  @PnIdTipoUsuario   = @PnIdTipoUsuario,
+                                  @PsPrimerApellido  = @PsPrimerApellido,
+                                  @PsSegundoApellido = @PsSegundoApellido,
+                                  @PsNombres         = @PsNombres,
+                                  @PsCorreo          = @PsCorreo,
+                                  @PnIdOperacion     = @PnIdOperacion,
+                                  @PnIdUsuarioAct    = @PnIdUsuarioAct,
+                                  @PsIpAct           = @PsIpAct,
+                                  @PsMacAddressAct   = @PsMacAddressAct,
+                                  @PnEstatus         = @PnEstatus Output,
+                                  @PsMensaje         = @PsMensaje Output;
+
+    Select @PnEstatus, @PsMensaje;
+    Return;
+End;
+Go
+
+En Caso de una actualización Spu_segUsuariosTbl
+
+Ejemplo:
+
+string passEncriptada = EncriptarBase64(TextPassw.Text.Trim());
+
+Declare
+   @PnIdUsuario              Integer          = 2,
+   @PsPassword               Varchar (Max)    = '************',
+   @PnIdTipoUsuario          Integer          = 1,
+   @PsPrimerApellido         Varchar (100)    = 'Mendez',
+   @PsSegundoApellido        Varchar (100)    = 'Pelado',
+   @PsNombres                Varchar (100)    = 'Alberto Jose',
+   @PsCorreo                 Varchar (260)    = 'AlbertoM@empresa',
+   @PnIdEstatus              Tinyint          = 1,
+   @PnIdOperacion            Integer          = 4,
+   @PnIdUsuarioAct           Integer          = 1,
+   @PsIpAct                  Varchar ( 30),
+   @PsMacAddressAct          Varchar ( 30),
+   @PnEstatus                Integer        = 0,
+   @PsMensaje                Varchar (250)  = Null;
+
+Begin
+   Execute dbo.Spu_segUsuariosTbl @PnIdUsuario       = @PnIdUsuario,
+                                  @PsPassword        = @PsPassword,
+                                  @PnIdTipoUsuario   = @PnIdTipoUsuario,
+                                  @PsPrimerApellido  = @PsPrimerApellido,
+                                  @PsSegundoApellido = @PsSegundoApellido,
+                                  @PsNombres         = @PsNombres,
+                                  @PsCorreo          = @PsCorreo,
+                                  @PnIdEstatus       = @PnIdEstatus,
+                                  @PnIdOperacion     = @PnIdOperacion,
+                                  @PnIdUsuarioAct    = @PnIdUsuarioAct,
+                                  @PsIpAct           = @PsIpAct,
+                                  @PsMacAddressAct   = @PsMacAddressAct,
+                                  @PnEstatus         = @PnEstatus Output,
+                                  @PsMensaje         = @PsMensaje Output;
+
+    Select @PnEstatus, @PsMensaje;
+    Return;
+End;
+Go
+
+
+El boton de exportacion a excel (BtnExcel), exportara los datos plasmados en el grid.
+
+Se usara el servicio ExcelExportService.cs  actualizando el código siguiente adaptandolo a nuestra aplicación
+
+using ClosedXML.Excel;
+using ClosedXML.Excel.Drawings;
+using DocumentFormat.OpenXml.ExtendedProperties;
+using RepGas.Infrastructure;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
+using System.Windows.Forms;
+
+
+namespace SCMBD.Services
+{
+    public class ExcelExportService
+    {
+        private readonly IExcelExportRepository _excelExportRepository;
+        public ExcelExportService(IExcelExportRepository excelExportRepository)
+        {
+            _excelExportRepository = excelExportRepository;
+        }
+        public void ExportarUsuarios(string archivo,DataGridView grid, string operacion, string usuario)
+        {
+            using (XLWorkbook workbook =
+                new XLWorkbook())
+            {
+                var worksheet =
+                    workbook.Worksheets.Add("Usuarios");
+
+                AgregarLogo(worksheet, AppSettings.Usuario);
+
+                ConstruirEncabezado(
+                    worksheet,
+                    operacion,
+                    usuario);
+
+                ConstruirDetalle(
+                    worksheet,
+                    grid);
+
+                workbook.SaveAs(archivo);
+            }
+        }
+
+        private void AgregarLogo(IXLWorksheet ws, string ciaCodigo)
+        {
+            string nombreLogo = $"logo.Trim().ToLower()}";
+
+            Image logo = Properties.Resources.ResourceManager
+                                .GetObject(nombreLogo) as Image;
+
+
+
+            if (logo == null)
+            {
+                MessageBox.Show(
+                    $"No existe el recurso: {nombreLogo}");
+                return;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                logo.Save(ms, ImageFormat.Png);
+
+                ms.Position = 0;
+
+                var picture =
+                    ws.AddPicture(
+                        ms,
+                        XLPictureFormat.Png,
+                        "Logo");
+
+                picture.MoveTo(ws.Cell("A1"));
+
+                picture.WithSize(226, 85);
+            }
+        }
+
+        private void ConstruirEncabezado(
+     IXLWorksheet ws,
+     int mes,
+     int anio,
+     string operacion,
+     string usuario)
+        {
+            ws.Cell("E1").Value = "Página:";
+            ws.Cell("E2").Value = "Fecha:";
+            ws.Cell("E3").Value = "Reporte:";
+            ws.Cell("E4").Value = "Usuario:";
+
+            ws.Range("E1:E4")
+              .Style.Font.SetBold(true);
+
+            ws.Cell("F1").Value = "1";
+
+            ws.Cell("F2").Value = DateTime.Now;
+
+            ws.Cell("F2").Style.NumberFormat.Format =
+                "dd/MM/yyyy HH:mm";
+
+            ws.Cell("F3").Value = operacion;
+
+            ws.Cell("F4").Value = usuario;
+
+            ws.Range("A6:F6").Merge();
+
+            ws.Cell("A6").Value =
+                $"Reporte Usuarios relacionados en SCMBD";
+
+            ws.Cell("A6").Style.Font.Bold = true;
+            ws.Cell("A6").Style.Font.FontSize = 12;
+            ws.Cell("A6").Style.Font.Underline =
+                XLFontUnderlineValues.Single;
+
+            ws.Cell("A6").Style.Alignment.Horizontal =
+                XLAlignmentHorizontalValues.Center;
+        }
+
+        public void ExportToExcel(string filePath, string sheetName, DataGridView dataGridView)
+        {
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add(sheetName);
+                // Add column headers
+                for (int i = 0; i < dataGridView.Columns.Count; i++)
+                {
+                    worksheet.Cell(1, i + 1).Value = dataGridView.Columns[i].HeaderText;
+                }
+                // Add rows
+                for (int i = 0; i < dataGridView.Rows.Count; i++)
+                {
+                    for (int j = 0; j < dataGridView.Columns.Count; j++)
+                    {
+                        worksheet.Cell(i + 2, j + 1).Value = dataGridView.Rows[i].Cells[j].Value?.ToString();
+                    }
+                }
+                // Save the workbook to the specified file path
+                workbook.SaveAs(filePath);
+            }
+        }
+    }
+}

@@ -2,7 +2,7 @@
 Declare
    @PnIdUsuario              Integer          = 3,
    @PsClaveUsuario           Varchar ( 50)    = 'AlbertoM',
-   @PsPassword               Varchar (Max)    = 'Alber2026!',
+   @PsPassword               Varchar (Max)    = '*************',
    @PnIdTipoUsuario          Integer          = 0,
    @PsPrimerApellido         Varchar (100)    = 'Mendez',
    @PsSegundoApellido        Varchar (100)    = 'Pelado',
@@ -211,7 +211,7 @@ Begin
          End
 
 --
--- Alta En el Historico de COntraseñas
+-- Alta En el Historico de Contraseñas
 --
   
       Execute dbo.Spa_histUserPassTbl @PnIdUsuario       = @PnIdUsuario,
