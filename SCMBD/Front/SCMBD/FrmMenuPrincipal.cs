@@ -468,7 +468,7 @@ namespace SCMBD
             this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSalir.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnSalir.FlatAppearance.BorderSize = 0;
-            this.btnSalir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
+            this.btnSalir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent; 
             this.btnSalir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
             this.btnSalir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSalir.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
