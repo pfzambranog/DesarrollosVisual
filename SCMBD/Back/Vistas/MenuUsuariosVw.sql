@@ -1,7 +1,7 @@
 Create or Alter View MenuUsuariosVw
 As
 Select a.idUsuario, a.claveUsuario, d.idMenu, d.descripcion menu,
-       0 idOperacion, d.descripcion operacion, 0 idAutorizacion, Char(32) llamada
+       0 idOperacion, Char(32)  claveOperacion, d.descripcion operacion, 0 idAutorizacion, Char(32) llamada
 From   dbo.segUsuariosTbl a
 Join   dbo.segAutOPeracionesTbl b
 On     a.idUsuario = b.idUsuario
@@ -16,7 +16,7 @@ Where  a.idEstatus = 1
 And    b.idEstatus = a.idEstatus
 Union
 Select a.idUsuario, a.claveUsuario, d.idMenu,  d.descripcion menu,
-       c.idOperacion, Replicate(Char(32), 10) + c.descripcion operacion, b.idAutorizacion, Isnull(llamada, Char(32))
+       c.idOperacion, c.operacion claveOperacion, Replicate(Char(32), 10) + c.descripcion operacion, b.idAutorizacion, Isnull(llamada, Char(32))
 From   dbo.segUsuariosTbl a
 Join   dbo.segAutOPeracionesTbl b
 On     a.idUsuario = b.idUsuario

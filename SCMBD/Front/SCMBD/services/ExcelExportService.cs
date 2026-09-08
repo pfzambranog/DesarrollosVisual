@@ -131,7 +131,7 @@ namespace SCMBD.Services
                 col++;
             }
 
-            // ✅ Estilo encabezados
+            //  Estilo encabezados
             var rangoEnc = hoja.Range(filaEncabezados, 1, filaEncabezados, col - 1);
             rangoEnc.Style.Fill.BackgroundColor = XLColor.LightSteelBlue;
             rangoEnc.Style.Font.SetBold();

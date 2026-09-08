@@ -14,9 +14,8 @@ namespace SCMBD
         private readonly int _idUsuario;
         private readonly string _claveUsuario;
         private readonly DataTable _dtPermisos;
+        private readonly string _operacion;
         private readonly string _cadenaConexion;
-
-        private readonly DataTable _permisos;
 
         private Panel pnlHeader;
         private Panel pnlBarraInferior;
@@ -29,18 +28,269 @@ namespace SCMBD
         private Button btnSalir;
         private ToolTip toolTipBotones;
 
-
-        public FrmMenuPrincipal(int idUsuario, string claveUsuario, DataTable dtPermisos, string cadenaConexion)
+        // ✅ Constructor ajustado: recibe operacion como parámetro
+        public FrmMenuPrincipal(int idUsuario, string claveUsuario, DataTable dtPermisos, string operacion, string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
             _dtPermisos = dtPermisos;
+            _operacion = operacion;
             _cadenaConexion = cadenaConexion;
 
             InitializeComponent();
+            this.Load += FrmMenuPrincipal_Load;
+        }
 
-            // ✅ CONECTAR EVENTO LOAD — ¡CRUCIAL!
-            this.Load += FrmMenuPrincipal_Load_1;
+        private void FrmMenuPrincipal_Load(object sender, EventArgs e)
+        {
+            txtFecha.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+            txtOperacion.Text = ConfigurationManager.AppSettings["Operacion"] ?? "SCMBD01";
+            txtUsuario.Text = _claveUsuario;
+
+            CargarLogo();
+            CargarOperaciones();
+            CargarIconoVentana();
+            CargarImagenesBotones();
+            ConfigurarTooltips();
+
+            string nombrePantalla = ObtenerLlamadaCambioContrasenia();
+            btnCambioContrasenia.Enabled = !string.IsNullOrEmpty(nombrePantalla);
+            btnCambioContrasenia.Tag = nombrePantalla;
+        }
+
+        private void ConfigurarTooltips()
+        {
+            toolTipBotones = new ToolTip
+            {
+                AutoPopDelay = 5000,
+                InitialDelay = 400,
+                ReshowDelay = 200,
+                ShowAlways = true
+            };
+            toolTipBotones.SetToolTip(btnCambioContrasenia, "Cambiar contraseña del usuario actual");
+            toolTipBotones.SetToolTip(btnSalir, "Salir de la aplicación");
+        }
+
+        private string ObtenerLlamadaCambioContrasenia()
+        {
+            string nombrePantalla = null;
+            try
+            {
+                const string operacionClave = "SU1999";
+                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
+                {
+                    string sql = @"SELECT TRIM(a.ruta) + '.' + TRIM(a.llamada) AS llamadaOperacion
+                                   FROM   dbo.catOperacionesTbl a
+                                   INNER JOIN dbo.segAutOperacionesTbl b 
+                                           ON b.idOperacion = a.idOperacion
+                                   WHERE  a.operacion = @Operacion 
+                                     AND b.idAutorizacion = 4";
+                    using (SqlCommand cmd = new SqlCommand(sql, cn))
+                    {
+                        cmd.Parameters.AddWithValue("@Operacion", operacionClave);
+                        cn.Open();
+                        var resultado = cmd.ExecuteScalar();
+                        if (resultado != null)
+                        {
+                            string llamadaOperacion = resultado.ToString().Trim();
+                            if (llamadaOperacion.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+                                llamadaOperacion = llamadaOperacion.Substring(0, llamadaOperacion.Length - 3);
+                            if (llamadaOperacion.StartsWith("SCMBD.", StringComparison.OrdinalIgnoreCase))
+                                llamadaOperacion = llamadaOperacion.Substring(6);
+                            nombrePantalla = llamadaOperacion;
+                        }
+                    }
+                }
+            }
+            catch { }
+            return nombrePantalla;
+        }
+
+        private void CargarImagenesBotones()
+        {
+            try
+            {
+                if (Properties.Resources.CANCELA1 != null)
+                {
+                    btnSalir.Image = Properties.Resources.CANCELA1.ToBitmap();
+                    btnSalir.ImageAlign = ContentAlignment.MiddleLeft;
+                }
+                if (Properties.Resources.cambio != null)
+                {
+                    btnCambioContrasenia.Image = Properties.Resources.cambio.ToBitmap();
+                    btnCambioContrasenia.ImageAlign = ContentAlignment.MiddleLeft;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"No se pudieron cargar las imágenes: {ex.Message}", "Nota", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void BtnSalir_Click(object sender, EventArgs e)
+        {
+            DialogResult respuesta = MessageBox.Show(
+                "¿Seguro que desea salir de la aplicación?",
+                "Confirmar",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2); // ✅ NO por defecto
+
+            // ✅ Compara AMBOS valores por seguridad
+            if (respuesta == DialogResult.Yes || respuesta == DialogResult.OK)
+            {
+                Application.Exit();
+            }
+
+            // ✅ Si llega aquí → NO hace nada
+        }
+
+
+
+        private void BtnCambioContrasenia_Click(object sender, EventArgs e)
+        {
+            string nombrePantalla = btnCambioContrasenia.Tag?.ToString() ?? "FrmCambioContrasenia";
+            Type tipoPantalla = Type.GetType($"SCMBD.{nombrePantalla}");
+            if (tipoPantalla != null)
+            {
+                // ✅ Pasar los 5 parámetros al constructor
+
+                Form pantalla = Activator.CreateInstance(tipoPantalla, _idUsuario, _claveUsuario, _dtPermisos, _operacion, _cadenaConexion) as Form;
+                if (pantalla != null)
+                {
+                    pantalla.Owner = this;
+                    pantalla.ShowDialog();
+                }
+            }
+            else
+            {
+                MessageBox.Show("No se encontró la pantalla de Cambio de Contraseña.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+            }
+        }
+
+        private void CargarOperaciones()
+        {
+            lstOperaciones.Items.Clear();
+            lstOperaciones.Columns.Clear();
+            lstOperaciones.Columns.Add("", -1);
+
+            if (_dtPermisos == null || _dtPermisos.Rows.Count == 0)
+            {
+                MessageBox.Show("No se encontraron permisos para este usuario.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var filasOrdenadas = _dtPermisos.AsEnumerable()
+                .OrderBy(r => r["idMenu"])
+                .ThenBy(r => r["idOperacion"]);
+
+            foreach (var fila in filasOrdenadas)
+            {
+                int idOperacion = Convert.ToInt32(fila["idOperacion"]);
+                int idAutorizacion = Convert.ToInt32(fila["idAutorizacion"]);
+                string nombreMenu = fila["Menu"].ToString();
+                string nombreOp = fila["Operacion"].ToString();
+                string llamada = fila["llamada"]?.ToString() ?? "";
+
+                if (idOperacion == 0 || idAutorizacion == 0)
+                {
+                    var itemMenu = new ListViewItem(nombreMenu)
+                    {
+                        Tag = null,
+                        Font = new Font(lstOperaciones.Font, FontStyle.Bold)
+                    };
+                    lstOperaciones.Items.Add(itemMenu);
+                }
+                else
+                {
+                    var itemOp = new ListViewItem("    " + nombreOp)
+                    {
+                        Tag = new Tuple<string, string>(idOperacion.ToString(), llamada),
+                        Font = new Font(lstOperaciones.Font, FontStyle.Regular)
+                    };
+                    lstOperaciones.Items.Add(itemOp);
+                }
+            }
+
+            lstOperaciones.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            lstOperaciones.DoubleClick += LstOperaciones_DoubleClick;
+            lstOperaciones.KeyDown += LstOperaciones_KeyDown;
+        }
+
+        private void LstOperaciones_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                AbrirPantallaSeleccionada();
+            }
+        }
+
+        private void LstOperaciones_DoubleClick(object sender, EventArgs e)
+        {
+            AbrirPantallaSeleccionada();
+        }
+
+        private void FrmMenuPrincipal_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void AbrirPantallaSeleccionada()
+        {
+            if (lstOperaciones.SelectedItems.Count == 0) return;
+            var item = lstOperaciones.SelectedItems[0];
+
+            if (item.Tag is Tuple<string, string> datos)
+            {
+                string llamada = datos.Item2;
+                if (string.IsNullOrWhiteSpace(llamada))
+                {
+                    MessageBox.Show("No está definida la pantalla para esta operación.",
+                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                string nombrePantalla = llamada.Replace(".cs", "").Trim();
+                Type tipoPantalla = Type.GetType($"SCMBD.{nombrePantalla}");
+
+                if (tipoPantalla == null)
+                {
+                    MessageBox.Show($"No se encontró la pantalla: {nombrePantalla}",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return;
+                }
+
+                // ✅ Abrir con los 5 parámetros: id, clave, permisos, operacion, cadena
+                Form pantalla = Activator.CreateInstance(tipoPantalla,
+                                    _idUsuario, _claveUsuario, _dtPermisos, _operacion, _cadenaConexion) as Form;
+                if (pantalla != null)
+                    pantalla.ShowDialog();
+                else
+                    MessageBox.Show("No se pudo abrir la pantalla.",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void CargarLogo()
+        {
+            RecursosCompartidos.CargarLogo(picLogo);
+        }
+
+        private void CargarIconoVentana()
+        {
+            try
+            {
+                string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
+                if (File.Exists(rutaLogo))
+                {
+                    using (Bitmap bmp = new Bitmap(rutaLogo))
+                    {
+                        this.Icon = Icon.FromHandle(bmp.GetHicon());
+                    }
+                }
+            }
+            catch { }
         }
 
         private void InitializeComponent()
@@ -79,7 +329,6 @@ namespace SCMBD
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(804, 144);
             this.pnlHeader.TabIndex = 0;
-            this.pnlHeader.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlHeader_Paint);
             // 
             // picLogo
             // 
@@ -217,7 +466,7 @@ namespace SCMBD
             // btnSalir
             // 
             this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSalir.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnSalir.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnSalir.FlatAppearance.BorderSize = 0;
             this.btnSalir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
             this.btnSalir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
@@ -231,6 +480,7 @@ namespace SCMBD
             this.btnSalir.TabStop = false;
             this.btnSalir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSalir.UseVisualStyleBackColor = false;
+            this.btnSalir.Click += new System.EventHandler(this.BtnSalir_Click);
             // 
             // FrmMenuPrincipal
             // 
@@ -243,7 +493,7 @@ namespace SCMBD
             this.Name = "FrmMenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SCMBD — Sistema de Control y Mantenimiento de Bases de Datos";
-            this.Load += new System.EventHandler(this.FrmMenuPrincipal_Load);
+            this.Load += new System.EventHandler(this.FrmMenuPrincipal_Load_1);
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
@@ -251,279 +501,6 @@ namespace SCMBD
             this.pnlBarraInferior.PerformLayout();
             this.ResumeLayout(false);
 
-        }
-
-        private void FrmMenuPrincipal_Load_1(object sender, EventArgs e)
-        {
-            txtFecha.Text = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-            txtOperacion.Text = ConfigurationManager.AppSettings["Operacion"] ?? "SCMBD001";
-            txtUsuario.Text = _claveUsuario;
-
-            CargarLogo();
-            CargarOperaciones();
-            CargarIconoVentana();
-            CargarImagenesBotones();
-            ConfigurarTooltips();
-
-            string nombrePantalla = ObtenerLlamadaCambioContrasenia();
-            btnCambioContrasenia.Enabled = !string.IsNullOrEmpty(nombrePantalla);
-            btnCambioContrasenia.Tag = nombrePantalla;
-
-        }
-
-        private void ConfigurarTooltips()
-        {
-            toolTipBotones = new ToolTip
-            {
-                AutoPopDelay = 5000,
-                InitialDelay = 400,
-                ReshowDelay = 200,
-                ShowAlways = true
-            };
-            toolTipBotones.SetToolTip(btnCambioContrasenia, "Cambiar contraseña del usuario actual");
-            toolTipBotones.SetToolTip(btnSalir, "Salir de la aplicación");
-        }
-
-        // =====================================================
-        // ✅ Verificar permiso y obtener nombre de pantalla
-        // =====================================================
-        private string ObtenerLlamadaCambioContrasenia()
-        {
-            string nombrePantalla = null;
-            try
-            {
-                const string operacionClave = "SU1999";
-                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
-                {
-                    string sql = @"SELECT TRIM(a.ruta) + '.' + TRIM(a.llamada) AS llamadaOperacion
-                   FROM   dbo.catOperacionesTbl a
-                   INNER JOIN dbo.segAutOperacionesTbl b 
-                           ON b.idOperacion = a.idOperacion
-                   WHERE  a.operacion = @Operacion 
-                     AND b.idAutorizacion = 4";
-
-                    using (SqlCommand cmd = new SqlCommand(sql, cn))
-                    {
-                        cmd.Parameters.AddWithValue("@Operacion", operacionClave);
-                        cn.Open();
-                        var resultado = cmd.ExecuteScalar();
-
-                        if (resultado != null)
-                        {
-                            // ✅ Nombre claro: viene de catOperacionesTbl, NO del menú
-                            string llamadaOperacion = resultado.ToString().Trim();
-
-                            // ✅ Limpiar: quitar .cs y prefijo SCMBD. si existe
-                            if (llamadaOperacion.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
-                                llamadaOperacion = llamadaOperacion.Substring(0, llamadaOperacion.Length - 3);
-
-                            if (llamadaOperacion.StartsWith("SCMBD.", StringComparison.OrdinalIgnoreCase))
-                                llamadaOperacion = llamadaOperacion.Substring(6);
-
-                            nombrePantalla = llamadaOperacion;
-                        }
-                    }
-                }
-            }
-            catch { /* Sin mensaje — simplemente no se habilita */ }
-            return nombrePantalla;
-        }
-
-        private void CargarImagenesBotones()
-        {
-            try
-            {
-                if (Properties.Resources.CANCELA1 != null)
-                {
-                    btnSalir.Image = Properties.Resources.CANCELA1.ToBitmap();
-                    btnSalir.ImageAlign = ContentAlignment.MiddleLeft;
-                }
-                if (Properties.Resources.cambio != null)
-                {
-                    btnCambioContrasenia.Image = Properties.Resources.cambio.ToBitmap();
-                    btnCambioContrasenia.ImageAlign = ContentAlignment.MiddleLeft;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"No se pudieron cargar las imágenes: {ex.Message}", "Nota", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void BtnSalir_Click(object sender, EventArgs e)
-        {
-            if (MessageBox.Show("¿Seguro que desea salir de la aplicación?",
-                                "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-            {
-                Application.Exit();
-            }
-        }
-
-        private void BtnCambioContrasenia_Click(object sender, EventArgs e)
-        {
-            // ✅ Usar el nombre que se obtuvo de la BD
-            string nombrePantalla = btnCambioContrasenia.Tag?.ToString() ?? "FrmCambioContrasenia";
-            Type tipoPantalla = Type.GetType($"SCMBD.{nombrePantalla}");
-
-            if (tipoPantalla != null)
-            {
-                // ✅ Enviar 4 parámetros (igual que el resto del sistema)
-                Form pantalla = Activator.CreateInstance(tipoPantalla, _idUsuario, _claveUsuario, _dtPermisos, _cadenaConexion) as Form;
-
-                if (pantalla != null)
-                {
-                    pantalla.Owner = this; // ✅ Establecer dueño
-                    pantalla.ShowDialog(); // ✅ SOLO abre ventana, NO cierra el menú
-                }
-            }
-            else
-            {
-                MessageBox.Show("No se encontró la pantalla de Cambio de Contraseña.",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            }
-
-        }
-
-
-        private void CargarOperaciones()
-        {
-            lstOperaciones.Items.Clear();
-            lstOperaciones.Columns.Clear();
-            lstOperaciones.Columns.Add("", -1);
-
-            if (_dtPermisos == null || _dtPermisos.Rows.Count == 0)
-            {
-                MessageBox.Show("No se encontraron permisos para este usuario.",
-                                "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
-            var filasOrdenadas = _dtPermisos.AsEnumerable()
-                .OrderBy(r => r["idMenu"])
-                .ThenBy(r => r["idOperacion"]);
-
-            foreach (var fila in filasOrdenadas)
-            {
-                int idOperacion = Convert.ToInt32(fila["idOperacion"]);
-                int idAutorizacion = Convert.ToInt32(fila["idAutorizacion"]);
-                string nombreMenu = fila["Menu"].ToString();
-                string nombreOp = fila["Operacion"].ToString();
-                string llamada = fila["llamada"]?.ToString() ?? "";
-
-                if (idOperacion == 0 || idAutorizacion == 0)
-                {
-                    var itemMenu = new ListViewItem(nombreMenu)
-                    {
-                        Tag = null,
-                        Font = new Font(lstOperaciones.Font, FontStyle.Bold)
-                    };
-                    lstOperaciones.Items.Add(itemMenu);
-                }
-                else
-                {
-                    var itemOp = new ListViewItem("    " + nombreOp)
-                    {
-                        Tag = new Tuple<string, string>(idOperacion.ToString(), llamada),
-                        Font = new Font(lstOperaciones.Font, FontStyle.Regular)
-                    };
-                    lstOperaciones.Items.Add(itemOp);
-                }
-
-            }
-
-            lstOperaciones.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
-
-            lstOperaciones.DoubleClick += LstOperaciones_DoubleClick;
-            lstOperaciones.KeyDown += LstOperaciones_KeyDown;
-
-        }
-
-        private void LstOperaciones_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-                AbrirPantallaSeleccionada();
-        }
-
-        private void FrmMenuPrincipal_Load(object sender, EventArgs e)
-        {
-            lstOperaciones.KeyDown += (s, ke) =>
-            {
-                if (ke.KeyCode == Keys.Enter)
-                {
-                    ke.SuppressKeyPress = true;
-                    AbrirPantallaSeleccionada();
-                }
-            };
-        }
-
-        private void pnlHeader_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void LstOperaciones_DoubleClick(object sender, EventArgs e)
-        {
-            AbrirPantallaSeleccionada();
-        }
-
-        private void AbrirPantallaSeleccionada()
-        {
-            if (lstOperaciones.SelectedItems.Count == 0) return;
-            var item = lstOperaciones.SelectedItems[0];
-
-            // ✅ Leer el Tuple que guardaste en CargarOperaciones
-            if (item.Tag is Tuple<string, string> datos)
-            {
-                string llamada = datos.Item2; // ✅ Aquí está la columna "llamada"
-
-                if (string.IsNullOrWhiteSpace(llamada))
-                {
-                    MessageBox.Show("No está definida la pantalla para esta operación.",
-                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-
-                string nombrePantalla = llamada.Replace(".cs", "").Trim();
-                Type tipoPantalla = Type.GetType($"SCMBD.{nombrePantalla}");
-
-                if (tipoPantalla == null)
-                {
-                    MessageBox.Show($"No se encontró la pantalla: {nombrePantalla}",
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                    return;
-                }
-
-                // ✅ Abrir con los 4 parámetros que espera TODO formulario
-                Form pantalla = Activator.CreateInstance(tipoPantalla,
-                                    _idUsuario, _claveUsuario, _dtPermisos, _cadenaConexion) as Form;
-
-                if (pantalla != null)
-                    pantalla.ShowDialog();
-                else
-                    MessageBox.Show("No se pudo abrir la pantalla.",
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void CargarLogo()
-        {
-            RecursosCompartidos.CargarLogo(picLogo);
-        }
-
-        private void CargarIconoVentana()
-        {
-            try
-            {
-                string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
-                if (File.Exists(rutaLogo))
-                {
-                    using (Bitmap bmp = new Bitmap(rutaLogo))
-                    {
-                        this.Icon = Icon.FromHandle(bmp.GetHicon());
-                    }
-                }
-            }
-            catch { }
         }
     }
 }

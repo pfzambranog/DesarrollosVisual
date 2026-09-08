@@ -15,27 +15,29 @@ namespace SCMBD
         private readonly int _idUsuario;
         private readonly string _claveUsuario;
         private readonly DataTable _dtPermisos;
+        private readonly string _operacion; 
         private readonly string _cadenaConexion;
-        private readonly string _operacion;
         private readonly int _idTipoUsuarioAct;
-        private DataTable _dtUsuarios;
+
         private DataGridView dgv;
 
-        public FrmManUser(int idUsuario, string claveUsuario, DataTable dtPermisos, string cadenaConexion)
+        // ✅ Constructor con los 5 parámetros EN ORDEN
+        public FrmManUser(int idUsuario, string claveUsuario, DataTable dtPermisos, string operacion, string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
             _dtPermisos = dtPermisos;
+            _operacion = operacion; 
             _cadenaConexion = cadenaConexion;
-            _operacion = ConfigurationManager.AppSettings["Operacion"] ?? "SCMBD001";
             _idTipoUsuarioAct = ObtenerTipoUsuario(_idUsuario);
+
             InitializeComponent();
         }
 
         private void FrmManUser_Load(object sender, EventArgs e)
         {
             CargarLogo();
-            txtOperacion.Text = _operacion;
+            txtOperacion.Text = _operacion;  
             txtUsuario.Text = _claveUsuario;
             CargarEstatus();
             CargarTipoUsuario();
@@ -52,7 +54,9 @@ namespace SCMBD
             {
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
                 using (SqlCommand cmd = new SqlCommand(
-                    "SELECT idTipoUsuario FROM dbo.segUsuariosTbl WHERE idUsuario = @IdUsuario", cn))
+                    "SELECT idTipoUsuario " +
+                    "FROM dbo.segUsuariosTbl " +
+                    "WHERE idUsuario = @IdUsuario", cn))
                 {
                     cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
                     cn.Open();
@@ -149,10 +153,10 @@ namespace SCMBD
                    AND c.valor = a.idTipoUsuario
                 ORDER BY a.idUsuario";
 
+                DataTable _dtUsuarios = new DataTable();
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
                 using (SqlDataAdapter da = new SqlDataAdapter(sql, cn))
                 {
-                    _dtUsuarios = new DataTable();
                     da.Fill(_dtUsuarios);
                 }
 
@@ -175,13 +179,11 @@ namespace SCMBD
                 dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
                 dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
 
-                // ✅ Asignar datos
                 dgv.DataSource = _dtUsuarios;
 
-                // ✅ RENOMBRAR, CENTRAR Y ANCHOS — SOLO CUANDO COLUMNAS YA EXISTEN
+                // ✅ Encabezados y anchos
                 dgv.DataBindingComplete += (s, e) =>
                 {
-                    // ✅ Encabezados con nombres amigables
                     dgv.Columns["idUsuario"].HeaderText = "ID";
                     dgv.Columns["claveUsuario"].HeaderText = "USUARIO";
                     dgv.Columns["Nombres"].HeaderText = "NOMBRES";
@@ -191,13 +193,9 @@ namespace SCMBD
                     dgv.Columns["estatus"].HeaderText = "ESTATUS";
                     dgv.Columns["tipoUsuario"].HeaderText = "TIPO DE USUARIO";
 
-                    // ✅ Centrar encabezados
                     foreach (DataGridViewColumn col in dgv.Columns)
-                    {
                         col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-                    }
 
-                    // ✅ Anchos fijos
                     dgv.Columns["idUsuario"].Width = 70;
                     dgv.Columns["claveUsuario"].Width = 180;
                     dgv.Columns["Nombres"].Width = 180;
@@ -207,11 +205,10 @@ namespace SCMBD
                     dgv.Columns["estatus"].Width = 150;
                     dgv.Columns["tipoUsuario"].Width = 120;
 
-                    // ✅ Alineación de datos
                     dgv.Columns["idUsuario"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 };
 
-                // ✅ Evento de selección → llenar campos
+                // ✅ Selección → llenar formulario
                 dgv.SelectionChanged += (s, e) =>
                 {
                     if (dgv.SelectedRows.Count > 0)
@@ -228,14 +225,12 @@ namespace SCMBD
                     }
                 };
 
-                // ✅ Posición y tamaño
                 if (panel1 != null)
                 {
                     dgv.Location = new Point(0, panel1.Bottom);
                     dgv.Size = new Size(this.ClientSize.Width, this.ClientSize.Height - panel1.Bottom - 40);
                 }
 
-                // ✅ Agregar al formulario
                 this.Controls.Add(dgv);
                 dgv.BringToFront();
             }
@@ -260,6 +255,7 @@ namespace SCMBD
 
         private string EncriptarBase64(string texto)
         {
+            if (string.IsNullOrWhiteSpace(texto)) return null;
             byte[] bytes = Encoding.Unicode.GetBytes(texto);
             return Convert.ToBase64String(bytes);
         }
@@ -294,24 +290,23 @@ namespace SCMBD
                 string segundoApellido = TxtSegundoApellido.Text.Trim();
                 int idTipoUsuario = Convert.ToInt32(cmbIdTipoUsuario.SelectedValue);
                 int idEstatus = Convert.ToInt32(cmbEstatus.SelectedValue);
-                string passEncriptada = string.IsNullOrWhiteSpace(TextPassw.Text)
-                    ? null
-                    : EncriptarBase64(TextPassw.Text.Trim());
+                string passEncriptada = EncriptarBase64(TextPassw.Text);
                 string correo = TxtCorreo.Text.Trim();
-                int estatus = 0;
-                string mensaje = "";
+                int estatus;
+                string mensaje;
 
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
                 {
                     cn.Open();
-                    if (idUsuario == 0)
+
+                    if (idUsuario == 0) // ✅ NUEVO
                     {
                         using (SqlCommand cmd = new SqlCommand("dbo.Spa_segUsuariosTbl", cn))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@PnIdUsuario", idUsuario);
                             cmd.Parameters.AddWithValue("@PsClaveUsuario", claveUsuario);
-                            cmd.Parameters.AddWithValue("@PsPassword", passEncriptada);
+                            cmd.Parameters.AddWithValue("@PsPassword", passEncriptada ?? (object)DBNull.Value);
                             cmd.Parameters.AddWithValue("@PnIdTipoUsuario", idTipoUsuario);
                             cmd.Parameters.AddWithValue("@PsPrimerApellido", primerApellido);
                             cmd.Parameters.AddWithValue("@PsSegundoApellido", segundoApellido);
@@ -334,13 +329,13 @@ namespace SCMBD
                             mensaje = (paramMensaje.Value ?? "").ToString().Trim();
                         }
                     }
-                    else
+                    else // ✅ MODIFICACIÓN
                     {
                         using (SqlCommand cmd = new SqlCommand("dbo.Spu_segUsuariosTbl", cn))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
                             cmd.Parameters.AddWithValue("@PnIdUsuario", idUsuario);
-                            cmd.Parameters.AddWithValue("@PsPassword", passEncriptada);
+                            cmd.Parameters.AddWithValue("@PsPassword", passEncriptada ?? (object)DBNull.Value);
                             cmd.Parameters.AddWithValue("@PnIdTipoUsuario", idTipoUsuario);
                             cmd.Parameters.AddWithValue("@PsPrimerApellido", primerApellido);
                             cmd.Parameters.AddWithValue("@PsSegundoApellido", segundoApellido);
@@ -416,11 +411,8 @@ namespace SCMBD
 
                 string carpetaReportes = ConfigurationManager.AppSettings["ReportsDirectory"]
                                       ?? @"C:\TempAdam\";
-
                 if (!Directory.Exists(carpetaReportes))
-                {
                     Directory.CreateDirectory(carpetaReportes);
-                }
 
                 string nombreArchivo = $"Usuarios_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 string rutaCompleta = Path.Combine(carpetaReportes, nombreArchivo);
@@ -428,9 +420,7 @@ namespace SCMBD
                 Services.ExcelExportService.ExportarUsuarios(rutaCompleta, dgv, _operacion, _claveUsuario);
 
                 MessageBox.Show($"Exportado correctamente:\n{rutaCompleta}",
-                                "Exportación",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
+                                "Exportación", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {

@@ -31,6 +31,7 @@ namespace SCMBD
                     picLogo.SizeMode = PictureBoxSizeMode.Zoom;
                     picLogo.BorderStyle = BorderStyle.None;
                     picLogo.BackColor = Color.LightSteelBlue;
+
                 }
             }
             catch { }

@@ -1,20 +1,22 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
-using System.Data.SqlClient;
-using System.Configuration;
 
 namespace SCMBD
 {
     public partial class FrmConexion : Form
     {
-        // ✅ SOLO las propiedades de datos — NO declarar controles aquí
+        // ✅ Propiedades públicas para pasar al Menú
         public int IdUsuario { get; private set; }
         public string ClaveUsuario { get; private set; }
         public DataTable Permisos { get; private set; }
         public string CadenaConexion { get; private set; }
+        public string Operacion { get; private set; }  // ✅ Declarada
 
         public FrmConexion()
         {
@@ -89,7 +91,7 @@ namespace SCMBD
 
             try
             {
-                // ✅ Construir cadena con credenciales
+                // ✅ Construir cadena de conexión con credenciales
                 string cadenaBase = ConfigurationManager.ConnectionStrings["SCMBD"].ConnectionString;
                 SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder(cadenaBase)
                 {
@@ -102,7 +104,7 @@ namespace SCMBD
                 {
                     cn.Open();
 
-                    // ✅ Consulta: valida usuario y obtiene estatus + tipo de usuario
+                    // ✅ Validar usuario y obtener datos básicos
                     string sqlUsuario = @"SELECT idUsuario, 
                                                   idEstatus AS Bloqueado, 
                                                   idTipoUsuario
@@ -114,7 +116,7 @@ namespace SCMBD
                         cmd.Parameters.AddWithValue("@ClaveUsuario", txtUsuario.Text.Trim());
                         using (SqlDataReader dr = cmd.ExecuteReader())
                         {
-                            // ❌ Usuario NO existe en la tabla
+                            // 
                             if (!dr.Read())
                             {
                                 MessageBox.Show("El usuario no está relacionado en la aplicación.",
@@ -136,20 +138,21 @@ namespace SCMBD
                                 return;
                             }
 
-                            // ✅ Usuario válido y ACTIVO → guardar datos
+                            // Guardar datos del usuario
                             IdUsuario = Convert.ToInt32(dr["idUsuario"]);
-                            ClaveUsuario = txtUsuario.Text.Trim().ToUpper(); // ✅ Convertir a Mayúsculas
+                            ClaveUsuario = txtUsuario.Text.Trim().ToUpper();
                             CadenaConexion = cadena;
                         }
                     }
 
-                    // ✅ PERMISOS — DENTRO del using, donde cn existe
+                    //  Cargar permisos y datos del menu del usuario
+
                     Permisos = new DataTable();
                     string sqlPermisos = @"SELECT idMenu, Menu, idOperacion, 
-                                                  Operacion, idAutorizacion, llamada
-                                           FROM   dbo.MenuUsuariosVw 
-                                           WHERE  idUsuario = @IdUsuario 
-                                           ORDER BY idMenu, idOperacion";
+                              Operacion, idAutorizacion, llamada, claveOperacion
+                       FROM   dbo.MenuUsuariosVw 
+                       WHERE  idUsuario = @IdUsuario 
+                       ORDER BY idMenu, idOperacion";
 
                     using (SqlCommand cmdPerm = new SqlCommand(sqlPermisos, cn))
                     {
@@ -160,29 +163,50 @@ namespace SCMBD
                         }
                     }
 
-                    // ⛔ Sin permisos → NO abre el menú
                     if (Permisos.Rows.Count == 0)
                     {
                         MessageBox.Show("El usuario no tiene permiso a ninguna operación.",
-                                        "Acceso Denegado",
-                                        MessageBoxButtons.OK,
-                                        MessageBoxIcon.Stop);
+                                        "Acceso Denegado", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return;
                     }
-                } // ✅ Cierra using (cn)
 
-                // ✅ Todo OK → abrir Menú Principal
-                FrmMenuPrincipal frm = new FrmMenuPrincipal(IdUsuario, ClaveUsuario, Permisos, CadenaConexion);
-                this.Hide();
-                frm.ShowDialog();
-                this.Close();
+                    // =====================================================
+                    //  OPCIÓN 2 — LEER claveOperacion DESDE LA BD
+                    // =====================================================
+
+                    DataRow filaOperacion = Permisos.AsEnumerable()
+                        .FirstOrDefault(f => Convert.ToInt32(f["idOperacion"]) > 0);
+
+                    if (filaOperacion != null)
+                    {
+                        Operacion = filaOperacion["claveOperacion"]?.ToString().Trim() ?? "";
+                    }
+
+                    // Si no se encontró o viene vacío → usar valor por defecto
+                    if (string.IsNullOrWhiteSpace(Operacion))
+                    {
+                        Operacion = ConfigurationManager.AppSettings["Operacion"] ?? "SCMBD01";
+                    }
+
+
+                    // ? ABRIR MENÚ CON LOS 5 PARÁMETROS EN ORDEN
+                    FrmMenuPrincipal frm = new FrmMenuPrincipal(
+                        IdUsuario,        // 1
+                        ClaveUsuario,     // 2
+                        Permisos,         // 3
+                        Operacion,        // 4 ? ? VIENE DE: MenuUsuariosVw ? columna claveOperacion
+                        CadenaConexion);  // 5
+
+                    this.Hide();
+                    frm.ShowDialog();
+                    this.Close();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al conectar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void TxtUsuario_TextChanged(object sender, EventArgs e)
         {
         }

@@ -166,7 +166,7 @@ namespace SCMBD.Properties {
         internal static System.Drawing.Bitmap salir {
             get {
                 object obj = ResourceManager.GetObject("salir", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ((System.Drawing.Bitmap)(obj)); 
             }
         }
     }
