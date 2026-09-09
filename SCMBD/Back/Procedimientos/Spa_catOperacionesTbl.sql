@@ -3,7 +3,7 @@ Declare
    @PsOperacion              Varchar ( 20)    = 'SU1999',
    @PsDescripcion            Varchar (100)    = 'Cambio de Contraseña',
    @PsLlamada                Varchar ( 20)    = 'FrmCambioContrasenia',
-   @PsRutas                  Varchar (512)    = 'SCMBD',
+   @PsRuta                   Varchar (512)    = 'SCMBD',
    @PnIdOperacion            Integer          = 3,
    @PnIdUsuarioAct           Integer          = 1,
    @PsIpAct                  Varchar ( 30)    = Null,
@@ -15,7 +15,7 @@ Begin
    Execute dbo.Spa_catOperacionesTbl @PsOperacion       = @PsOperacion,
                                      @PsDescripcion     = @PsDescripcion,
                                      @PsLlamada         = @PsLlamada,
-                                     @PsRutas           = @PsRutas,
+                                     @PsRuta            = @PsRuta,
                                      @PnIdOperacion     = @PnIdOperacion,
                                      @PnIdUsuarioAct    = @PnIdUsuarioAct,
                                      @PsIpAct           = @PsIpAct,
@@ -32,8 +32,8 @@ Go
 Create Or Alter Procedure dbo.Spa_catOperacionesTbl
   (@PsOperacion              Varchar ( 20),
    @PsDescripcion            Varchar (100),
-   @PsLlamada                Varchar ( 40),
-   @PsRutas                  Varchar (512),
+   @PsLlamada                Varchar ( 40)  = Null,
+   @PsRuta                   Varchar (512)  = Null,
    @PnIdOperacion            Integer,
    @PnIdUsuarioAct           Integer,
    @PsIpAct                  Varchar ( 30)  = Null,
@@ -45,6 +45,7 @@ As
 Declare
    @w_desc_error              Varchar( 250),
    @w_Error                   Integer,
+   @w_operacion               Integer,
    @w_fechaAct                Datetime,
    @w_idEstatus               Bit;
 
@@ -95,9 +96,16 @@ Begin
       Insert Into dbo.catOperacionesTbl
      (operacion,    descripcion, llamada, ruta,
       idUsuarioAct, ipAct,   macAddressAct)
-      Select @PsOperacion,    @PsDescripcion, @PsLlamada,       @PsRutas,
+      Select @PsOperacion,    @PsDescripcion, @PsLlamada,       @PsRuta,
              @PnIdUsuarioAct, @PsIpAct,       @PsMacAddressAct
 
+      Set @w_operacion = @@Identity
+
+     Insert into dbo.segAutOperacionesTbl
+    (idUsuario, idOperacion, idAutorizacion, idUsuarioAct
+     ipAct,     macAddressAct)
+    Select @PnIdUsuarioAct, @w_operacion, 4, @PnIdUsuarioAct,
+          dbo.Fn_BuscaDireccionIP(), dbo.Fn_Busca_DireccionMac()
    End Try
 
    Begin Catch
@@ -120,6 +128,8 @@ Begin
 
 End
 Go
+
+Grant execute on Spa_catOperacionesTbl to public;
 
 --
 -- Comentarios.

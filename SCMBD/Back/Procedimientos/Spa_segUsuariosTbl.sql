@@ -18,7 +18,7 @@ Declare
 Begin
 
    Set @PsPassword = dbo.fn_EncryptBase64 (@PsPassword );
-   
+
    Execute dbo.Spa_segUsuariosTbl @PnIdUsuario       = @PnIdUsuario,
                                   @PsClaveUsuario    = @PsClaveUsuario,
                                   @PsPassword        = @PsPassword,
@@ -41,7 +41,7 @@ Go
 
 */
 Create Or Alter Procedure dbo.Spa_segUsuariosTbl
-  (@PnIdUsuario              Integer,
+  (@PnIdUsuario              Integer       = Null,
    @PsClaveUsuario           Varchar ( 50),
    @PsPassword               Varchar (Max),
    @PnIdTipoUsuario          Integer,
@@ -60,6 +60,7 @@ As
 Declare
    @w_desc_error              Varchar( 250),
    @w_Error                   Integer,
+   @w_idUsuario               Integer,
    @w_fechaAct                Datetime,
    @w_idEstatus               Bit;
 
@@ -112,6 +113,13 @@ Begin
          Return
       End
 
+   If Isnull(@PnIdUsuario, 0) = 0
+      Begin
+         Select @w_idUsuario = Max(idUsuario)
+         From   dbo.segUsuariosTbl;
+         Set @PnIdUsuario = Isnull(@w_idUsuario, 0) + 1;
+      End;
+
    If Exists (Select Top 1 1
               From   dbo.segUsuariosTbl
               Where  claveUsuario = @PsClaveUsuario
@@ -157,7 +165,7 @@ Begin
 
          Set Xact_Abort Off
          Return
-      End  
+      End
 
 --
 -- Alta de Usuario en la Aplicación
@@ -172,14 +180,14 @@ Begin
          Select @PnIdUsuario,       @PsClaveUsuario,  @PnIdTipoUsuario, @PsPrimerApellido,
                 @PsSegundoApellido, @PsNombres,       @PsCorreo,        @PnIdUsuarioAct,
                 @PsIpAct,           @PsMacAddressAct
-   
+
       End Try
-   
+
       Begin Catch
          Select  @w_Error      = @@Error,
                  @w_desc_error = Substring (Error_Message(), 1, 230)
       End   Catch
-   
+
       If Isnull(@w_Error, 0) <> 0
          Begin
             Select @PnEstatus = @w_Error,
@@ -189,7 +197,7 @@ Begin
             Set Xact_Abort Off
             Return
          End
-      
+
 --
 -- Generación de Usuario en Base de Datos.
 --
@@ -201,8 +209,8 @@ Begin
                                    @PnIdUsuarioAct = @PnIdUsuarioAct,
                                    @PnEstatus      = @PnEstatus  Output,
                                    @PsMensaje      = @PsMensaje  Output;
-   
-   
+
+
       If @PnEstatus != 0
          Begin
             Rollback TRansaction
@@ -213,7 +221,7 @@ Begin
 --
 -- Alta En el Historico de Contraseñas
 --
-  
+
       Execute dbo.Spa_histUserPassTbl @PnIdUsuario       = @PnIdUsuario,
                                       @PsContrasenia     = @PsPassword,
                                       @PnEstatus         = @PnEstatus Output,

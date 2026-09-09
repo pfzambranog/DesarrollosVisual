@@ -399,7 +399,6 @@
             this.MinimizeBox = false;
             this.Name = "FrmManUser";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Administración de Usuarios";
             this.Load += new System.EventHandler(this.FrmManUser_Load);
             this.pnlBarrainicial.ResumeLayout(false);
             this.pnlBarrainicial.PerformLayout();

@@ -46,3 +46,4 @@ C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\System.Security.Cry
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\EPPlus.xml
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\Microsoft.IO.RecyclableMemoryStream.xml
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\System.Security.Cryptography.Xml.xml
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmManOperaciones.resources

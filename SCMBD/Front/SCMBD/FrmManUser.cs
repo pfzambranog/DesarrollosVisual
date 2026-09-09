@@ -17,12 +17,13 @@ namespace SCMBD
         private readonly DataTable _dtPermisos;
         private readonly string _operacion; 
         private readonly string _cadenaConexion;
+        private readonly string _nombreOperacion;
         private readonly int _idTipoUsuarioAct;
 
         private DataGridView dgv;
 
         // ✅ Constructor con los 5 parámetros EN ORDEN
-        public FrmManUser(int idUsuario, string claveUsuario, DataTable dtPermisos, string operacion, string cadenaConexion)
+        public FrmManUser(int idUsuario, string claveUsuario, DataTable dtPermisos, string operacion, string nombreOperacion,  string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
@@ -30,12 +31,15 @@ namespace SCMBD
             _operacion = operacion; 
             _cadenaConexion = cadenaConexion;
             _idTipoUsuarioAct = ObtenerTipoUsuario(_idUsuario);
+            _nombreOperacion = nombreOperacion;
 
             InitializeComponent();
         }
 
         private void FrmManUser_Load(object sender, EventArgs e)
         {
+            this.Text = $"{_nombreOperacion}";
+
             CargarLogo();
             txtOperacion.Text = _operacion;  
             txtUsuario.Text = _claveUsuario;
