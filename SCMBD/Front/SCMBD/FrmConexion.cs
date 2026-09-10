@@ -149,10 +149,10 @@ namespace SCMBD
 
                     Permisos = new DataTable();
                     string sqlPermisos = @"SELECT idMenu, Menu, idOperacion, 
-                              Operacion, idAutorizacion, llamada, claveOperacion
-                       FROM   dbo.MenuUsuariosVw 
-                       WHERE  idUsuario = @IdUsuario 
-                       ORDER BY idMenu, idOperacion";
+                                                  Operacion, idAutorizacion, llamada, claveOperacion
+                                           FROM   dbo.MenuUsuariosVw 
+                                           WHERE  idUsuario = @IdUsuario 
+                                           Order  BY OrdenPresentacion, idOperacion";
 
                     using (SqlCommand cmdPerm = new SqlCommand(sqlPermisos, cn))
                     {

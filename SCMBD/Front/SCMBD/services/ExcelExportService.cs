@@ -11,23 +11,24 @@ namespace SCMBD.Services
 {
     public static class ExcelExportService
     {
-        // ✅ ANCHOS DE COLUMNA — según ajuste final
+        // ANCHOS DE COLUMNA
         private static readonly double[] anchosColumnas =
         {
-            15,   // A → idUsuario
-            30,   // B → USUARIO (antes claveUsuario)
-            30,   // C → Nombres
-            30,   // D → PRIMER APELLIDO
-            30,   // E → SEGUNDO APELLIDO
-            30,   // F → CORREO
-            20,   // G → ESTATUS
-            20    // H → TIPO DE USUARIO
+            15,   
+            30,  
+            30,
+            30,
+            30,
+            30, 
+            20,   
+            20    
         };
 
         public static void ExportarUsuarios(
             string rutaArchivo,
             DataGridView dgv,
             string operacion,
+            string tituloreporte,
             string usuario)
         {
             using (var libro = new XLWorkbook())
@@ -38,7 +39,7 @@ namespace SCMBD.Services
                 AgregarLogo(hoja);
 
                 // ✅ 2. Encabezados (Fecha, Reporte, Usuario) — columna G/H
-                ConstruirEncabezado(hoja, operacion, usuario);
+                ConstruirEncabezado(hoja, operacion, tituloreporte, usuario);
 
                 // ✅ 3. Datos del Grid con encabezados renombrados
                 ConstruirDetalle(hoja, dgv);
@@ -49,16 +50,16 @@ namespace SCMBD.Services
         }
 
         // =====================================================
-        // ✅ Agregar Logo en celda A1
+        // Agregar Logo en celda A1
         // =====================================================
+
         private static void AgregarLogo(IXLWorksheet hoja)
         {
             string rutaLogo = Path.Combine(Application.StartupPath, @"Imagenes\LogoSCMBD.png");
 
             if (!File.Exists(rutaLogo))
             {
-                MessageBox.Show($"No se encontró el logo en:\n{rutaLogo}", "Advertencia",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"No se encontró el logo en:\n{rutaLogo}", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -79,6 +80,7 @@ namespace SCMBD.Services
         private static void ConstruirEncabezado(
             IXLWorksheet hoja,
             string operacion,
+            string tituloreporte,
             string usuario)
         {
             // Etiquetas en columna G
@@ -91,26 +93,28 @@ namespace SCMBD.Services
 
             hoja.Cell("H1").Value = 1;
             hoja.Cell("H2").Value = DateTime.Now;
+            hoja.Range("H2:I2").Merge();
             hoja.Cell("H2").Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+            hoja.Cell("H2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
             hoja.Cell("H3").Value = operacion;
             hoja.Cell("H4").Value = usuario;
 
 
             hoja.Range("A6:H6").Merge();
-            hoja.Cell("A6").Value = "Reporte de Usuarios en SCMBD";
-            hoja.Cell("A6").Style.Font.SetBold();           // ✅ Negrita
-            hoja.Cell("A6").Style.Font.SetFontSize(14);     // ✅ Tamaño 14 — SIN error
+            hoja.Cell("A6").Value = tituloreporte;
+            hoja.Cell("A6").Style.Font.SetBold();           
+                                                            
             hoja.Cell("A6").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         }
 
         // =====================================================
-        // ✅ Construir Detalle — ENCABEZADOS RENOMBRADOS
+        // Construir Detalle — ENCABEZADOS RENOMBRADOS
         // =====================================================
         private static void ConstruirDetalle(IXLWorksheet hoja, DataGridView dgv)
         {
             int filaEncabezados = 8; // Debajo del título
 
-            // ✅ ENCABEZADOS CON NOMBRES PERSONALIZADOS
+            // ENCABEZADOS CON NOMBRES PERSONALIZADOS
             int col = 1;
             for (int c = 0; c < dgv.Columns.Count; c++)
             {
@@ -118,7 +122,7 @@ namespace SCMBD.Services
 
                 string nombreMostrar = dgv.Columns[c].HeaderText.Trim().ToUpper();
 
-                // ✅ RENOMBRES SEGÚN SOLICITUD
+                //  RENOMBRES SEGÚN SOLICITUD
                 switch (nombreMostrar)
                 {
                     case "CLAVEUSUARIO": nombreMostrar = "USUARIO"; break;
@@ -155,19 +159,19 @@ namespace SCMBD.Services
                 fila++;
             }
 
-            // ✅ APLICAR ANCHOS DE COLUMNA
+            //  APLICAR ANCHOS DE COLUMNA
             for (int c = 0; c < anchosColumnas.Length && c < dgv.Columns.Count; c++)
             {
                 hoja.Column(c + 1).Width = anchosColumnas[c];
             }
 
-            // ✅ BORDES A TODA LA TABLA
+            //  BORDES A TODA LA TABLA
             int ultimaFila = fila - 1;
             var rangoDatos = hoja.Range(filaEncabezados, 1, ultimaFila, dgv.Columns.Count);
             rangoDatos.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             rangoDatos.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
-            // ✅ BLOQUEAR FILAS DE ENCABEZADO
+            //  BLOQUEAR FILAS DE ENCABEZADO
             hoja.SheetView.FreezeRows(filaEncabezados);
         }
     }

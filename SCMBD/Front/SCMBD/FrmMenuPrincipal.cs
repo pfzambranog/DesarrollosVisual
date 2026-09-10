@@ -219,7 +219,12 @@ namespace SCMBD
             AbrirPantallaSeleccionada();
         }
 
-        // ✅ MÉTODO ACTUALIZADO — Detecta 5 o 6 parámetros automáticamente
+        private void FrmMenuPrincipal_Load_1(object sender, EventArgs e)
+        {
+
+        }
+
+        // MÉTODO ACTUALIZADO — Detecta 5 o 6 parámetros automáticamente
         private void AbrirPantallaSeleccionada()
         {
             if (lstOperaciones.SelectedItems.Count == 0) return;
@@ -233,8 +238,7 @@ namespace SCMBD
 
                 if (string.IsNullOrWhiteSpace(llamada))
                 {
-                    MessageBox.Show("No está definida la pantalla para esta operación.",
-                                    "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("No está definida la pantalla para esta operación.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -326,8 +330,9 @@ namespace SCMBD
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).BeginInit();
             this.pnlBarraInferior.SuspendLayout();
             this.SuspendLayout();
-
+            // 
             // pnlHeader
+            // 
             this.pnlHeader.BackColor = System.Drawing.Color.LightSteelBlue;
             this.pnlHeader.Controls.Add(this.picLogo);
             this.pnlHeader.Controls.Add(this.lblFecha);
@@ -342,16 +347,18 @@ namespace SCMBD
             this.pnlHeader.Name = "pnlHeader";
             this.pnlHeader.Size = new System.Drawing.Size(804, 144);
             this.pnlHeader.TabIndex = 0;
-
+            // 
             // picLogo
+            // 
             this.picLogo.Location = new System.Drawing.Point(1, 1);
             this.picLogo.Name = "picLogo";
             this.picLogo.Size = new System.Drawing.Size(106, 41);
             this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picLogo.TabIndex = 0;
             this.picLogo.TabStop = false;
-
+            // 
             // lblFecha
+            // 
             this.lblFecha.AutoSize = true;
             this.lblFecha.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblFecha.Location = new System.Drawing.Point(580, 6);
@@ -359,8 +366,9 @@ namespace SCMBD
             this.lblFecha.Size = new System.Drawing.Size(46, 13);
             this.lblFecha.TabIndex = 1;
             this.lblFecha.Text = "Fecha:";
-
+            // 
             // txtFecha
+            // 
             this.txtFecha.BackColor = System.Drawing.Color.LightSteelBlue;
             this.txtFecha.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtFecha.Enabled = false;
@@ -370,8 +378,9 @@ namespace SCMBD
             this.txtFecha.ReadOnly = true;
             this.txtFecha.Size = new System.Drawing.Size(150, 13);
             this.txtFecha.TabIndex = 2;
-
+            // 
             // lblOperacion
+            // 
             this.lblOperacion.AutoSize = true;
             this.lblOperacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblOperacion.Location = new System.Drawing.Point(580, 22);
@@ -379,8 +388,9 @@ namespace SCMBD
             this.lblOperacion.Size = new System.Drawing.Size(69, 13);
             this.lblOperacion.TabIndex = 3;
             this.lblOperacion.Text = "Operación:";
-
+            // 
             // txtOperacion
+            // 
             this.txtOperacion.BackColor = System.Drawing.Color.LightSteelBlue;
             this.txtOperacion.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOperacion.Enabled = false;
@@ -390,8 +400,9 @@ namespace SCMBD
             this.txtOperacion.ReadOnly = true;
             this.txtOperacion.Size = new System.Drawing.Size(150, 13);
             this.txtOperacion.TabIndex = 4;
-
+            // 
             // lblUsuario
+            // 
             this.lblUsuario.AutoSize = true;
             this.lblUsuario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.lblUsuario.Location = new System.Drawing.Point(580, 38);
@@ -399,8 +410,9 @@ namespace SCMBD
             this.lblUsuario.Size = new System.Drawing.Size(54, 13);
             this.lblUsuario.TabIndex = 5;
             this.lblUsuario.Text = "Usuario:";
-
+            // 
             // txtUsuario
+            // 
             this.txtUsuario.BackColor = System.Drawing.Color.LightSteelBlue;
             this.txtUsuario.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtUsuario.Enabled = false;
@@ -410,8 +422,9 @@ namespace SCMBD
             this.txtUsuario.ReadOnly = true;
             this.txtUsuario.Size = new System.Drawing.Size(150, 13);
             this.txtUsuario.TabIndex = 6;
-
+            // 
             // lblTitulo
+            // 
             this.lblTitulo.BackColor = System.Drawing.Color.LightSteelBlue;
             this.lblTitulo.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.lblTitulo.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
@@ -421,8 +434,9 @@ namespace SCMBD
             this.lblTitulo.TabIndex = 7;
             this.lblTitulo.Text = "MENÚ PRINCIPAL";
             this.lblTitulo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-
+            // 
             // lstOperaciones
+            // 
             this.lstOperaciones.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lstOperaciones.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lstOperaciones.FullRowSelect = true;
@@ -435,8 +449,9 @@ namespace SCMBD
             this.lstOperaciones.TabIndex = 2;
             this.lstOperaciones.UseCompatibleStateImageBehavior = false;
             this.lstOperaciones.View = System.Windows.Forms.View.Details;
-
+            // 
             // pnlBarraInferior
+            // 
             this.pnlBarraInferior.BackColor = System.Drawing.Color.LightSteelBlue;
             this.pnlBarraInferior.Controls.Add(this.btnCambioContrasenia);
             this.pnlBarraInferior.Controls.Add(this.btnSalir);
@@ -445,8 +460,9 @@ namespace SCMBD
             this.pnlBarraInferior.Name = "pnlBarraInferior";
             this.pnlBarraInferior.Size = new System.Drawing.Size(804, 70);
             this.pnlBarraInferior.TabIndex = 1;
-
+            // 
             // btnCambioContrasenia
+            // 
             this.btnCambioContrasenia.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCambioContrasenia.AutoSize = true;
             this.btnCambioContrasenia.BackColor = System.Drawing.Color.LightSteelBlue;
@@ -464,10 +480,10 @@ namespace SCMBD
             this.btnCambioContrasenia.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             this.btnCambioContrasenia.UseVisualStyleBackColor = false;
             this.btnCambioContrasenia.Click += new System.EventHandler(this.BtnCambioContrasenia_Click);
-
+            // 
             // btnSalir
+            // 
             this.btnSalir.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSalir.DialogResult = System.Windows.Forms.DialogResult.None;
             this.btnSalir.FlatAppearance.BorderSize = 0;
             this.btnSalir.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Transparent;
             this.btnSalir.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Transparent;
@@ -482,8 +498,9 @@ namespace SCMBD
             this.btnSalir.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnSalir.UseVisualStyleBackColor = false;
             this.btnSalir.Click += new System.EventHandler(this.BtnSalir_Click);
-
+            // 
             // FrmMenuPrincipal
+            // 
             this.BackColor = System.Drawing.Color.LightSteelBlue;
             this.ClientSize = new System.Drawing.Size(804, 550);
             this.Controls.Add(this.lstOperaciones);
@@ -493,12 +510,14 @@ namespace SCMBD
             this.Name = "FrmMenuPrincipal";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SCMBD — Sistema de Control y Mantenimiento de Bases de Datos";
+            this.Load += new System.EventHandler(this.FrmMenuPrincipal_Load_1);
             this.pnlHeader.ResumeLayout(false);
             this.pnlHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
             this.pnlBarraInferior.ResumeLayout(false);
             this.pnlBarraInferior.PerformLayout();
             this.ResumeLayout(false);
+
         }
     }
 }

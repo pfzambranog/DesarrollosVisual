@@ -10,52 +10,52 @@ using System.Windows.Forms;
 
 namespace SCMBD
 {
-    public partial class FrmManOperaciones : Form
+    public partial class FrmManMenus : Form
     {
         private readonly int _idUsuario;
         private readonly string _claveUsuario;
         private readonly DataTable _dtPermisos;
-        private readonly string _claveOperacion;      // ✅ Código: CATOPE01
-        private readonly string _nombreOperacion;     // ✅ Nombre: Mantenimiento Catálogo...
+        private readonly string _codigoMenu;
+        private readonly string _nombreOperacion;
         private readonly string _cadenaConexion;
         private DataGridView dgv;
 
         // ✅ Constructor con 6 parámetros: recibe CLAVE + NOMBRE
-        public FrmManOperaciones(int idUsuario, string claveUsuario, DataTable dtPermisos,
-                                  string claveOperacion, string nombreOperacion, string cadenaConexion)
+        public FrmManMenus(int idUsuario, string claveUsuario, DataTable dtPermisos,
+                                  string codigoMenu, string nombreOperacion, string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
             _dtPermisos = dtPermisos;
-            _claveOperacion = claveOperacion;        // 
+            _codigoMenu = codigoMenu;        // 
             _nombreOperacion = nombreOperacion;      // 
             _cadenaConexion = cadenaConexion;
 
             InitializeComponent();
         }
 
-        private void FrmManOperaciones_Load(object sender, EventArgs e)
+        private void FrmManMenus_Load(object sender, EventArgs e)
         {
             CargarLogo();
 
-            //  txtOperacion.Text = $"{_claveOperacion} - {_nombreOperacion}";
+            //  txtOperacion.Text = $"{_codigoMenu} - {_nombreOperacion}";
 
             this.Text = $"{_nombreOperacion}";
 
-            txtOperacion.Text = $"{_claveOperacion}";
+            txtOperacion.Text = $"{_codigoMenu}";
             txtUsuario.Text = _claveUsuario;
             
             CargarEstatus();
-            CargarGridOperaciones();
+            CargarGridMenues();
 
             // ✅ Habilitar Botón Procesar según autorización del usuario
 
-            bool tienePermisoProcesar = _dtPermisos.AsEnumerable()
-                 .Any(f => f["claveOperacion"].ToString().Trim() == _claveOperacion.Trim()
-                       && Convert.ToInt32(f["idAutorizacion"]) >= 4);
+          //  bool tienePermisoProcesar = 4; //_dtPermisos.AsEnumerable()
+          //       .Any(f => f["claveOperacion"].ToString().Trim() == _claveOperacion.Trim()
+         //              && Convert.ToInt32(f["idAutorizacion"]) >= 4);
 
 
-            BtnProcesar.Enabled = tienePermisoProcesar;
+         //   BtnProcesar.Enabled = tienePermisoProcesar;
         }
 
         private void CargarLogo()
@@ -74,7 +74,7 @@ namespace SCMBD
                 using (SqlCommand cmd = new SqlCommand(
                     "SELECT valor, descripcion " +
                     "FROM   dbo.catGeneralesTbl " +
-                    "WHERE  tabla = 'catOperacionesTbl' " +
+                    "WHERE  tabla = 'catMenusTbl' " +
                     "AND    columna = 'idEstatus' " +
                     "ORDER BY valor", cn))
                 {
@@ -94,22 +94,21 @@ namespace SCMBD
             }
         }
 
-        private void CargarGridOperaciones()
+        private void CargarGridMenues()
         {
             try
             {
-                string sql = @"SELECT a.idOperacion,
-                                      a.operacion AS ClaveOperacion,
-                                      a.descripcion AS Operacion,
-                                      a.llamada AS Llamada,
-                                      a.ruta AS Ruta,
+                string sql = @"SELECT a.idMenu,
+                                      a.codigoMenu,
+                                      a.descripcion AS menu,
+                                      a.OrdenPresentacion,
                                       b.descripcion AS Estatus
-                               FROM   dbo.catOperacionesTbl a
+                               FROM   dbo.catMenusTbl a
                                JOIN   dbo.catGeneralesTbl b 
-                                 ON b.tabla = 'catOperacionesTbl' 
+                                 ON b.tabla = 'catMenusTbl' 
                                 AND b.columna = 'idEstatus'
                                 AND b.valor = a.idEstatus
-                               ORDER BY a.idOperacion";
+                               ORDER BY a.idMenu";
 
                 DataTable dtOperaciones = new DataTable();
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
@@ -140,23 +139,20 @@ namespace SCMBD
 
                 dgv.DataBindingComplete += (s, e) =>
                 {
-                    dgv.Columns["idOperacion"].HeaderText = "ID OPERACIÓN";
-                    dgv.Columns["ClaveOperacion"].HeaderText = "CLAVE OPERACIÓN";
-                    dgv.Columns["Operacion"].HeaderText = "DESCRIPCIÓN";
-                    dgv.Columns["Llamada"].HeaderText = "LLAMADA";
-                    dgv.Columns["Ruta"].HeaderText = "RUTA";
-                    dgv.Columns["Estatus"].HeaderText = "ESTATUS";
-
+                    dgv.Columns["idMenu"].HeaderText = "ID Menú";
+                    dgv.Columns["codigoMenu"].HeaderText = "Código Menú";
+                    dgv.Columns["menu"].HeaderText = "Menú";
+                    dgv.Columns["OrdenPresentacion"].HeaderText = "Orden Presentación";
+                    dgv.Columns["estatus"].HeaderText = "ESTATUS";
                     foreach (DataGridViewColumn col in dgv.Columns)
                         col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
 
-                    dgv.Columns["idOperacion"].Width = 70;
-                    dgv.Columns["ClaveOperacion"].Width = 130;
-                    dgv.Columns["Operacion"].Width = 350;
-                    dgv.Columns["Llamada"].Width = 200;
-                    dgv.Columns["Ruta"].Width = 130;
-                    dgv.Columns["Estatus"].Width = 120;
-                    dgv.Columns["idOperacion"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                    dgv.Columns["idMenu"].Width = 70;
+                    dgv.Columns["codigoMenu"].Width = 130;
+                    dgv.Columns["menu"].Width = 350;
+                    dgv.Columns["OrdenPresentacion"].Width = 200;
+                    dgv.Columns["estatus"].Width = 120;
+                    dgv.Columns["idMenu"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
                 };
 
                 dgv.SelectionChanged += (s, e) =>
@@ -164,11 +160,10 @@ namespace SCMBD
                     if (dgv.SelectedRows.Count > 0)
                     {
                         DataRowView fila = dgv.SelectedRows[0].DataBoundItem as DataRowView;
-                        TxtIdOperacion.Text = fila["idOperacion"].ToString();
-                        TxtClaveOperacion.Text = fila["ClaveOperacion"].ToString().Trim();
-                        TxtDescripcion.Text = fila["Operacion"].ToString().Trim();
-                        TxtLlamada.Text = fila["Llamada"].ToString().Trim();
-                        TxtRuta.Text = fila["Ruta"].ToString().Trim();
+                        TxtIdMenu.Text = fila["idMenu"].ToString();
+                        TxtClaveMenu.Text = fila["codigoMenu"].ToString().Trim();
+                        TxtDescripcion.Text = fila["menu"].ToString().Trim();
+                        TxtOrdenPresentacion.Text = fila["OrdenPresentacion"].ToString();
                         SeleccionarValorEnCombo(cmbEstatus, fila["Estatus"].ToString());
                     }
                 };
@@ -184,7 +179,7 @@ namespace SCMBD
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error cargando operaciones: {ex.Message}", "Error",
+                MessageBox.Show($"Error cargando el detalle de los Menus: {ex.Message}", "Error",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -203,9 +198,9 @@ namespace SCMBD
 
         private void BtnProcesar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(TxtClaveOperacion.Text))
+            if (string.IsNullOrWhiteSpace(this.txtOperacion.Text))
             {
-                MessageBox.Show("Ingrese la Clave de Operación.", "Validación",
+                MessageBox.Show("Ingrese la Clave de Menu.", "Validación",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -224,11 +219,10 @@ namespace SCMBD
 
             try
             {
-                int idOperacion = string.IsNullOrWhiteSpace(TxtIdOperacion.Text) ? 0 : Convert.ToInt32(TxtIdOperacion.Text);
-                string claveOperacion = TxtClaveOperacion.Text.Trim();
+                int idMenu = string.IsNullOrWhiteSpace(TxtIdMenu.Text) ? 0 : Convert.ToInt32(TxtIdMenu.Text);
+                string codigoMenu = TxtClaveMenu.Text.Trim();
                 string descripcion = TxtDescripcion.Text.Trim();
-                string llamada = TxtLlamada.Text.Trim();
-                string ruta = TxtRuta.Text.Trim();
+                int OrdenPresentacion = string.IsNullOrWhiteSpace(TxtOrdenPresentacion.Text) ? 0 : Convert.ToInt32(TxtOrdenPresentacion.Text);
                 int idEstatus = Convert.ToInt32(cmbEstatus.SelectedValue);
                 int estatus;
                 string mensaje;
@@ -237,17 +231,16 @@ namespace SCMBD
                 {
                     cn.Open();
 
-                    if (idOperacion == 0)
+                    if (idMenu == 0)
                     {
                         // ✅ ALTA — SIN @PnIdEstatus (la tabla usa DEFAULT 1)
-                        using (SqlCommand cmd = new SqlCommand("dbo.Spa_catOperacionesTbl", cn))
+                        using (SqlCommand cmd = new SqlCommand("dbo.Spa_catMenusTbl", cn))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@PsOperacion", claveOperacion);
+                            cmd.Parameters.AddWithValue("@PsCodigoMenu", codigoMenu);
                             cmd.Parameters.AddWithValue("@PsDescripcion", descripcion);
-                            cmd.Parameters.AddWithValue("@PsLlamada", llamada);
-                            cmd.Parameters.AddWithValue("@PsRuta", ruta);
-                            cmd.Parameters.AddWithValue("@PnIdOperacion", 5);
+                            cmd.Parameters.AddWithValue("@PnOrdenPresentacion", OrdenPresentacion);
+                            cmd.Parameters.AddWithValue("@PnIdOperacion", 9);
                             cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
                             cmd.Parameters.AddWithValue("@PsIpAct", DBNull.Value);
                             cmd.Parameters.AddWithValue("@PsMacAddressAct", DBNull.Value);
@@ -268,15 +261,14 @@ namespace SCMBD
                     else
                     {
                         // ✅ MODIFICACIÓN
-                        using (SqlCommand cmd = new SqlCommand("dbo.Spu_catOperacionesTbl", cn))
+                        using (SqlCommand cmd = new SqlCommand("dbo.Spu_catMenusTbl", cn))
                         {
                             cmd.CommandType = CommandType.StoredProcedure;
-                            cmd.Parameters.AddWithValue("@PnIdOperacion", idOperacion);
-                            cmd.Parameters.AddWithValue("@PsOperacion", claveOperacion);
+                            cmd.Parameters.AddWithValue("@PsCodigoMenu", codigoMenu);
                             cmd.Parameters.AddWithValue("@PsDescripcion", descripcion);
-                            cmd.Parameters.AddWithValue("@PsLlamada", llamada);
-                            cmd.Parameters.AddWithValue("@PsRuta", ruta);
+                            cmd.Parameters.AddWithValue("@PnOrdenPresentacion", OrdenPresentacion);
                             cmd.Parameters.AddWithValue("@PbIdEstatus", idEstatus);
+                            cmd.Parameters.AddWithValue("@PnIdOperacion", 9);
                             cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
                             cmd.Parameters.AddWithValue("@PsIpAct", DBNull.Value);
                             cmd.Parameters.AddWithValue("@PsMacAddressAct", DBNull.Value);
@@ -323,13 +315,11 @@ namespace SCMBD
         {
 
 
-            CargarGridOperaciones();
-
-            TxtIdOperacion.Text = "";
-            TxtClaveOperacion.Text = "";
+            CargarGridMenues();
+            TxtIdMenu.Text = "";
+            TxtClaveMenu.Text = "";
             TxtDescripcion.Text = "";
-            TxtLlamada.Text = "";
-            TxtRuta.Text = "";
+            TxtOrdenPresentacion.Text = "";
             cmbEstatus.SelectedIndex = -1;
         }
 
@@ -350,9 +340,9 @@ namespace SCMBD
 
                 // ✅ Pasamos TITULO como parámetro al servicio
 
-                // string tituloReporte = $"{_claveOperacion} - {_nombreOperacion}";
+                // string tituloReporte = $"{_codigoMenu} - {_nombreOperacion}";
 
-                string OperReporte = $"{_claveOperacion}";
+                string OperReporte = $"{_codigoMenu}";
                 string tituloReporte = $"{_nombreOperacion}";
 
                 Services.ExcelExportService.ExportarUsuarios(rutaCompleta, dgv, OperReporte, tituloReporte, _claveUsuario);
@@ -374,7 +364,5 @@ namespace SCMBD
         private void panel1_Paint(object sender, PaintEventArgs e) { }
       //  private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) { }
         private void pnlBarrainicial_Paint(object sender, PaintEventArgs e) { }
-
-
     }
 }

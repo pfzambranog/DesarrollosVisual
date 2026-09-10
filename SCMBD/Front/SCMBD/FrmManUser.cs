@@ -413,15 +413,16 @@ namespace SCMBD
             {
                 if (dgv == null) return;
 
-                string carpetaReportes = ConfigurationManager.AppSettings["ReportsDirectory"]
-                                      ?? @"C:\TempAdam\";
+                string carpetaReportes = ConfigurationManager.AppSettings["ReportsDirectory"] ?? @"C:\TempAdam\";
                 if (!Directory.Exists(carpetaReportes))
                     Directory.CreateDirectory(carpetaReportes);
+
+                string tituloReporte = $"{"Reporte de Usuarios Relacionados a la Aplicacion"}";
 
                 string nombreArchivo = $"Usuarios_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 string rutaCompleta = Path.Combine(carpetaReportes, nombreArchivo);
 
-                Services.ExcelExportService.ExportarUsuarios(rutaCompleta, dgv, _operacion, _claveUsuario);
+                Services.ExcelExportService.ExportarUsuarios(rutaCompleta, dgv, _operacion, tituloReporte, _claveUsuario);
 
                 MessageBox.Show($"Exportado correctamente:\n{rutaCompleta}",
                                 "Exportación", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -434,8 +435,7 @@ namespace SCMBD
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al exportar: {ex.Message}", "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al exportar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

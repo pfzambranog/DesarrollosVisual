@@ -9,8 +9,10 @@ If Exists (Select Top 1 1
 Go
 
 Create Table dbo.catMenusTbl
-  (idMenu              Integer        Not Null,
+  (idMenu              Integer        Not Null  Identity (1, 1),
+   codigoMenu          Varchar(30)    Not Null,
    descripcion         Varchar( 100)  Not Null,
+   OrdenPresentacion   Smallint       Not Null,
    idEstatus           Bit            Not Null Default(1),
    idUsuarioAct        INteger        Not Null,
    fechaAct            Datetime       Not Null Default Getdate(),
@@ -18,6 +20,7 @@ Create Table dbo.catMenusTbl
    macAddressAct       Varchar( 30)       Null,
 Constraint catMenusPk
 Primary Key (idMenu),
+Index catMenusIdx01 Unique (codigoMenu),
 Constraint catMenusFk01
 Foreign Key (idUsuarioAct)
 References dbo.segUsuariosTbl (idUsuario) on Update Cascade on Delete Cascade) 
@@ -39,13 +42,23 @@ Execute sys.sp_addextendedproperty @name       = 'MS_Description',
 Go
 
 Execute sys.sp_addextendedproperty @name       = 'MS_Description', 
-                                   @value      = 'Identificador Correlativo del Menu relacionada a la aplicacion.' , 
+                                   @value      = 'Identificador Correlativo del Menu relacionado a la aplicacion.' , 
                                    @level0type = 'Schema',
                                    @level0name = 'dbo', 
                                    @level1type = 'Table',
                                    @level1name = 'catMenusTbl', 
                                    @level2type = 'Column',
                                    @level2name = 'idMenu'
+Go
+
+Execute sys.sp_addextendedproperty @name       = 'MS_Description', 
+                                   @value      = 'Codigo del Menu relacionado a la aplicacion.' , 
+                                   @level0type = 'Schema',
+                                   @level0name = 'dbo', 
+                                   @level1type = 'Table',
+                                   @level1name = 'catMenusTbl', 
+                                   @level2type = 'Column',
+                                   @level2name = 'codigoMenu'
 Go
 
 
@@ -60,6 +73,16 @@ Execute sys.sp_addextendedproperty @name       = 'MS_Description',
 Go
 
 Execute sys.sp_addextendedproperty @name       = 'MS_Description', 
+                                   @value      = 'Orden de la presentacíon del Menu.' , 
+                                   @level0type = 'Schema',
+                                   @level0name = 'dbo', 
+                                   @level1type = 'Table',
+                                   @level1name = 'catMenusTbl', 
+                                   @level2type = 'Column',
+                                   @level2name = 'OrdenPresentacion'
+Go
+
+Execute sys.sp_addextendedproperty @name       = 'MS_Description', 
                                    @value      = 'Identificador del Estatus del Registro. 1.- Activo, 0.- Inactivo.' , 
                                    @level0type = 'Schema',
                                    @level0name = 'dbo', 
@@ -68,7 +91,6 @@ Execute sys.sp_addextendedproperty @name       = 'MS_Description',
                                    @level2type = 'Column',
                                    @level2name = 'idEstatus'
 Go
-
 
 Execute sys.sp_addextendedproperty @name       = 'MS_Description', 
                                    @value      = 'Último Usuario que realizó la actualización del Registro.' , 

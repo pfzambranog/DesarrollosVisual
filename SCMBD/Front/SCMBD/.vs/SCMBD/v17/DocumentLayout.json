@@ -1,20 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmmanuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmmanuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmmanuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmmanuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmmanoperaciones.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmmanoperaciones.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -22,50 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": -1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "FrmManUser.cs",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManUser.cs",
-              "RelativeDocumentMoniker": "FrmManUser.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManUser.cs",
-              "RelativeToolTip": "FrmManUser.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABsAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-09T00:49:57.579Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "FrmManUser.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManUser.cs",
-              "RelativeDocumentMoniker": "FrmManUser.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManUser.cs [Dise\u00F1o]",
-              "RelativeToolTip": "FrmManUser.cs [Dise\u00F1o]",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-09T00:53:30.78Z",
-              "EditorCaption": " [Dise\u00F1o]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "FrmManOperaciones.cs",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManOperaciones.cs",
-              "RelativeDocumentMoniker": "FrmManOperaciones.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManOperaciones.cs",
-              "RelativeToolTip": "FrmManOperaciones.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAlwB4AAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-09T00:36:48.725Z",
-              "EditorCaption": ""
             }
           ]
         },

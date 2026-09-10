@@ -86,11 +86,23 @@ Begin
             Begin
                Select @PnEstatus = 9985,
                       @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
-      
+
                Set Xact_Abort Off
                Return
             End
     End
+
+   If Exists (Select Top 1 1
+                  From   dbo.catOperacionesTbl
+                  Where  operacion   = @PsOperacion)
+      Begin
+         Select @PnEstatus = 2627,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
 
    Begin Try
       Insert Into dbo.catOperacionesTbl
@@ -102,7 +114,7 @@ Begin
       Set @w_operacion = @@Identity
 
      Insert into dbo.segAutOperacionesTbl
-    (idUsuario, idOperacion, idAutorizacion, idUsuarioAct
+    (idUsuario, idOperacion, idAutorizacion, idUsuarioAct,
      ipAct,     macAddressAct)
     Select @PnIdUsuarioAct, @w_operacion, 4, @PnIdUsuarioAct,
           dbo.Fn_BuscaDireccionIP(), dbo.Fn_Busca_DireccionMac()

@@ -1,11 +1,10 @@
 /*
 Declare
-   @PsOperacion              Varchar ( 20)  = 'CATOPER01',
-   @PsDescripcion            Varchar (100)  = 'Mantenimiento Catálogo de Operaciones',
-   @PsLlamada                Varchar ( 40)  = 'FrmManOperaciones.cs',
-   @PsRuta                   Varchar (512)  = 'SCMBD',
-   @PbIdEstatus              Bit            = Null,
-   @PnIdOperacion            Integer        = 5,
+   @PsCodigoMenu             Varchar ( 20)  = 'MENREP01',
+   @PsDescripcion            Varchar (100)  = 'REPORTES DEL SISTEMA',
+   @PnOrdenPresentacion      Integer        = 3,
+   @PbIdEstatus              Bit            = 0,
+   @PnIdOperacion            Integer        = 4,
    @PnIdUsuarioAct           Integer        = 3,
    @PsIpAct                  Varchar ( 30)  = Null,
    @PsMacAddressAct          Varchar ( 30)  = Null,
@@ -13,17 +12,16 @@ Declare
    @PsMensaje                Varchar (250)  = Null;
 
 Begin
-   Execute dbo.Spu_catOperacionesTbl @PsOperacion       = @PsOperacion,
-                                     @PsDescripcion     = @PsDescripcion,
-                                     @PsLlamada         = @PsLlamada,
-                                     @PsRuta            = @PsRuta,
-                                     @PbIdEstatus       = @PbIdEstatus,
-                                     @PnIdOperacion     = @PnIdOperacion,
-                                     @PnIdUsuarioAct    = @PnIdUsuarioAct,
-                                     @PsIpAct           = @PsIpAct,
-                                     @PsMacAddressAct   = @PsMacAddressAct,
-                                     @PnEstatus         = @PnEstatus Output,
-                                     @PsMensaje         = @PsMensaje Output;
+   Execute dbo.Spu_catMenusTbl       @PsCodigoMenu         = @PsCodigoMenu,
+                                     @PsDescripcion        = @PsDescripcion,
+                                     @PnOrdenPresentacion  = @PnOrdenPresentacion,
+                                     @PbIdEstatus          = @PbIdEstatus,
+                                     @PnIdOperacion        = @PnIdOperacion,
+                                     @PnIdUsuarioAct       = @PnIdUsuarioAct,
+                                     @PsIpAct              = @PsIpAct,
+                                     @PsMacAddressAct      = @PsMacAddressAct,
+                                     @PnEstatus            = @PnEstatus Output,
+                                     @PsMensaje            = @PsMensaje Output;
 
 
     Select @PnEstatus IdError, @PsMensaje MensajeError;
@@ -33,11 +31,10 @@ Go
 
 */
 
-Create Or Alter Procedure dbo.Spu_catOperacionesTbl
-  (@PsOperacion              Varchar ( 20),
+Create Or Alter Procedure dbo.Spu_catMenusTbl
+  (@PsCodigoMenu             Varchar ( 20),
    @PsDescripcion            Varchar (100)  = Null,
-   @PsLlamada                Varchar ( 40)  = Null,
-   @PsRuta                  Varchar (512)   = Null,
+   @PnOrdenPresentacion      Integer        = Null,
    @PbIdEstatus              Bit            = Null,
    @PnIdOperacion            Integer,
    @PnIdUsuarioAct           Integer,
@@ -52,16 +49,14 @@ Declare
    @w_sql                     Varchar( Max),
    @w_Error                   Integer,
    @w_registros               Integer,
-   @w_fechaAct                Datetime,
    @w_comilla                 Char(1),
-   @w_claveUsuario            Varchar( 50),
    @w_nombre                  Varchar(400);
 
 Begin
 /*
   Autor:          Pedro Zambrano
   Fecha:          2026-07-08
-  Descripción:    Procedimiento que actualiza los Registros a la tabla catOperacionesTbl.
+  Descripci�n:    Procedimiento que actualiza los Registros a la tabla catMenusTbl.
   Creacion:       02-sep-2026.
   Version:        1.0
 */
@@ -73,7 +68,7 @@ Begin
    Select @PnEstatus         = 0,
           @PsMensaje         = 'Registro Actualizado',
           @w_comilla         = Char(39),
-          @PsIpAct           = Isnull(@PsIpAct, dbo.Fn_BuscaDireccionIP()),
+          @PsIpAct           = Isnull(@PsIpAct,         dbo.Fn_BuscaDireccionIP()),
           @PsMacAddressAct   = Isnull(@PsMacAddressAct, dbo.Fn_Busca_DireccionMAC());
 
 
@@ -103,7 +98,7 @@ Begin
       Begin
          If Not Exists (Select Top 1 1
                         From   dbo.catGeneralesTbl
-                        Where  tabla   = 'catOperacionesTbl'
+                        Where  tabla   = 'catMenusTbl'
                         And    columna = 'idEstatus'
                         And    valor   = @PbIdEstatus)
             Begin
@@ -116,8 +111,8 @@ Begin
       End
 
    If Not Exists (Select Top 1 1
-                  From   dbo.catOperacionesTbl
-                  Where  operacion   = @PsOperacion)
+                  From   dbo.catMenusTbl
+                  Where  codigoMenu  = @PsCodigoMenu)
       Begin
          Select @PnEstatus = 6204,
                 @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
@@ -126,38 +121,20 @@ Begin
          Return
       End
 
-   If Not Exists (Select Top 1 1
-                  From   dbo.segAutOperacionesTbl
-                  Where  idUsuario       = @PnIdUsuarioAct
-                  And    idOperacion     = @PnIdOperacion
-                  And    idAutorizacion >= 3)
-      Begin
-         Select @PnEstatus = 9985,
-                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
-
-         Set Xact_Abort Off
-         Return
-      End
-
-   Set @w_sql = Concat('Update dbo.catOperacionesTbl ',
+   Set @w_sql = Concat('Update dbo.catMenusTbl ',
                        'Set    fechaAct      = ', @w_comilla, Getdate(),  @w_comilla, ', ',
                               'idUsuarioAct  = ', @PnIdUsuarioAct,  ', ',
                               'ipAct         = ', @w_comilla, @PsIpAct,         @w_comilla, ', ',
                               'macAddressAct = ', @w_comilla, @PsMacAddressAct, @w_comilla);
 
-   If @PsDescripcion        Is Not Null
+   If @PsDescripcion Is Not Null
       Begin
          Set @w_sql = Concat(@w_sql, ', descripcion = ', @w_comilla, @PsDescripcion, @w_comilla);
       End
 
-   If @PsLlamada  Is Not Null
+   If @PnOrdenPresentacion  Is Not Null
       Begin
-        Set @w_sql = Concat(@w_sql, ', llamada = ', @w_comilla, @PsLlamada, @w_comilla);
-      End
-
-   If @PsRuta    Is Not Null
-      Begin
-        Set @w_sql = Concat(@w_sql, ', ruta = ', @w_comilla, @PsRuta, @w_comilla);
+        Set @w_sql = Concat(@w_sql, ', ordenPresentacion = ', @PnOrdenPresentacion);
       End
 
    If @PbIdEstatus  Is Not Null
@@ -165,7 +142,7 @@ Begin
         Set @w_sql = Concat(@w_sql, ', idEstatus = ', @PbIdEstatus);
       End
 
-   Set @w_sql = Concat(@w_sql, ' Where operacion = ', @w_comilla + @PsOperacion + @w_comilla)
+   Set @w_sql = Concat(@w_sql, ' Where codigoMenu = ', @w_comilla + @PsCodigoMenu + @w_comilla)
 
    Begin Try
 
@@ -200,8 +177,8 @@ Grant Execute on Spp_ActualizaPasswordUserBD to Public;
 --
 
 Declare
-   @w_valor          Varchar(1500) = 'Procedimiento que actualiza los Registros a la tabla catOperacionesTblTbl.',
-   @w_procedimiento  Varchar( 100) = 'Spu_catOperacionesTbl'
+   @w_valor          Varchar(1500) = 'Procedimiento que actualiza los Registros a la tabla catMenusTbl.',
+   @w_procedimiento  Varchar( 100) = 'Spu_catMenusTbl'
 
 
 If Not Exists (Select Top 1 1
