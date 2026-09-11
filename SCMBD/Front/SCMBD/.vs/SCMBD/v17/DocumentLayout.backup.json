@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmmanmenus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmmanmenus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrelusuariooperacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrelusuariooperacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmmanmenus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmmanmenus.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrelusuariooperacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrelusuariooperacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -27,26 +27,26 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "FrmManMenus.cs",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManMenus.cs",
-              "RelativeDocumentMoniker": "FrmManMenus.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManMenus.cs*",
-              "RelativeToolTip": "FrmManMenus.cs*",
-              "ViewState": "AgIAAOAAAAAAAAAAAAAuwPIAAAA8AAAAAAAAAA==",
+              "Title": "FrmRelUsuarioOperacion.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRelUsuarioOperacion.cs",
+              "RelativeDocumentMoniker": "FrmRelUsuarioOperacion.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRelUsuarioOperacion.cs*",
+              "RelativeToolTip": "FrmRelUsuarioOperacion.cs*",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAkwKUAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-09T21:39:11.83Z",
+              "WhenOpened": "2026-09-11T19:48:35.556Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "FrmManMenus.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManMenus.cs",
-              "RelativeDocumentMoniker": "FrmManMenus.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmManMenus.cs [Dise\u00F1o]*",
-              "RelativeToolTip": "FrmManMenus.cs [Dise\u00F1o]*",
+              "Title": "FrmRelUsuarioOperacion.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRelUsuarioOperacion.cs",
+              "RelativeDocumentMoniker": "FrmRelUsuarioOperacion.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRelUsuarioOperacion.cs [Dise\u00F1o]*",
+              "RelativeToolTip": "FrmRelUsuarioOperacion.cs [Dise\u00F1o]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-09T21:32:20.709Z",
+              "WhenOpened": "2026-09-11T19:42:11.651Z",
               "EditorCaption": " [Dise\u00F1o]"
             }
           ]

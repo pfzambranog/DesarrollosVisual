@@ -198,7 +198,7 @@ namespace SCMBD
 
         private void BtnProcesar_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(this.txtOperacion.Text))
+            if (string.IsNullOrWhiteSpace(txtOperacion.Text))
             {
                 MessageBox.Show("Ingrese la Clave de Menu.", "Validación",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);

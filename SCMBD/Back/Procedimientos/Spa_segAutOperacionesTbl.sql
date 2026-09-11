@@ -3,6 +3,7 @@ Declare
    @PnIdUsuario              Integer          = 1,
    @PnIdOperacion            Integer          = 7,
    @PnIdAutorizacion         Tinyint          = 4,
+   @PnIdOperacionAct         Integer          = 1,
    @PnIdUsuarioAct           Integer          = 1,
    @PsIpAct                  Varchar ( 30)    = Null,
    @PsMacAddressAct          Varchar ( 30)    = Null,
@@ -13,6 +14,7 @@ Begin
    Execute dbo.Spa_segAutOperacionesTbl @PnIdUsuario       = @PnIdUsuario,
                                         @PnIdOperacion     = @PnIdOperacion,
                                         @PnIdAutorizacion  = @PnIdAutorizacion,
+                                        @PnIdOperacionAct  = @PnIdOperacionAct,
                                         @PnIdUsuarioAct    = @PnIdUsuarioAct,
                                         @PsIpAct           = @PsIpAct,
                                         @PsMacAddressAct   = @PsMacAddressAct,
@@ -29,6 +31,7 @@ Create Or Alter Procedure dbo.Spa_segAutOperacionesTbl
   (@PnIdUsuario              Integer,
    @PnIdOperacion            Integer,
    @PnIdAutorizacion         Tinyint,
+   @PnIdOperacionAct         Integer,
    @PnIdUsuarioAct           Integer,
    @PsIpAct                  Varchar ( 30)  = Null,
    @PsMacAddressAct          Varchar ( 30)  = Null,
@@ -68,11 +71,11 @@ Begin
          Set Xact_Abort Off
          Return
       End
-/*
+
    If Not Exists (Select Top 1 1
                   From   dbo.segAutOperacionesTbl
                   Where  idUsuario       = @PnIdUsuarioAct
-                  And    idOperacion     = @PnIdOperacion
+                  And    idOperacion     = @PnIdOperacionAct
                   And    idAutorizacion >= 2)
       Begin
          Select @PnEstatus = 9985,
@@ -81,13 +84,12 @@ Begin
          Set Xact_Abort Off
          Return
       End
-*/
+
 
    If Exists (Select Top 1 1
               From   dbo.segAutOperacionesTbl
               Where  idUsuario       = @PnIdUsuario
-              And    idOperacion     = @PnIdOperacion
-              And    idAutorizacion  = @PnIdAutorizacion)
+              And    idOperacion     = @PnIdOperacion)
       Begin
          Select @PnEstatus = 706,
                 @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);

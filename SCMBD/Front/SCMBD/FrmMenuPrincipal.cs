@@ -49,7 +49,7 @@ namespace SCMBD
             CargarImagenesBotones();
             ConfigurarTooltips();
             string nombrePantalla = ObtenerLlamadaCambioContrasenia();
-            btnCambioContrasenia.Enabled = !string.IsNullOrEmpty(nombrePantalla);
+            btnCambioContrasenia.Enabled = true; // = !string.IsNullOrEmpty(nombrePantalla);
             btnCambioContrasenia.Tag = nombrePantalla;
         }
 
@@ -225,6 +225,7 @@ namespace SCMBD
         }
 
         // MÉTODO ACTUALIZADO — Detecta 5 o 6 parámetros automáticamente
+
         private void AbrirPantallaSeleccionada()
         {
             if (lstOperaciones.SelectedItems.Count == 0) return;
@@ -232,9 +233,9 @@ namespace SCMBD
 
             if (item.Tag is Tuple<string, string, string> datos)
             {
-                string llamada = datos.Item1;           // "SCMBD.FrmManOperaciones"
-                string claveOperacion = datos.Item2;     // "CATOPE01"
-                string nombreOperacion = datos.Item3;    // "Mantenimiento Catálogo de Operaciones"
+                string llamada = datos.Item1; 
+                string claveOperacion = datos.Item2;
+                string nombreOperacion = datos.Item3;
 
                 if (string.IsNullOrWhiteSpace(llamada))
                 {
@@ -262,7 +263,7 @@ namespace SCMBD
 
                 if (constructor6 != null)
                 {
-                    // ✅ PANTALLA NUEVA → 6 parámetros
+                    
                     pantalla = Activator.CreateInstance(tipoPantalla,
                         _idUsuario,
                         _claveUsuario,

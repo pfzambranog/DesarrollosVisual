@@ -9,13 +9,13 @@ namespace SCMBD
 {
     public partial class FrmCambioContrasenia : Form
     {
-        // ✅ TUS CAMPOS — INTACTOS
+        // ? TUS CAMPOS — INTACTOS
         private readonly int _idUsuario;
         private readonly string _cadenaConexion;
         private string _claveUsuarioBD;
         private readonly string _claveUsuario;
         private readonly DataTable _permisos;
-        private readonly string _operacion; // ✅ NUEVO: recibimos pero no se usa aquí
+        private readonly string _operacion; // ? NUEVO: recibimos pero no se usa aquí
 
         // Controles — TAL COMO LOS TIENES
         private Button btnCancelar;
@@ -28,21 +28,21 @@ namespace SCMBD
         private TextBox txtConfirmarContrasenia;
 
         // =====================================================
-        // ✅ Constructor CORREGIDO — AHORA RECIBE LOS 5 PARÁMETROS
+        // ? Constructor CORREGIDO — AHORA RECIBE LOS 5 PARÁMETROS
         // =====================================================
         public FrmCambioContrasenia(int idUsuario, string claveUsuario, DataTable permisos, string operacion, string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
             _permisos = permisos;
-            _operacion = operacion;           // ✅ Recibimos, aunque no se usa aquí
+            _operacion = operacion;           // ? Recibimos, aunque no se usa aquí
             _cadenaConexion = cadenaConexion;
 
             InitializeComponent();
             this.Load += FrmCambioContrasenia_Load;
         }
 
-        // ✅ Constructor vacío — INTACTO
+        // ? Constructor vacío — INTACTO
         public FrmCambioContrasenia()
         {
             InitializeComponent();
@@ -50,7 +50,7 @@ namespace SCMBD
         }
 
         // =====================================================
-        // ✅ RESTO DE TU CÓDIGO — TODO IGUAL, SIN CAMBIOS
+        // ? RESTO DE TU CÓDIGO — TODO IGUAL, SIN CAMBIOS
         // =====================================================
 
         private void FrmCambioContrasenia_Load(object sender, EventArgs e)
