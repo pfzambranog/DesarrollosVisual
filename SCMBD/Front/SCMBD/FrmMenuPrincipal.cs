@@ -49,7 +49,7 @@ namespace SCMBD
             CargarImagenesBotones();
             ConfigurarTooltips();
             string nombrePantalla = ObtenerLlamadaCambioContrasenia();
-            btnCambioContrasenia.Enabled = true; // = !string.IsNullOrEmpty(nombrePantalla);
+            btnCambioContrasenia.Enabled = !string.IsNullOrEmpty(nombrePantalla);
             btnCambioContrasenia.Tag = nombrePantalla;
         }
 
