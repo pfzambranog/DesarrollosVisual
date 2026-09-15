@@ -116,6 +116,12 @@
     <Compile Include="FrmManMenus.Designer.cs">
       <DependentUpon>FrmManMenus.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmListaErrores.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmListaErrores.Designer.cs">
+      <DependentUpon>FrmListaErrores.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmRelUsuarioOperacion.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -146,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmConexion.resx">
       <DependentUpon>FrmConexion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmListaErrores.resx">
+      <DependentUpon>FrmListaErrores.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmManMenus.resx">
       <DependentUpon>FrmManMenus.cs</DependentUpon>
@@ -203,6 +212,7 @@
     <Content Include="Resources\Consultar.jpeg" />
     <Content Include="Resources\Consultar.png" />
     <Content Include="Resources\Excel.png" />
+    <None Include="Resources\I011.ICO" />
     <Content Include="Resources\importar.png" />
     <None Include="Resources\manuser.ico" />
     <Content Include="Resources\procesar.png" />

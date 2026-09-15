@@ -119,7 +119,7 @@ Begin
                   From   dbo.catOperacionesTbl
                   Where  operacion   = @PsOperacion)
       Begin
-         Select @PnEstatus = 6204,
+         Select @PnEstatus = 9979,
                 @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
 
          Set Xact_Abort Off

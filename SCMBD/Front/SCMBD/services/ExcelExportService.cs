@@ -15,14 +15,15 @@ namespace SCMBD.Services
         private static readonly double[] anchosColumnas =
         {
             15,   
-            30,  
-            30,
+            40,  
+            40,
             30,
             30,
             30, 
-            20,   
+            60,   
             20    
         };
+
 
         public static void ExportarUsuarios(
             string rutaArchivo,
@@ -84,20 +85,20 @@ namespace SCMBD.Services
             string usuario)
         {
             // Etiquetas en columna G
-            hoja.Cell("G1").Value = "Página:";
-            hoja.Cell("G2").Value = "Fecha:";
-            hoja.Cell("G3").Value = "Reporte:";
-            hoja.Cell("G4").Value = "Usuario:";
-            hoja.Range("G1:G4").Style.Font.SetBold();
+            hoja.Cell("F1").Value = "Página:";
+            hoja.Cell("F2").Value = "Fecha:";
+            hoja.Cell("F3").Value = "Reporte:";
+            hoja.Cell("F4").Value = "Usuario:";
+            hoja.Range("F1:F4").Style.Font.SetBold();
 
 
-            hoja.Cell("H1").Value = 1;
-            hoja.Cell("H2").Value = DateTime.Now;
-            hoja.Range("H2:I2").Merge();
-            hoja.Cell("H2").Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
-            hoja.Cell("H2").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
-            hoja.Cell("H3").Value = operacion;
-            hoja.Cell("H4").Value = usuario;
+            hoja.Cell("G1").Value = 1;
+            hoja.Cell("G2").Value = DateTime.Now;
+            hoja.Range("G2:H2").Merge();
+            hoja.Cell("G2").Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+            hoja.Range("G1:G4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+            hoja.Cell("G3").Value = operacion;
+            hoja.Cell("G4").Value = usuario;
 
 
             hoja.Range("A6:H6").Merge();
@@ -168,6 +169,9 @@ namespace SCMBD.Services
             //  BORDES A TODA LA TABLA
             int ultimaFila = fila - 1;
             var rangoDatos = hoja.Range(filaEncabezados, 1, ultimaFila, dgv.Columns.Count);
+
+            dgv.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+
             rangoDatos.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             rangoDatos.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 

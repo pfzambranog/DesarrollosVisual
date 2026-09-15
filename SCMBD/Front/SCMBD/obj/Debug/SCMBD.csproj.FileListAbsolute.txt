@@ -49,3 +49,4 @@ C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\bin\Debug\System.Security.Cry
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmManOperaciones.resources
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmManMenus.resources
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmRelUsuarioOperacion.resources
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmListaErrores.resources

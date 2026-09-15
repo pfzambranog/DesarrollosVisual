@@ -2,7 +2,7 @@
 
 Declare
    @PsJasonIn                Varchar(Max),
-   @PnIdOperacion            Integer        = 9,
+   @PsOperacion              Varchar( 20)   = 'SU1011',
    @PnIdUsuarioAct           Integer        = 3,
    @PsIpAct                  Varchar ( 30)  = Null,
    @PsMacAddressAct          Varchar ( 30)  = Null,
@@ -10,24 +10,10 @@ Declare
    @PsMensaje                Varchar (Max)  = Char(32);
 
 Begin
-   Set   @PsJasonIn = '[{
-                           "Identificador": 1,
-                           "IdUsuario": 0,
-                           "IdOperacion": 7,
-                           "IdAutorizacion": 0,
-                           "IdEstatus": 0
-                        },
-                        {
-                           "Identificador": 2,
-                           "IdUsuario": 0,
-                           "IdOperacion": 7,
-                           "IdAutorizacion": 1,
-                           "IdEstatus": 0
-                        }
-                       ]'
+   Set   @PsJasonIn = '[{"IdUsuario":3,"IdOperacion":7,"IdAutorizacion":4,"IdEstatus":1}]'
 
    Execute dbo.Spp_segAutOperacionesTbl @PsJasonIn        = @PsJasonIn,
-                                        @PnIdOperacion    = @PnIdOperacion,
+                                        @PsOperacion      = @PsOperacion,
                                         @PnIdUsuarioAct   = @PnIdUsuarioAct,
                                         @PsIpAct          = @PsIpAct,
                                         @PsMacAddressAct  = @PsMacAddressAct,
@@ -47,8 +33,8 @@ Go
 
 Create or Alter Procedure Spp_segAutOperacionesTbl
   (@PsJasonIn                Varchar(Max),
-   @PnIdOperacion            Integer        = 9,
-   @PnIdUsuarioAct           Integer        = 3,
+   @PsOperacion              Varchar( 20),
+   @PnIdUsuarioAct           Integer,
    @PsIpAct                  Varchar ( 30)  = Null,
    @PsMacAddressAct          Varchar ( 30)  = Null,
    @PnEstatus                Integer        = 0    Output,
@@ -57,14 +43,18 @@ As
 
 Declare
    @w_desc_error             Varchar( 250),
+   @w_idOperacion            Integer,
    @w_Error                  Integer,
    @w_registros              Integer,
    @w_sec                    Integer,
    @w_identificador          Integer,
    @w_idusuario              Integer,
-   @w_idOperacion            Integer,
+   @w_idOperacionAct         Integer,
    @w_idAutorizacion         Tinyint,
-   @w_idEstatus              Tinyint;
+   @w_idEstatus              Tinyint,
+   @w_idEstatus2             Tinyint,
+   @w_operacion              Varchar( 100),
+   @w_usuario                Varchar( 400);
 
 Begin
 /*
@@ -84,6 +74,7 @@ Begin
           @PsMacAddressAct   = Isnull(@PsMacAddressAct, dbo.Fn_Busca_DireccionMAC());
 
 
+
    Select @PnEstatus = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct)
    If @PnEstatus != 0
       Begin
@@ -93,10 +84,14 @@ Begin
          Return
       End
 
+   Select top 1 @w_idOperacionAct = idOperacion
+   From   dbo.catOperacionesTbl
+   Where  operacion = @PsOperacion;
+
    If Not Exists (Select Top 1 1
-                  From   dbo.segAutOPeracionesTbl
+                  From   dbo.segAutOperacionesTbl
                   Where  idUsuario       = @PnIdUsuarioAct
-                  And    idOPeracion     = @PnIdOPeracion
+                  And    idOPeracion     = @w_idOperacionAct
                   And    idAutorizacion >= 2)
       Begin
          Select @PnEstatus = 9985,
@@ -117,28 +112,25 @@ Begin
 
    Create Table #Temp_Json
   (secuencia           Integer    Not Null Identity(1, 1) Primary Key,
-   identificador       Integer        Null,
    idusuario           Integer        Null,
    idOperacion         Integer        Null,
    idAutorizacion      Tinyint        Null,
    idEstatus           Tinyint        Null)
 
    Create Table #TempError
-  (secuencia           Integer    Not Null  Primary Key,
-   identificador       Integer        Null,
-   idusuario           Integer        Null,
-   idOperacion         Integer        Null,
-   idAutorizacion      Tinyint        Null,
-   idEstatus           Tinyint        Null,
-   error               Integer        Null,
-   mensaje             Varchar(Max)   Null)
+  (secuencia           Integer       Not Null  Primary Key,
+   usuario             Varchar(400)      Null,
+   operacion           Varchar(100)      Null,
+   idAutorizacion      Tinyint           Null,
+   idEstatus           Tinyint           Null,
+   error               Integer           Null,
+   mensaje             Varchar(Max)      Null)
 
    Insert Into #Temp_Json
-  (Identificador, Idusuario, IdOperacion, IdAutorizacion, IdEstatus)
-   Select Identificador, IdUsuario, IdOperacion,  Isnull(IdAutorizacion, 0), Isnull(IdEstatus, 0)
+  (Idusuario, IdOperacion, IdAutorizacion, IdEstatus)
+   Select IdUsuario, IdOperacion,  Isnull(IdAutorizacion, 0), Isnull(IdEstatus, 0)
    From   Openjson(@PsJasonIn)
-   With  (Identificador       Integer      '$.Identificador',
-          IdUsuario           Integer      '$.IdUsuario',
+   With  (IdUsuario           Integer      '$.IdUsuario',
           IdOperacion         Integer      '$.IdOperacion',
           IdAutorizacion      Tinyint      '$.IdAutorizacion',
           IdEstatus           Tinyint      '$.idusuario');
@@ -158,8 +150,7 @@ Begin
    Begin
       Set @w_sec = @w_sec + 1
 
-      Select @w_identificador  = identificador,
-             @w_idusuario      = idusuario,
+      Select @w_idusuario      = idusuario,
              @w_idOperacion    = idOperacion,
              @w_idAutorizacion = idAutorizacion,
              @w_idEstatus      = idEstatus
@@ -170,15 +161,144 @@ Begin
             Break
          End
 
-      Select @PnEstatus = 0,
-             @PsMensaje = Char(32);
+      Select @PnEstatus       = 0,
+             @PsMensaje       = Char(32),
+             @w_identificador = 1;
+
+--
+-- Validación de Usuario proveniente del Json.
+--
+
+      Select @w_usuario     = Concat(primerApellido, Char(32), segundoApellido, Char(32), nombres),
+             @w_idEstatus2  = IdEstatus
+      From   dbo.segUsuariosTbl
+      Where  idUsuario = @w_idusuario;
+      If @@Rowcount = 0
+         Begin
+            Select @PnEstatus = 9999,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_idusuario, @w_idOperacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+
+      If @w_idEstatus2 = 0
+         Begin
+            Select @PnEstatus = 9998,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_idOperacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+--
+-- Validación de Operacion proveniente del Json.
+--
+
+      Select @w_operacion   = descripcion,
+             @w_idEstatus2  = IdEstatus
+      From   dbo.catOperacionesTbl
+      Where  IdOperacion = @w_idOperacion;
+      If @@Rowcount = 0
+         Begin
+            Select @PnEstatus = 9979,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_idOperacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+      If @w_idEstatus2 = 0
+         Begin
+            Select @PnEstatus = 9980,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_operacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+--
+-- Validación de Nivel de Autorizacion proveniente del Json.
+--
+
+      If Not Exists ( Select top 1 1
+                      From   dbo.catGeneralesTbl
+                      Where  tabla   = 'segAutOperacionesTbl'
+                      And    columna = 'idAutorizacion'
+                      And    valor   = @w_idAutorizacion)
+         Begin
+            Select @PnEstatus = 707,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_operacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+
+--
+-- Validación de Id Estatus proveniente del Json.
+--
+
+      If Not Exists ( Select top 1 1
+                      From   dbo.catGeneralesTbl
+                      Where  tabla   = 'segAutOperacionesTbl'
+                      And    columna = 'idEstatus'
+                      And    valor   = @w_idEstatus)
+         Begin
+            Select @PnEstatus = 8888,
+                   @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_operacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+
+            Goto Proximo;
+         End;
+
+--
+
+      If Exists (Select Top 1 1
+                 From   dbo.segAutOperacionesTbl
+                 Where  idUsuario       = @w_idusuario
+                 And    idOperacion     = @w_idOperacion)
+         Begin
+            Set @w_identificador = 2;
+         End;
 
       If @w_identificador = 1
          Begin
             Execute dbo.Spa_segAutOperacionesTbl @PnIdUsuario       = @w_idusuario,
                                                  @PnIdOperacion     = @w_idOperacion,
                                                  @PnIdAutorizacion  = @w_idAutorizacion,
-                                                 @PnIdOperacionAct  = @PnIdOperacion,
+                                                 @PnIdOperacionAct  = @w_idOperacionAct,
                                                  @PnIdUsuarioAct    = @PnIdUsuarioAct,
                                                  @PsIpAct           = @PsIpAct,
                                                  @PsMacAddressAct   = @PsMacAddressAct,
@@ -187,47 +307,62 @@ Begin
          End
       Else
          Begin
-            Execute dbo.Spu_segAutOperacionesTbl @PnIdUsuario       = @w_idusuario,
-                                                 @PnIdOperacion     = @w_idOperacion,
-                                                 @PnIdAutorizacion  = @w_idAutorizacion,
-                                                 @PnIdEstatus       = @w_idEstatus,
-                                                 @PnIdOperacionAct  = @PnIdOperacion,
-                                                 @PnIdUsuarioAct    = @PnIdUsuarioAct,
-                                                 @PsIpAct           = @PsIpAct,
-                                                 @PsMacAddressAct   = @PsMacAddressAct,
-                                                 @PnEstatus         = @PnEstatus Output,
-                                                 @PsMensaje         = @PsMensaje Output;
 
+            If @w_idAutorizacion = 0
+               Begin
+                  Execute dbo.Spd_segAutOperacionesTbl @PnIdUsuario       = @w_idusuario,
+                                                       @PnIdOperacion     = @w_idOperacion,
+                                                       @PnIdOperacionAct  = @w_idOperacionAct,
+                                                       @PnIdUsuarioAct    = @PnIdUsuarioAct,
+                                                       @PsIpAct           = @PsIpAct,
+                                                       @PsMacAddressAct   = @PsMacAddressAct,
+                                                       @PnEstatus         = @PnEstatus Output,
+                                                       @PsMensaje         = @PsMensaje Output;
+               End;
+            Else
+               Begin
+                  Execute dbo.Spu_segAutOperacionesTbl @PnIdUsuario       = @w_idusuario,
+                                                       @PnIdOperacion     = @w_idOperacion,
+                                                       @PnIdAutorizacion  = @w_idAutorizacion,
+                                                       @PnIdEstatus       = @w_idEstatus,
+                                                       @PnIdOperacionAct  = @w_idOperacionAct,
+                                                       @PnIdUsuarioAct    = @PnIdUsuarioAct,
+                                                       @PsIpAct           = @PsIpAct,
+                                                       @PsMacAddressAct   = @PsMacAddressAct,
+                                                       @PnEstatus         = @PnEstatus Output,
+                                                       @PsMensaje         = @PsMensaje Output;
+               End;
          End
 
-            If @PnEstatus != 0
-               Begin
-                  Insert Into #TempError
-                 (secuencia,       identificador,  idusuario,  idOperacion,
-                  idAutorizacion,  idEstatus,      error,      mensaje)
-                  Select @w_sec,            @w_identificador, @w_idusuario, @w_idOperacion,
-                         @w_idAutorizacion, @w_idEstatus,     @PnEstatus,   @PsMensaje
-              End
+      If @PnEstatus != 0
+         Begin
+            Insert Into #TempError
+           (secuencia, usuario, operacion, idAutorizacion,
+            idEstatus, error,   mensaje)
+            Select @w_sec,       @w_usuario,   @w_operacion, @w_idAutorizacion,
+                   @w_idEstatus, @PnEstatus,   @PsMensaje;
+        End
 
+Proximo:
 
    End
-   
+
    If Exists ( Select Top 1 1
                From   #TempError)
       Begin
          Select @PnEstatus = 1,
-                @PsMensaje = (Select secuencia,       identificador,  idusuario,  idOperacion,
-                                     idAutorizacion,  idEstatus,      error,      mensaje
+                @PsMensaje = (Select secuencia, usuario, operacion, idAutorizacion,
+                                     idEstatus, error,   mensaje
                               From   #TempError
                               For    Json Path);
       End
-     
+
    Return;
 
 End
 Go
 
-Grant Execute on Spa_segAutOperacionesTbl to public;
+Grant Execute on Spp_segAutOperacionesTbl to public;
 
 --
 -- Comentarios.

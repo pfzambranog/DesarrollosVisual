@@ -22,7 +22,7 @@ namespace SCMBD
 
         // ✅ Constructor con 6 parámetros: recibe CLAVE + NOMBRE
         public FrmManMenus(int idUsuario, string claveUsuario, DataTable dtPermisos,
-                                  string codigoMenu, string nombreOperacion, string cadenaConexion)
+                           string codigoMenu, string nombreOperacion, string cadenaConexion)
         {
             _idUsuario = idUsuario;
             _claveUsuario = claveUsuario;
