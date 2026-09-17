@@ -11,13 +11,15 @@ Go
 Create Table dbo.catRelMenuOperacionTbl
   (idMenu			   Integer		  Not Null,
    idOperacion		   Integer		  Not Null,
-   idEstatus		   Bit			  Not Null Default(1),
+   secuencia           Smallint       Not Null Default 1,
+   idEstatus		   Bit			  Not Null Default 1,
    idUsuarioAct		   INteger		  Not Null,
    fechaAct			   Datetime		  Not Null Default Getdate(),
    ipAct			   Varchar( 30)		  Null,
    macAddressAct	   Varchar( 30)		  Null,
 Constraint catRelMenuOperacionPk
 Primary Key (idMenu, idOperacion),
+Index catRelMenuOperacionId01 Unique (idOperacion),
 Constraint catRelMenuOperacionFK1
 Foreign Key (idMenu)
 References dbo.catMenusTbl(idMenu) on Delete Cascade,
@@ -54,7 +56,6 @@ Execute sys.sp_addextendedproperty @name	   = 'MS_Description',
 								   @level2name = 'idMenu'
 Go
 
-
 Execute sys.sp_addextendedproperty @name	   = 'MS_Description',
 								   @value	   = 'Descripción del Menú' ,
 								   @level0type = 'Schema',
@@ -64,6 +65,17 @@ Execute sys.sp_addextendedproperty @name	   = 'MS_Description',
 								   @level2type = 'Column',
 								   @level2name = 'idOperacion'
 Go
+
+Execute sys.sp_addextendedproperty @name	   = 'MS_Description',
+								   @value	   = 'Secuencia en presentación del Menú' ,
+								   @level0type = 'Schema',
+								   @level0name = 'dbo',
+								   @level1type = 'Table',
+								   @level1name = 'catRelMenuOperacionTbl',
+								   @level2type = 'Column',
+								   @level2name = 'secuencia'
+Go
+
 
 Execute sys.sp_addextendedproperty @name	   = 'MS_Description',
 								   @value	   = 'Identificador del Estatus del Registro. 1.- Activo, 0.- Inactivo.' ,

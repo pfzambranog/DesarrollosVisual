@@ -15,8 +15,8 @@ namespace SCMBD
         private readonly int _idUsuario;
         private readonly string _claveUsuario;
         private readonly DataTable _dtPermisos;
-        private readonly string _claveOperacion;      // ✅ Código: CATOPE01
-        private readonly string _nombreOperacion;     // ✅ Nombre: Mantenimiento Catálogo...
+        private readonly string _claveOperacion;
+        private readonly string _nombreOperacion;
         private readonly string _cadenaConexion;
         private DataGridView dgv;
 
@@ -136,8 +136,7 @@ AND    a.idEstatus = 1
 AND    NOT EXISTS  ( SELECT 1 
                      FROM   dbo.segAutOperacionesTbl b 
                      WHERE  b.idOperacion = a.idOperacion 
-                     And    b.idUsuario   = d.idUsuario
-                     And    b.idAutorizacion > 0)
+                     And    b.idUsuario   = d.idUsuario)
 UNION ALL
 SELECT 
     d.idUsuario, 
@@ -150,8 +149,7 @@ FROM   dbo.catOperacionesTbl a
 INNER JOIN dbo.segAutOperacionesTbl b 
         ON b.idOperacion = a.idOperacion 
        AND b.idUsuario   = @IdUsuario
-       AND b.idAutorizacion > 0 
-       AND b.idEstatus     = 1 
+       AND b.idAutorizacion >= 0  
 INNER JOIN dbo.segUsuariosTbl d 
         ON d.idUsuario = b.idUsuario
 WHERE  a.idEstatus = 1

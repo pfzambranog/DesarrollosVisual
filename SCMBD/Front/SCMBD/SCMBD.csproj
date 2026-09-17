@@ -122,6 +122,12 @@
     <Compile Include="FrmListaErrores.Designer.cs">
       <DependentUpon>FrmListaErrores.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmRelMenuOperacion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRelMenuOperacion.Designer.cs">
+      <DependentUpon>FrmRelMenuOperacion.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmRelUsuarioOperacion.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -158,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmManMenus.resx">
       <DependentUpon>FrmManMenus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmRelMenuOperacion.resx">
+      <DependentUpon>FrmRelMenuOperacion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRelUsuarioOperacion.resx">
       <DependentUpon>FrmRelUsuarioOperacion.cs</DependentUpon>
@@ -204,6 +213,7 @@
   <ItemGroup>
     <Content Include="Resources\ACEPTA1.ICO" />
     <None Include="Resources\cambio.ICO" />
+    <None Include="Resources\BAJA.BMP" />
     <Content Include="Resources\CANCELA1.ICO" />
     <Content Include="Resources\CANCELA1.png" />
     <Content Include="Resources\Cancela_con1.bmp" />
@@ -211,6 +221,7 @@
     <None Include="Resources\Ccontra.ico" />
     <Content Include="Resources\Consultar.jpeg" />
     <Content Include="Resources\Consultar.png" />
+    <None Include="Resources\Elimina.png" />
     <Content Include="Resources\Excel.png" />
     <None Include="Resources\I011.ICO" />
     <Content Include="Resources\importar.png" />

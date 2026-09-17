@@ -50,3 +50,4 @@ C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmManOperaci
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmManMenus.resources
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmRelUsuarioOperacion.resources
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmListaErrores.resources
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmRelMenuOperacion.resources

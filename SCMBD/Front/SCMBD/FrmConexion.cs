@@ -152,7 +152,7 @@ namespace SCMBD
                                                   Operacion, idAutorizacion, llamada, claveOperacion
                                            FROM   dbo.MenuUsuariosVw 
                                            WHERE  idUsuario = @IdUsuario 
-                                           Order  BY OrdenPresentacion, idOperacion";
+                                           Order  BY OrdenPresentacion, secuencia";
 
                     using (SqlCommand cmdPerm = new SqlCommand(sqlPermisos, cn))
                     {
