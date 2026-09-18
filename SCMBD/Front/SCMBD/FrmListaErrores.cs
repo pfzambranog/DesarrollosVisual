@@ -22,23 +22,21 @@ namespace SCMBD
         private void ConfigurarPantalla()
         {
             Text = "Lista de Errores de Validación";
-            Size = new Size(1200, 650);
+            Size = new Size(1400, 700);
             StartPosition = FormStartPosition.CenterParent;
-            MinimumSize = new Size(1000, 500);
+            MinimumSize = new Size(1100, 550);
             BackColor = Color.LightSteelBlue;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
 
             const int alturaCabecera = 80;
-
-            // ✅ Panel superior
             Panel pnlCabecera = new Panel
             {
                 Bounds = new Rectangle(0, 0, this.ClientSize.Width, alturaCabecera),
                 BackColor = Color.Transparent
             };
 
-            // ✅ LOGO arriba a la izquierda
+            // Logo
             PictureBox picLogo = new PictureBox
             {
                 Size = new Size(70, 70),
@@ -49,11 +47,11 @@ namespace SCMBD
             RecursosCompartidos.CargarLogo(picLogo);
             pnlCabecera.Controls.Add(picLogo);
 
-            // ✅ BOTÓN EXCEL — solo ícono
+            // ✅ BOTÓN EXCEL — movido hacia la izquierda
             Button btnExcel = new Button
             {
                 Name = "BtnExcel",
-                Location = new Point(1060, 19),
+                Location = new Point(1200, 19),  // ← Antes: 1280
                 Size = new Size(59, 42),
                 BackColor = Color.LightSteelBlue,
                 Image = Resources.Excel,
@@ -65,11 +63,11 @@ namespace SCMBD
             btnExcel.Click += BtnExcel_Click;
             pnlCabecera.Controls.Add(btnExcel);
 
-            // ✅ BOTÓN SALIR — solo ícono
+            // ✅ BOTÓN SALIR — movido hacia la izquierda
             Button btnSalir = new Button
             {
                 Name = "BtnSalir",
-                Location = new Point(1125, 19),
+                Location = new Point(1270, 19),  // ← Antes: 1345
                 Size = new Size(59, 42),
                 BackColor = Color.LightSteelBlue,
                 Image = Resources.salir,
@@ -82,7 +80,7 @@ namespace SCMBD
             btnSalir.Click += (s, e) => Close();
             pnlCabecera.Controls.Add(btnSalir);
 
-            // ✅ GRID
+            // Grid
             dgv = new DataGridView
             {
                 Bounds = new Rectangle(0, alturaCabecera, this.ClientSize.Width, this.ClientSize.Height - alturaCabecera),
@@ -96,7 +94,6 @@ namespace SCMBD
                 AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None,
                 DefaultCellStyle = { WrapMode = DataGridViewTriState.True }
             };
-
             dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.SteelBlue;
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
@@ -105,89 +102,133 @@ namespace SCMBD
             dgv.RowTemplate.Height = 45;
             dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
-            // ✅ EVENTO: AJUSTAR COLUMNAS CUANDO YA ESTÉN CREADAS
             dgv.DataBindingComplete += Dgv_DataBindingComplete;
-
             dgv.DataSource = _dtErrores;
 
             Controls.Add(pnlCabecera);
             Controls.Add(dgv);
         }
 
-        // ✅ SE DISPARA SOLO CUANDO LAS COLUMNAS YA EXISTEN 100%
         private void Dgv_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            if (dgv.Columns.Count >= 7)
+            if (dgv.Columns.Count == 0) return;
+
+            bool esReglas = _dtErrores.Columns.Contains("Regla")
+                         || _dtErrores.Columns.Contains("codRegla");
+
+            if (esReglas)
             {
-                // ✅ Anchos fijos iguales al diseño original
-                dgv.Columns[0].Width = 70;
-                dgv.Columns[0].HeaderText = "Secuencia";
-                dgv.Columns[0].ReadOnly = true;
-
-                dgv.Columns[1].Width = 200;
-                dgv.Columns[1].HeaderText = "Usuario";
-                dgv.Columns[1].ReadOnly = true;
-
-                dgv.Columns[2].Width = 300;
-                dgv.Columns[2].HeaderText = "Operación";
-                dgv.Columns[2].ReadOnly = true;
-
-                dgv.Columns[3].Width = 110;
-                dgv.Columns[3].HeaderText = "Autorización";
-                dgv.Columns[3].ReadOnly = true;
-
-                dgv.Columns[4].Width = 80;
-                dgv.Columns[4].HeaderText = "Estatus";
-                dgv.Columns[4].ReadOnly = true;
-
-                dgv.Columns[5].Width = 90;
-                dgv.Columns[5].HeaderText = "N° Error";
-                dgv.Columns[5].ReadOnly = true;
-
-                // ✅ Mensaje → LLENA TODO el ancho restante de la pantalla
-                dgv.Columns[6].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                dgv.Columns[6].MinimumWidth = 280;
-                dgv.Columns[6].HeaderText = "Mensaje";
-                dgv.Columns[6].ReadOnly = true;
-                dgv.Columns[6].DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+                AplicarEstiloComun();
+                ConfigurarColumnasReglas();
+            }
+            else
+            {
+                AplicarEstiloComun();
+                ConfigurarColumnasUsuarioOperacion();
             }
         }
 
-        // ✅ EXPORTAR con tu estándar
+        private void AplicarEstiloComun()
+        {
+            foreach (DataGridViewColumn col in dgv.Columns)
+            {
+                col.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                col.ReadOnly = true;
+            }
+        }
+
+        private void ConfigurarColumnasReglas()
+        {
+            if (dgv.Columns.Count >= 9)
+            {
+                dgv.Columns[0].Width = 60;
+                dgv.Columns[0].HeaderText = "Sec";
+
+                dgv.Columns[1].Width = 110;
+                dgv.Columns[1].HeaderText = "Código Regla";
+
+                dgv.Columns[2].Width = 220;
+                dgv.Columns[2].HeaderText = "Nombre de Regla";
+                dgv.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                dgv.Columns[3].Width = 300;
+                dgv.Columns[3].HeaderText = "Descripción";
+                dgv.Columns[3].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                dgv.Columns[4].Width = 100;
+                dgv.Columns[4].HeaderText = "Requerido";
+
+                dgv.Columns[5].Width = 130;
+                dgv.Columns[5].HeaderText = "Valor Mínimo";
+
+                dgv.Columns[6].Width = 100;
+                dgv.Columns[6].HeaderText = "Estatus";
+
+                dgv.Columns[7].Width = 100;
+                dgv.Columns[7].HeaderText = "N° Error";
+
+                dgv.Columns[8].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgv.Columns[8].MinimumWidth = 350;
+                dgv.Columns[8].HeaderText = "Mensaje";
+                dgv.Columns[8].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            }
+        }
+
+        private void ConfigurarColumnasUsuarioOperacion()
+        {
+            if (dgv.Columns.Count >= 7)
+            {
+                dgv.Columns[0].Width = 70;
+                dgv.Columns[0].HeaderText = "Secuencia";
+
+                dgv.Columns[1].Width = 220;
+                dgv.Columns[1].HeaderText = "Usuario";
+
+                dgv.Columns[2].Width = 320;
+                dgv.Columns[2].HeaderText = "Operación";
+                dgv.Columns[2].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+                dgv.Columns[3].Width = 150;
+                dgv.Columns[3].HeaderText = "Autorización";
+
+                dgv.Columns[4].Width = 90;
+                dgv.Columns[4].HeaderText = "Estatus";
+
+                dgv.Columns[5].Width = 100;
+                dgv.Columns[5].HeaderText = "N° Error";
+
+                dgv.Columns[6].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgv.Columns[6].MinimumWidth = 350;
+                dgv.Columns[6].HeaderText = "Mensaje";
+                dgv.Columns[6].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            }
+        }
+
         private void BtnExcel_Click(object sender, EventArgs e)
         {
             try
             {
                 if (dgv == null) return;
-
-                string carpetaReportes = ConfigurationManager.AppSettings["ReportsDirectory"]
-                                      ?? @"C:\TempAdam\";
-
-                if (!Directory.Exists(carpetaReportes))
-                    Directory.CreateDirectory(carpetaReportes);
-
-                string nombreArchivo = $"ErroresValidacion_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-                string rutaCompleta = Path.Combine(carpetaReportes, nombreArchivo);
-
+                string carpeta = ConfigurationManager.AppSettings["ReportsDirectory"] ?? @"C:\TempAdam\";
+                if (!Directory.Exists(carpeta)) Directory.CreateDirectory(carpeta);
+                string archivo = $"ErroresValidacion_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                string ruta = Path.Combine(carpeta, archivo);
                 string operReporte = "ERRORES";
-                string tituloReporte = "Lista de Errores de Validación";
-                Services.ExcelExportService.ExportarUsuarios(rutaCompleta, dgv, operReporte, tituloReporte, "");
-
-                MessageBox.Show($"✅ Exportado correctamente:\n{rutaCompleta}",
-                                "Exportación",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                string titulo = "Lista de Errores de Validación";
+                Services.ExcelExportService.ExportarUsuarios(ruta, dgv, operReporte, titulo, "");
+                MessageBox.Show($"✅ Exportado correctamente:\n{ruta}",
+                                "Exportación", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
-                    FileName = rutaCompleta,
+                    FileName = ruta,
                     UseShellExecute = true
                 });
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"❌ Error al exportar:\n{ex.Message}",
-                                "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

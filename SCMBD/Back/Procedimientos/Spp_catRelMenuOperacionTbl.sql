@@ -32,8 +32,8 @@ Go
 */
 
 Create or Alter Procedure Spp_catRelMenuOperacionTbl
-  (@PsJasonIn                Varchar(Max),
-   @PsOperacion              Varchar( 20),
+  (@PsJasonIn                Varchar (Max),
+   @PsOperacion              Varchar ( 20),
    @PnIdUsuarioAct           Integer,
    @PsIpAct                  Varchar ( 30)  = Null,
    @PsMacAddressAct          Varchar ( 30)  = Null,

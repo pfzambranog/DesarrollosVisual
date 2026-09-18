@@ -1,0 +1,185 @@
+/*
+Declare
+   @PsCodRegla            Varchar( 10)  = 'Test01',
+   @PsNombreRegla         Varchar(100)  = 'Regla de Prueba',
+   @PsDescripcion         Varchar(500)  = 'Regla de Prueba',
+   @PbEsRequerido         Bit           = 1,
+   @PnValorMinimo         Integer       = 2,
+   @PnIdOperacionAct      Integer       = 8,
+   @PnIdUsuarioAct        Integer       = 3,
+   @PsIpAct               Varchar(30)   = Null,
+   @PsMacAddressAct       Varchar(30)   = Null,
+   @PnIdRegla             Integer       = 0,
+   @PnEstatus             Integer       = 0,
+   @PsMensaje             Varchar(Max)  = Null;
+Begin
+   Execute dbo.Spa_segReglasContrasenaTbl @PsCodRegla       = @PsCodRegla,
+                                          @PsNombreRegla    = @PsNombreRegla,
+                                          @PsDescripcion    = @PsDescripcion,
+                                          @PbEsRequerido    = @PbEsRequerido,
+                                          @PnValorMinimo    = @PnValorMinimo,
+                                          @PnIdOperacionAct = @PnIdOperacionAct,
+                                          @PnIdUsuarioAct   = @PnIdUsuarioAct,
+                                          @PsIpAct          = @PsIpAct,
+                                          @PsMacAddressAct  = @PsMacAddressAct,
+                                          @PnIdRegla        = @PnIdRegla Output,
+                                          @PnEstatus        = @PnEstatus Output,
+                                          @PsMensaje        = @PsMensaje Output;
+
+   Select @PnIdRegla Id, @PnEstatus IdError, @PsMensaje Error;
+
+   Return;
+
+End;
+Go
+
+*/
+
+Create Or Alter Procedure dbo.Spa_segReglasContrasenaTbl
+   @PsCodRegla            Varchar( 10),
+   @PsNombreRegla         Varchar(100),
+   @PsDescripcion         Varchar(500),
+   @PbEsRequerido         Bit,
+   @PnValorMinimo         Integer      = 0,
+   @PnIdOperacionAct      Integer,
+   @PnIdUsuarioAct        Integer,
+   @PsIpAct               Varchar(30)  = Null,
+   @PsMacAddressAct       Varchar(30)  = Null,
+   @PnIdRegla             Integer      = 0     Output,
+   @PnEstatus             Integer      = 0     Output,
+   @PsMensaje             Varchar(Max) = Null  Output
+As
+
+Declare
+   @w_desc_error              Varchar( 250),
+   @w_Error                   Integer,
+   @w_linea                   Integer;
+
+Begin
+   Set Nocount       On
+   Set Xact_Abort    On
+   Set Ansi_Nulls    On
+
+-- =================================================================
+-- Autor:       Pedro Zambrano
+-- Fecha:       2026-09-17
+-- Descripción: Procedimiento de Alta de Reglas de Validación de Contraseñas
+-- Operación:   SU1012
+-- =================================================================
+
+   Select @PnEstatus         = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct),
+          @PsMensaje         = Char(32),
+          @PsIpAct           = Isnull(@PsIpAct, dbo.Fn_BuscaDireccionIP()),
+          @PsMacAddressAct   = Isnull(@PsMacAddressAct, dbo.Fn_Busca_DireccionMAC());
+
+   If @PnEstatus != 0
+      Begin
+         Set @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.segAutOperacionesTbl
+                  Where  idUsuario       = @PnIdUsuarioAct
+                  And    idOperacion     = @PnIdOperacionAct
+                  And    idAutorizacion >= 2)
+      Begin
+         Select @PnEstatus = 9985,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   If Not Exists ( Select Top 1 1
+                  From   dbo.catGeneralesTbl
+                  Where  tabla   = 'segReglasContrasenaTbl'
+                  And    columna = 'esRequerido'
+                  And    valor   = @PbEsRequerido)
+      Begin
+         Select @PnEstatus = 5017,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   If Exists (Select Top 1 1
+              From   dbo.segReglasContrasenaTbl
+              Where  codRegla = @PsCodRegla)
+      Begin
+         Select @PnEstatus = 5014,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   Begin Try
+      Insert Into dbo.segReglasContrasenaTbl
+     (codRegla,    nombreRegla,  descripcion, esRequerido,
+      valorMinimo, idUsuarioAct, ipAct,       macAddressAct)
+      Select @PsCodRegla,     @PsNombreRegla,  @PsDescripcion, @PbEsRequerido,
+             @PnValorMinimo,  @PnIdUsuarioAct, @PsIpAct,       @PsMacAddressAct;
+
+      Set @PnIdRegla = SCOPE_IDENTITY();
+   End Try
+
+   Begin Catch
+      Select  @w_Error      = @@Error,
+              @w_linea      = Error_line(),
+              @w_desc_error = Substring (Error_Message(), 1, 230);
+   End   Catch
+
+   If Isnull(@w_Error, 0) <> 0
+      Begin
+         Select @PnEstatus = @w_Error,
+                @PsMensaje = Concat('Error En Linea ', @w_linea, '.: ', @w_Error, ' ',    @w_desc_error )
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   Set Xact_Abort Off
+   Return
+
+End
+Go
+
+--
+-- Comentarios.
+--
+
+Declare
+   @w_valor          Varchar(1500) = 'Procedimiento que da alta de Registros a la tabla segReglasContrasenaTbl.',
+   @w_procedimiento  Varchar( 100) = 'Spa_segReglasContrasenaTbl'
+
+
+If Not Exists (Select Top 1 1
+               From   sys.extended_properties a
+               Join   sysobjects  b
+               On     b.xtype   = 'P'
+               And    b.name    = @w_procedimiento
+               And    b.id      = a.major_id)
+
+   Begin
+      Execute  sp_addextendedproperty @name       = N'MS_Description',
+                                      @value      = @w_valor,
+                                      @level0type = 'Schema',
+                                      @level0name = N'Dbo',
+                                      @level1type = 'Procedure',
+                                      @level1name = @w_procedimiento;
+
+   End
+Else
+   Begin
+      Execute sp_updateextendedproperty @name       = 'MS_Description',
+                                        @value      = @w_valor,
+                                        @level0type = 'Schema',
+                                        @level0name = N'Dbo',
+                                        @level1type = 'Procedure',
+                                        @level1name = @w_procedimiento
+   End
+Go

@@ -28,8 +28,7 @@ Create Table dbo.segReglasContrasenaTbl
    macAddressAct       Varchar( 30)        Null,
 Constraint segReglasContrasenaPk
 Primary Key Clustered (idRegla),
-Index   segReglasContrasenaIdex01 Unique (codRegla)
-)
+Index   segReglasContrasenaIdex01 Unique (codRegla))
 Go
 
 Grant Insert, Delete, Select, Update, References On segReglasContrasenaTbl to Public;
