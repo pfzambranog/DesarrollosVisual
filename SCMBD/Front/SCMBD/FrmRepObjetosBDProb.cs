@@ -40,7 +40,9 @@ namespace SCMBD
             CargarReportes();
             ConfigurarGrid();
             BtnExcel.Enabled = false;
-            
+
+            // 
+            dg.CellDoubleClick += dg_CellDoubleClick;
         }
 
         private void CargarLogo()
@@ -406,5 +408,54 @@ ORDER BY valor";
         {
             // Evento requerido por diseñador — sin lógica
         }
+        private void BtnVerScript_Click(object sender, EventArgs e)
+        {
+            if (dg.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Seleccione un objeto del grid.", "Información",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            DataGridViewRow fila = dg.SelectedRows[0];
+
+            // ✅ Leer por posición: 0=Esquema, 1=Objeto, 2=Tipo
+            string esquema = fila.Cells[0].Value?.ToString()?.Trim() ?? "";
+            string nombreObjeto = fila.Cells[1].Value?.ToString()?.Trim() ?? "";
+            string tipoObjeto = fila.Cells[2].Value?.ToString()?.Trim() ?? "";
+
+            if (string.IsNullOrWhiteSpace(esquema) || string.IsNullOrWhiteSpace(nombreObjeto))
+            {
+                MessageBox.Show("No se pudieron leer los datos del objeto seleccionado.",
+                                "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ✅ Llamar con TODOS los parámetros del estándar
+            string rutaArchivo = Services.ScriptsExportService.ExportarDefinicionObjeto(
+                esquema,
+                nombreObjeto,
+                tipoObjeto,
+                _cadenaConexion,
+                _claveOperacion,   // ← Clave como SU1012
+                _idUsuario);    // ← ID del usuario en sesión
+
+            if (!string.IsNullOrWhiteSpace(rutaArchivo))
+            {
+                MessageBox.Show($"✅ Script generado:\n{rutaArchivo}",
+                                "Archivo Creado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                Services.ScriptsExportService.AbrirArchivo(rutaArchivo);
+            }
+        }
+
+        private void dg_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
+            {
+                BtnVerScript_Click(sender, e);
+            }
+        }
+
     }
 }

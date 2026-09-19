@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\services\\scriptsexportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:services\\scriptsexportservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,27 +26,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "FrmRepObjetosBDProb.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs",
-              "RelativeDocumentMoniker": "FrmRepObjetosBDProb.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs [Dise\u00F1o]*",
-              "RelativeToolTip": "FrmRepObjetosBDProb.cs [Dise\u00F1o]*",
+              "DocumentIndex": 0,
+              "Title": "ScriptsExportService.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\services\\ScriptsExportService.cs",
+              "RelativeDocumentMoniker": "services\\ScriptsExportService.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\services\\ScriptsExportService.cs*",
+              "RelativeToolTip": "services\\ScriptsExportService.cs*",
+              "ViewState": "AgIAACIAAAAAAAAAAAAuwDUAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-19T00:12:06.965Z",
-              "EditorCaption": " [Dise\u00F1o]"
+              "WhenOpened": "2026-09-19T20:19:17.743Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "FrmRepObjetosBDProb.cs",
               "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs",
               "RelativeDocumentMoniker": "FrmRepObjetosBDProb.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs*",
-              "RelativeToolTip": "FrmRepObjetosBDProb.cs*",
-              "ViewState": "AgIAAD8BAAAAAAAAAAAuwHIBAAAJAAAAAAAAAA==",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs",
+              "RelativeToolTip": "FrmRepObjetosBDProb.cs",
+              "ViewState": "AgIAAJkBAAAAAAAAAAAowLIBAABXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-18T23:18:54.667Z",
+              "WhenOpened": "2026-09-19T18:22:22.324Z",
               "EditorCaption": ""
             }
           ]

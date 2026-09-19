@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmRepObjetosBDProb));
             this.pnlBarrainicial = new System.Windows.Forms.Panel();
+            this.BtnVerScript = new System.Windows.Forms.Button();
             this.BtnProcesar = new System.Windows.Forms.Button();
             this.BtnExcel = new System.Windows.Forms.Button();
             this.BtnRefrescar = new System.Windows.Forms.Button();
@@ -50,6 +51,7 @@
             // pnlBarrainicial
             // 
             this.pnlBarrainicial.BackColor = System.Drawing.Color.LightSteelBlue;
+            this.pnlBarrainicial.Controls.Add(this.BtnVerScript);
             this.pnlBarrainicial.Controls.Add(this.BtnProcesar);
             this.pnlBarrainicial.Controls.Add(this.BtnExcel);
             this.pnlBarrainicial.Controls.Add(this.BtnRefrescar);
@@ -64,6 +66,18 @@
             this.pnlBarrainicial.Size = new System.Drawing.Size(963, 92);
             this.pnlBarrainicial.TabIndex = 2;
             this.pnlBarrainicial.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlBarrainicial_Paint);
+            // 
+            // BtnVerScript
+            // 
+            this.BtnVerScript.Image = global::SCMBD.Properties.Resources.Archivo_Sql2;
+            this.BtnVerScript.Location = new System.Drawing.Point(717, 2);
+            this.BtnVerScript.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BtnVerScript.Name = "BtnVerScript";
+            this.BtnVerScript.Size = new System.Drawing.Size(59, 42);
+            this.BtnVerScript.TabIndex = 13;
+            this.BtnVerScript.UseVisualStyleBackColor = true;
+            this.BtnVerScript.Click += new System.EventHandler(this.BtnVerScript_Click);
+
             // 
             // BtnProcesar
             // 
@@ -90,7 +104,7 @@
             // BtnRefrescar
             // 
             this.BtnRefrescar.Image = global::SCMBD.Properties.Resources.renovar;
-            this.BtnRefrescar.Location = new System.Drawing.Point(715, 2);
+            this.BtnRefrescar.Location = new System.Drawing.Point(775, 2);
             this.BtnRefrescar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnRefrescar.Name = "BtnRefrescar";
             this.BtnRefrescar.Size = new System.Drawing.Size(59, 42);
@@ -101,7 +115,7 @@
             // BtnSalir
             // 
             this.BtnSalir.Image = global::SCMBD.Properties.Resources.salir;
-            this.BtnSalir.Location = new System.Drawing.Point(774, 2);
+            this.BtnSalir.Location = new System.Drawing.Point(834, 2);
             this.BtnSalir.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnSalir.Name = "BtnSalir";
             this.BtnSalir.Size = new System.Drawing.Size(59, 42);
@@ -232,5 +246,6 @@
         private System.Windows.Forms.ComboBox CmbReportes;
         private System.Windows.Forms.Label LblReportes;
         private System.Windows.Forms.DataGridView dg;
+        private System.Windows.Forms.Button BtnVerScript;
     }
 }
