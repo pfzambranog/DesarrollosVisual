@@ -235,6 +235,10 @@ Begin
          Begin
             Set @w_identificador = 2;
          End;
+      Else
+          Begin
+            Set @w_identificador = 1;
+         End;     
 
       If @w_identificador = 1
          Begin

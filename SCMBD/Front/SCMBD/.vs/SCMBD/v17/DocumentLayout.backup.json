@@ -3,12 +3,12 @@
   "WorkspaceRootPath": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmreglascontrasenia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmreglascontrasenia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmreglascontrasenia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmreglascontrasenia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+      "AbsoluteMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|c:\\desarrollos\\desarrollosvisual\\scmbd\\front\\scmbd\\frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{292BCC4A-FA3E-46CB-8A7C-AB26973BBFAA}|SCMBD.csproj|solutionrelative:frmrepobjetosbdprob.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,7 +18,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -26,28 +26,28 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "FrmReglasContrasenia.cs",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmReglasContrasenia.cs",
-              "RelativeDocumentMoniker": "FrmReglasContrasenia.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmReglasContrasenia.cs*",
-              "RelativeToolTip": "FrmReglasContrasenia.cs*",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAgwFAAAAAhAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "FrmRepObjetosBDProb.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs",
+              "RelativeDocumentMoniker": "FrmRepObjetosBDProb.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs [Dise\u00F1o]*",
+              "RelativeToolTip": "FrmRepObjetosBDProb.cs [Dise\u00F1o]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-18T18:46:21.207Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-19T00:12:06.965Z",
+              "EditorCaption": " [Dise\u00F1o]"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "FrmReglasContrasenia.cs [Dise\u00F1o]",
-              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmReglasContrasenia.cs",
-              "RelativeDocumentMoniker": "FrmReglasContrasenia.cs",
-              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmReglasContrasenia.cs [Dise\u00F1o]*",
-              "RelativeToolTip": "FrmReglasContrasenia.cs [Dise\u00F1o]*",
+              "DocumentIndex": 0,
+              "Title": "FrmRepObjetosBDProb.cs",
+              "DocumentMoniker": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs",
+              "RelativeDocumentMoniker": "FrmRepObjetosBDProb.cs",
+              "ToolTip": "C:\\Desarrollos\\DesarrollosVisual\\SCMBD\\Front\\SCMBD\\FrmRepObjetosBDProb.cs*",
+              "RelativeToolTip": "FrmRepObjetosBDProb.cs*",
+              "ViewState": "AgIAAD8BAAAAAAAAAAAuwHIBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-09-18T18:46:16.707Z",
-              "EditorCaption": " [Dise\u00F1o]"
+              "WhenOpened": "2026-09-18T23:18:54.667Z",
+              "EditorCaption": ""
             }
           ]
         },

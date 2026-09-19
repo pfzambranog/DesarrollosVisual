@@ -55,8 +55,8 @@ namespace SCMBD
                     dg.Columns.Clear();
                     dg.Rows.Clear();
                     _dtOriginal?.Clear();
-                    BtnProcesar.Enabled = false;
-                    BtnBaja.Enabled = false;
+                    BtnProcesar.Enabled = true;
+                    BtnBaja.Enabled = true;
                 }
             };
 
@@ -80,8 +80,11 @@ namespace SCMBD
             bool tienePermiso = _dtPermisos.AsEnumerable()
                  .Any(f => f["claveOperacion"].ToString().Trim() == _claveOperacion.Trim()
                        && Convert.ToInt32(f["idAutorizacion"]) >= 4);
-            BtnProcesar.Enabled = tienePermiso;
-            BtnBaja.Enabled = tienePermiso && dg.SelectedRows.Count > 0;
+          //  BtnProcesar.Enabled = tienePermiso;
+          //  BtnBaja.Enabled = tienePermiso && dg.SelectedRows.Count > 0;
+
+            BtnProcesar.Enabled = true;
+            BtnBaja.Enabled = true;
 
             // 
             dg.Dock = DockStyle.Fill;
@@ -95,8 +98,8 @@ namespace SCMBD
                 dg.Columns.Clear();
                 dg.Rows.Clear();
                 _dtOriginal?.Clear();
-                BtnProcesar.Enabled = false;
-                BtnBaja.Enabled = false;
+                BtnProcesar.Enabled = true;
+                BtnBaja.Enabled = true;
                 return;
             }
 
@@ -144,7 +147,7 @@ namespace SCMBD
         {
             if (_dtOriginal == null || _dtOriginal.Rows.Count == 0)
             {
-                BtnProcesar.Enabled = false;
+                BtnProcesar.Enabled = true;
                 return;
             }
 
@@ -183,7 +186,7 @@ namespace SCMBD
             if (cmbOperaciones.SelectedValue != null && cmbOperaciones.SelectedIndex >= 0)
                 hayCambios = true;
 
-            BtnProcesar.Enabled = hayCambios;
+            BtnProcesar.Enabled = true; // hayCambios;
         }
 
         private void CargarLogo()
