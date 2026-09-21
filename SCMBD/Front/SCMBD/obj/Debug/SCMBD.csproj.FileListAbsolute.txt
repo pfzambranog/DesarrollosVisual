@@ -53,3 +53,4 @@ C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.exe
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.pdb
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.exe.config
 C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmRepObjetosBDProb.resources
+C:\Desarrollos\DesarrollosVisual\SCMBD\Front\SCMBD\obj\Debug\SCMBD.FrmRepDefObjetosBD.resources

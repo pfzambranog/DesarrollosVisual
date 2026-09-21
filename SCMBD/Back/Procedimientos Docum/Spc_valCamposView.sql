@@ -1,8 +1,9 @@
 Use SCMBD
 Go
+
 /*
 Declare
-   @PsTabla             Sysname      = 'segUsuariosTbl',
+   @PsView              Sysname      = 'MenuUsuariosVw',
    @PsColumna           Sysname      = 'idUsuario',
    @PbAplica            Bit          = 0,
    @PsTipoCampo         Varchar(250) = ' ',
@@ -12,15 +13,15 @@ Declare
    @PnEstatus           Integer      = 0,
    @PsMensaje           Varchar(250) = ' ';
 Begin
-   Execute dbo.Spc_valida_longitud @PsTabla     = @PsTabla,
-                                   @PsColumna   = @PsColumna,
-                                   @PbAplica    = @PbAplica      Output,
-                                   @PsTipoCampo = @PsTipoCampo   Output,
-                                   @PnLogitud   = @PnLogitud     Output,
-                                   @PnDecimales = @PnDecimales   Output,
-                                   @PsRequerido = @PsRequerido   Output,
-                                   @PnEstatus   = @PnEstatus     Output,
-                                   @PsMensaje   = @PsMensaje     Output;
+   Execute dbo.Spc_valCamposView @PsView      = @PsView,
+                                 @PsColumna   = @PsColumna,
+                                 @PbAplica    = @PbAplica      Output,
+                                 @PsTipoCampo = @PsTipoCampo   Output,
+                                 @PnLogitud   = @PnLogitud     Output,
+                                 @PnDecimales = @PnDecimales   Output,
+                                 @PsRequerido = @PsRequerido   Output,
+                                 @PnEstatus   = @PnEstatus     Output,
+                                 @PsMensaje   = @PsMensaje     Output;
    If @PnEstatus != 0
       Begin
          Select @PnEstatus, @PsMensaje;
@@ -36,11 +37,11 @@ Begin
 
 End
 Go
+
 */
 
-
-Create Or Alter Procedure dbo.Spc_valida_longitud
-   (@PsTabla             Sysname,
+Create Or Alter Procedure dbo.Spc_valCamposView
+   (@PsView              Sysname,
     @PsColumna           Sysname,
     @PbAplica            Bit          = 0    Output,
     @PsTipoCampo         Varchar(250) = ' '  Output,
@@ -67,7 +68,6 @@ Begin
   Creacion:       21-sep-2026.
   Version:        1.0
 */
-
    Set Nocount       On
    Set Xact_Abort    On
    Set Ansi_Nulls    On
@@ -86,13 +86,12 @@ Begin
                                       Else 'NO'
                                  End
       From   sys.columns a
-      Join   sys.types b
-      on     b.system_type_id = a.system_type_id
+      Join   sys.types b on b.system_type_id = a.system_type_id
       Where  a.name   = @PsColumna
       And    Exists   ( Select Top 1 1
-                        From   sys.tables c
+                        From   sys.views c
                         Where  c.object_id = a.object_id
-                        And    c.name      = @PsTabla)
+                        And    c.name      = @PsView)
    End Try
 
    Begin Catch
@@ -126,13 +125,16 @@ Begin
 End
 Go
 
+Grant Execute On dbo.Spc_valCamposView to Public;
+Go
+
 --
 -- Comentarios
 --
 
 Declare
-   @w_valor          Nvarchar(250) = 'Procedimiento que consulta la longitud de los campos de una tabla específica.',
-   @w_procedimiento  NVarchar(250) = 'Spc_valida_longitud';
+   @w_valor          Nvarchar(250) = 'Procedimiento que consulta la longitud de los campos de una vista específica.',
+   @w_procedimiento  NVarchar(250) = 'Spc_valCamposView';
 
 If Not Exists (Select Top 1 1
                From   sys.extended_properties a

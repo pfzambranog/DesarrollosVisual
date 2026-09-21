@@ -134,6 +134,12 @@
     <Compile Include="FrmReglasContrasenia.Designer.cs">
       <DependentUpon>FrmReglasContrasenia.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmRepDefObjetosBD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRepDefObjetosBD.Designer.cs">
+      <DependentUpon>FrmRepDefObjetosBD.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmRepObjetosBDProb.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +189,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmReglasContrasenia.resx">
       <DependentUpon>FrmReglasContrasenia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmRepDefObjetosBD.resx">
+      <DependentUpon>FrmRepDefObjetosBD.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRepObjetosBDProb.resx">
       <DependentUpon>FrmRepObjetosBDProb.cs</DependentUpon>

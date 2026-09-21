@@ -2,63 +2,86 @@ Use SCMBD
 Go
 
 /*
-Declare
-   @PsTabla      Sysname      = Null,
-   @PnEstatus    Integer      = 0,
-   @PsMensaje    Varchar(250) = ' ';
-Begin
-   Execute dbo.Spc_Lista_Det_Triggers @PsTabla   = @PsTabla,
-                                      @PnEstatus = @PnEstatus Output,
-                                      @PsMensaje = @PsMensaje Output;
-   If @PnEstatus != 0
-      Begin
-         Select @PnEstatus, @PsMensaje;
-      End
 
-   Return
-
-End
-Go
 */
 
 Create Or Alter Procedure dbo.Spc_Lista_Det_Triggers
-  (@PsTabla      Sysname      = Null,
-   @PnEstatus    Integer      = 0    Output,
-   @PsMensaje    Varchar(250) = ' '  Output)
---- With Encryption
+  (@PsObjeto        Sysname      = Null,
+   @PsOperacion     Varchar( 20),
+   @PnIdUsuarioAct  Integer,
+   @PnEstatus       Integer      = 0    Output,
+   @PsMensaje       Varchar(250) = ' '  Output)
+With Execute AS Owner
 As
+
 Declare
    @w_Error             Integer,
-   @w_desc_error        Varchar( 250)
+   @w_idOperacionAct    Integer,
+   @w_desc_error        Varchar( 250);
 
 Begin
+/*
+  Autor:          Pedro Zambrano
+  Descripción:    Procedimiento que Consulta la definición de Vistas en la base de datos.
+  Creacion:       19-sep-2026.
+  Version:        1.0
+*/
+
    Set Nocount       On
    Set Xact_Abort    On
-   Set Ansi_Nulls    On
-   Set Ansi_Warnings On
-   Set Ansi_Padding  On
+   Set Ansi_Nulls    Off
+
+   Select @PnEstatus         = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct),
+          @PsMensaje         = Char(32);
+
+   If @PnEstatus != 0
+      Begin
+         Set @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   Select top 1 @w_idOperacionAct = idOperacion
+   From   dbo.catOperacionesTbl
+   Where  operacion = @PsOperacion;
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.segAutOperacionesTbl
+                  Where  idUsuario       = @PnIdUsuarioAct
+                  And    idOperacion     = @w_idOperacionAct
+                  And    idAutorizacion >= 2)
+      Begin
+         Select @PnEstatus = 9985,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+--
 
    Begin Try
-
-     Select
-         db_name() [Base de Datos]
-         , OBJECT_NAME(so.parent_obj) AS [Nombre Tabla]
-         , so.name AS [Nombre Trigger]
-         , USER_NAME(so.uid) AS [Propietario]
-         , s.name AS [Esquema]
-     	 , Case When OBJECTPROPERTY(id, 'ExecIsTriggerDisabled')  = 0 Then 'Si' Else 'No' End As [Habilitado]
-         , Case When OBJECTPROPERTY(id, 'ExecIsInsteadOfTrigger') = 1 Then 'Si' Else 'No' End As [InsteadOf]
-         , Case When OBJECTPROPERTY(id, 'ExecIsAfterTrigger')     = 1 Then 'Si' Else 'No' End As [After]
-     	 , Case When OBJECTPROPERTY(id, 'ExecIsInsertTrigger')    = 1 Then 'Si' Else 'No' End As [Insert]
-         , Case When OBJECTPROPERTY(id, 'ExecIsUpdateTrigger')    = 1 Then 'Si' Else 'No' End As [Update]
-         , Case When OBJECTPROPERTY(id, 'ExecIsDeleteTrigger')    = 1 Then 'Si' Else 'No' End As [Delete]
-     From  sysobjects  so
-     Join  sysusers      On so.uid        = sysusers.uid
-     Join  sys.tables  t On so.parent_obj = t.object_id
-     Join  sys.schemas s On t.schema_id   = s.schema_id
-     WHERE 1=1
-	 And so.type = 'TR'
-	 And OBJECT_NAME(so.parent_obj)  = Iif(@PsTabla  Is Null, OBJECT_NAME(so.parent_obj),  @PsTabla)
+       Select db_name() [Base de Datos],
+           OBJECT_NAME(so.parent_obj) [Nombre Tabla],
+           so.name                    [Nombre Trigger],
+           USER_NAME(so.uid)           Propietario,
+           s.name                      Esquema,
+       	   Case When OBJECTPROPERTY(id, 'ExecIsTriggerDisabled')  = 0 Then 'Si' Else 'No' End Habilitado,
+           Case When OBJECTPROPERTY(id, 'ExecIsInsteadOfTrigger') = 1 Then 'Si' Else 'No' End InsteadOf,
+           Case When OBJECTPROPERTY(id, 'ExecIsAfterTrigger')     = 1 Then 'Si' Else 'No' End "After",
+       	   Case When OBJECTPROPERTY(id, 'ExecIsInsertTrigger')    = 1 Then 'Si' Else 'No' End "Insert",
+           Case When OBJECTPROPERTY(id, 'ExecIsUpdateTrigger')    = 1 Then 'Si' Else 'No' End "Update",
+           Case When OBJECTPROPERTY(id, 'ExecIsDeleteTrigger')    = 1 Then 'Si' Else 'No' End "Delete"
+       From  sysobjects  so
+       Join  sysusers    su
+       On    so.uid        = su.uid
+       Join  sys.tables  t
+       On so.parent_obj = t.object_id
+       Join  sys.schemas s
+       On t.schema_id   = s.schema_id
+       WHERE so.type = 'TR'
+  	   And   OBJECT_NAME(so.parent_obj)  = Iif(@PsObjeto  Is Null, OBJECT_NAME(so.parent_obj),  @PsObjeto)
 
     End Try
 
@@ -71,12 +94,10 @@ Begin
        Begin
           Select @PnEstatus = @w_Error,
                  @PsMensaje = 'Error.: ' + Rtrim(Ltrim(Cast(@w_Error As Varchar))) + ' ' + @w_desc_error
-          Select @PsMensaje
 
           Set Xact_Abort Off
           Return
        End
-    Select @PnEstatus, @PsMensaje
 
 
 End

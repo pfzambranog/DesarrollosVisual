@@ -1,12 +1,17 @@
 /*
 Declare
-   @PsProc       Sysname      = Null,
-   @PnEstatus    Integer      = 0,
-   @PsMensaje    Varchar(250) = ' ';
+   @PsObjeto        Sysname      = Null,
+   @PsOperacion     Varchar( 20) = 'REPOBJBD02',
+   @PnIdUsuarioAct  Integer      = 3,
+   @PnEstatus       Integer      = 0,
+   @PsMensaje       Varchar(250) = ' ';
 Begin
-   Execute dbo.spc_Lista_Det_Procedimientos @PsProc    = @PsProc,
-                                            @PnEstatus = @PnEstatus Output,
-                                            @PsMensaje = @PsMensaje Output;
+   Execute dbo.spc_Lista_Det_Procedimientos @PsObjeto         = @PsObjeto,
+                                            @PsOperacion    = @PsOperacion,
+                                            @PnIdUsuarioAct = @PnIdUsuarioAct,
+                                            @PnEstatus      = @PnEstatus Output,
+                                            @PsMensaje      = @PsMensaje Output;
+
    If @PnEstatus != 0
       Begin
          Select @PnEstatus, @PsMensaje;
@@ -19,16 +24,62 @@ Go
 */
 
 Create Or Alter Procedure dbo.spc_Lista_Det_Procedimientos
-  (@PsProc       Sysname      = Null,
-   @PnEstatus    Integer      = 0    Output,
-   @PsMensaje    Varchar(250) = ' '  Output)
+  (@PsObjeto        Sysname      = Null,
+   @PsOperacion     Varchar( 20),
+   @PnIdUsuarioAct  Integer,
+   @PnEstatus       Integer      = 0    Output,
+   @PsMensaje       Varchar(250) = ' '  Output)
+With Execute AS Owner
 As
 
+Declare
+   @w_Error             Integer,
+   @w_idOperacionAct    Integer,
+   @w_desc_error        Varchar( 250);
+
 Begin
+/*
+  Autor:          Pedro Zambrano
+  Descripción:    Procedimiento que Consulta la definición de los Parámetros de los Procedimientos de la base de datos.
+  Creacion:       19-sep-2026.
+  Version:        1.0
+*/
+
    Set Nocount       On
    Set Xact_Abort    On
+   Set Ansi_Nulls    Off
 
-   create table #Tempsps(
+   Select @PnEstatus         = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct),
+          @PsMensaje         = Char(32);
+
+   If @PnEstatus != 0
+      Begin
+         Set @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   Select top 1 @w_idOperacionAct = idOperacion
+   From   dbo.catOperacionesTbl
+   Where  operacion = @PsOperacion;
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.segAutOperacionesTbl
+                  Where  idUsuario       = @PnIdUsuarioAct
+                  And    idOperacion     = @w_idOperacionAct
+                  And    idAutorizacion >= 2)
+      Begin
+         Select @PnEstatus = 9985,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+--
+
+   Create table #Tempsps(
     objeto_id              Integer,
     Procedimiento          Varchar(150),
     Posicion               Smallint,
@@ -53,14 +104,9 @@ Begin
     On     R.specific_name = P.specific_name
     Join   sys.objects S
     On     S.name = R.SPECIFIC_NAME
-    Where  R.ROUTINE_TYPE = 'PROCEDURE'
+    Where  R.ROUTINE_TYPE  = 'PROCEDURE'
+    And    P.SPECIFIC_NAME = Isnull(@PsObjeto, P.SPECIFIC_NAME)
     Order By P.SPECIFIC_NAME, P.ORDINAL_POSITION;
-
-    If @PsProc Is Not Null
-       Begin
-          Delete #Tempsps
-          Where  Procedimiento Not Like Concat('%', @PsProc, '%');
-       End
 
     Update #Tempsps
     Set    Procedimiento     = Char(32),
@@ -74,11 +120,9 @@ Begin
            Escala       = Isnull(Escala,    Char(32)),
            Collation    = Isnull(Collation, Char(32));
 
-
-    Select Procedimiento,  Posicion,           TipoParametro "Tipo Parametro",
-           NombreParametro "Nombre Parametro", TipoDato      "Tipo Dato",
-           Longitud,       Precision           "Precision Numerica",  Escala,     Collation,
-           FechaCreacion "Fecha Creacion",   FechaAct "Fecha Últ Act"
+    Select Procedimiento,  Posicion,           TipoParametro        "TipoParametro",
+           NombreParametro "NombreParametro",  Upper(TipoDato)      "tipodato",
+           Longitud,       Precision           precisionnumerica,   "Collation"
     From   #Tempsps
     Order By objeto_id, Posicion;
 
@@ -91,7 +135,7 @@ Go
 --
 
 Declare
-   @w_valor          Nvarchar(250) = 'Procedimiento que Consulta los parámetros de los Procedimientos declarados en la base de datos.',
+   @w_valor          Nvarchar(250) = 'Procedimiento que Consulta la definición de los Parámetros de los Procedimientos de la base de datos',
    @w_procedimiento  NVarchar(250) = 'spc_Lista_Det_Procedimientos';
 
 If Not Exists (Select Top 1 1

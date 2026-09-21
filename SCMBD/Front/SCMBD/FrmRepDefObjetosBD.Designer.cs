@@ -1,6 +1,6 @@
 ﻿namespace SCMBD
 {
-    partial class FrmRepObjetosBDProb
+    partial class FrmRepDefObjetosBD
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmRepObjetosBDProb));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmRepDefObjetosBD));
             this.pnlBarrainicial = new System.Windows.Forms.Panel();
             this.BtnVerScript = new System.Windows.Forms.Button();
             this.BtnProcesar = new System.Windows.Forms.Button();
@@ -63,26 +63,25 @@
             this.pnlBarrainicial.Location = new System.Drawing.Point(0, 0);
             this.pnlBarrainicial.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.pnlBarrainicial.Name = "pnlBarrainicial";
-            this.pnlBarrainicial.Size = new System.Drawing.Size(963, 92);
+            this.pnlBarrainicial.Size = new System.Drawing.Size(1540, 92);
             this.pnlBarrainicial.TabIndex = 2;
             this.pnlBarrainicial.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlBarrainicial_Paint);
             // 
             // BtnVerScript
             // 
             this.BtnVerScript.Image = global::SCMBD.Properties.Resources.Archivo_Sql2;
-            this.BtnVerScript.Location = new System.Drawing.Point(717, 2);
+            this.BtnVerScript.Location = new System.Drawing.Point(1313, 2);
             this.BtnVerScript.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnVerScript.Name = "BtnVerScript";
             this.BtnVerScript.Size = new System.Drawing.Size(59, 42);
             this.BtnVerScript.TabIndex = 13;
             this.BtnVerScript.UseVisualStyleBackColor = true;
             this.BtnVerScript.Click += new System.EventHandler(this.BtnVerScript_Click);
-
             // 
             // BtnProcesar
             // 
             this.BtnProcesar.Image = ((System.Drawing.Image)(resources.GetObject("BtnProcesar.Image")));
-            this.BtnProcesar.Location = new System.Drawing.Point(601, 2);
+            this.BtnProcesar.Location = new System.Drawing.Point(1197, 2);
             this.BtnProcesar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnProcesar.Name = "BtnProcesar";
             this.BtnProcesar.Size = new System.Drawing.Size(59, 42);
@@ -93,7 +92,7 @@
             // BtnExcel
             // 
             this.BtnExcel.Image = global::SCMBD.Properties.Resources.Excel;
-            this.BtnExcel.Location = new System.Drawing.Point(660, 2);
+            this.BtnExcel.Location = new System.Drawing.Point(1256, 2);
             this.BtnExcel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnExcel.Name = "BtnExcel";
             this.BtnExcel.Size = new System.Drawing.Size(59, 42);
@@ -104,7 +103,7 @@
             // BtnRefrescar
             // 
             this.BtnRefrescar.Image = global::SCMBD.Properties.Resources.renovar;
-            this.BtnRefrescar.Location = new System.Drawing.Point(775, 2);
+            this.BtnRefrescar.Location = new System.Drawing.Point(1371, 2);
             this.BtnRefrescar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnRefrescar.Name = "BtnRefrescar";
             this.BtnRefrescar.Size = new System.Drawing.Size(59, 42);
@@ -115,7 +114,7 @@
             // BtnSalir
             // 
             this.BtnSalir.Image = global::SCMBD.Properties.Resources.salir;
-            this.BtnSalir.Location = new System.Drawing.Point(834, 2);
+            this.BtnSalir.Location = new System.Drawing.Point(1430, 2);
             this.BtnSalir.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BtnSalir.Name = "BtnSalir";
             this.BtnSalir.Size = new System.Drawing.Size(59, 42);
@@ -129,7 +128,7 @@
             this.txtUsuario.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtUsuario.Enabled = false;
             this.txtUsuario.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtUsuario.Location = new System.Drawing.Point(755, 69);
+            this.txtUsuario.Location = new System.Drawing.Point(1410, 69);
             this.txtUsuario.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtUsuario.Name = "txtUsuario";
             this.txtUsuario.ReadOnly = true;
@@ -142,7 +141,7 @@
             this.txtOperacion.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.txtOperacion.Enabled = false;
             this.txtOperacion.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtOperacion.Location = new System.Drawing.Point(755, 50);
+            this.txtOperacion.Location = new System.Drawing.Point(1410, 50);
             this.txtOperacion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.txtOperacion.Name = "txtOperacion";
             this.txtOperacion.ReadOnly = true;
@@ -168,7 +167,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 92);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(963, 58);
+            this.panel1.Size = new System.Drawing.Size(1540, 58);
             this.panel1.TabIndex = 3;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -202,15 +201,15 @@
             this.dg.MultiSelect = false;
             this.dg.Name = "dg";
             this.dg.RowTemplate.Height = 28;
-            this.dg.Size = new System.Drawing.Size(959, 599);
+            this.dg.Size = new System.Drawing.Size(1504, 674);
             this.dg.TabIndex = 4;
             // 
-            // FrmRepObjetosBDProb
+            // FrmRepDefObjetosBD
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
-            this.ClientSize = new System.Drawing.Size(963, 767);
+            this.ClientSize = new System.Drawing.Size(1540, 825);
             this.Controls.Add(this.dg);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.pnlBarrainicial);
@@ -219,9 +218,9 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "FrmRepObjetosBDProb";
+            this.Name = "FrmRepDefObjetosBD";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Load += new System.EventHandler(this.FrmRepObjetosBDProb_Load);
+            this.Load += new System.EventHandler(this.FrmRepDefObjetosBD_Load);
             this.pnlBarrainicial.ResumeLayout(false);
             this.pnlBarrainicial.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picLogo)).EndInit();
@@ -249,5 +248,3 @@
         private System.Windows.Forms.Button BtnVerScript;
     }
 }
-
-

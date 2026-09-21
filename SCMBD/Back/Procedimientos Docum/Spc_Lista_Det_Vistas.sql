@@ -3,13 +3,17 @@ Go
 
 /*
 Declare
-   @PsVista      Sysname      = Null,
-   @PnEstatus    Integer      = 0,
-   @PsMensaje    Varchar(250) = ' ';
+   @PsObjeto        Sysname      = Null,
+   @PsOperacion     Varchar( 20) = 'REPOBJBD02',
+   @PnIdUsuarioAct  Integer      = 3,
+   @PnEstatus       Integer      = 0,
+   @PsMensaje       Varchar(250) = ' ';
 Begin
-   Execute dbo.Spc_Lista_Det_Vistas @PsVista   = @PsVista,
-                                    @PnEstatus = @PnEstatus Output,
-                                    @PsMensaje = @PsMensaje Output;
+   Execute dbo.Spc_Lista_Det_Vistas @PsObjeto       = @PsObjeto,
+                                    @PsOperacion    = @PsOperacion,
+                                    @PnIdUsuarioAct = @PnIdUsuarioAct,
+                                    @PnEstatus      = @PnEstatus Output,
+                                    @PsMensaje      = @PsMensaje Output;
    If @PnEstatus != 0
       Begin
          Select @PnEstatus, @PsMensaje;
@@ -22,10 +26,12 @@ Go
 */
 
 Create Or Alter Procedure Spc_Lista_Det_Vistas
-  (@PsVista      Sysname      = Null,
-   @PnEstatus    Integer      = 0    Output,
-   @PsMensaje    Varchar(250) = ' '  Output)
--- With Encryption
+  (@PsObjeto        Sysname      = Null,
+   @PsOperacion     Varchar( 20),
+   @PnIdUsuarioAct  Integer,
+   @PnEstatus       Integer      = 0    Output,
+   @PsMensaje       Varchar(250) = ' '  Output)
+With Execute AS Owner
 As
 
 Declare
@@ -34,33 +40,68 @@ Declare
   from     Sysobjects
   Where    Uid     = 1
   And      Type    = 'V'
-  And      Name    = Case When @PsVista Is Null
-                          Then Name
-                     Else @PsVista
-                 End
+  And      Name    = Isnull(@PsObjeto, Name)
   Order    By 1
 
 Declare
-   @w_tabla             Sysname,
+   @w_Error             Integer,
+   @w_idOperacionAct    Integer,
+   @w_desc_error        Varchar( 250),
+   @w_vista             Sysname,
    @w_columna           Sysname,
-   @w_idTabla           Integer,
+   @w_idVista           Integer,
    @w_column_id         Integer,
    @w_TipoCampo         Varchar(250),
    @w_Longitud          Integer,
    @w_Decimales         Integer,
    @w_requerido         Char(2),
    @w_aplica            Bit,
-   @w_desc_error        Varchar( 250),
-   @w_Error             Integer,
    @w_descripcion       NVarchar(1500),
+   @w_descripcionCol    NVarchar(1500),
    @w_dependencias      NVarchar(1500)
 
 Begin
+/*
+  Autor:          Pedro Zambrano
+  Descripción:    Procedimiento que Consulta la definición de Vistas en la base de datos.
+  Creacion:       19-sep-2026.
+  Version:        1.0
+*/
+
    Set Nocount       On
    Set Xact_Abort    On
-   Set Ansi_Nulls    On
-   Set Ansi_Warnings On
-   Set Ansi_Padding  On
+   Set Ansi_Nulls    Off
+
+   Select @PnEstatus         = dbo.Fn_ValidaUsuario(@PnIdUsuarioAct),
+          @PsMensaje         = Char(32),
+          @w_descripcion     = Char(32);
+
+   If @PnEstatus != 0
+      Begin
+         Set @PsMensaje = Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+
+   Select top 1 @w_idOperacionAct = idOperacion
+   From   dbo.catOperacionesTbl
+   Where  operacion = @PsOperacion;
+
+   If Not Exists (Select Top 1 1
+                  From   dbo.segAutOperacionesTbl
+                  Where  idUsuario       = @PnIdUsuarioAct
+                  And    idOperacion     = @w_idOperacionAct
+                  And    idAutorizacion >= 2)
+      Begin
+         Select @PnEstatus = 9985,
+                @PsMensaje = 'Error.: ' + Dbo.Fn_Busca_MensajeError(@PnEstatus);
+
+         Set Xact_Abort Off
+         Return
+      End
+      
+--
 
    Create table #Tmp_Objectos
    (Orden             SmallInt        Not Null,
@@ -84,7 +125,7 @@ Begin
    Open  C_tablas
    While @@Fetch_status < 1
    Begin
-      Fetch C_tablas Into @w_tabla, @w_idTabla
+      Fetch C_tablas Into @w_vista, @w_idVista
       If @@Fetch_status <> 0
          Begin
             Break
@@ -93,7 +134,7 @@ Begin
       Set @w_descripcion = ''
 
       Select @w_descripcion = Cast(Value As NVarchar(1550))
-      From   fn_listextendedproperty('MS_Description', 'Schema', 'dbo', 'table', @w_tabla,
+      From   fn_listextendedproperty('MS_Description', 'Schema', 'dbo', 'table', @w_vista,
               Null, Null)
 
       Select @w_dependencias = Stuff
@@ -105,19 +146,19 @@ Begin
         Iif(t.referenced_schema_name Is Null,'',  t.referenced_schema_name+'.')   +
         t.referenced_entity_name
         From sys.sql_expression_dependencies As t
-        Where t.referencing_id = @w_idTabla
+        Where t.referencing_id = @w_idVista
         For XML Path (''), Type
        ).value('.', 'varchar(max)'), 1, 1, '')
 
       Insert Into #Tmp_Objectos
       (Orden, Objeto, tabla, Descripcion, Dependencias)
-      Values (1, @w_tabla, @w_tabla, @w_descripcion, @w_dependencias)
+      Values (1, @w_vista, @w_vista, @w_descripcion, @w_dependencias)
 
       Declare
          C_columnas Cursor For
            Select Name, Column_id
            From   sys.columns
-           Where  Object_id = @w_idTabla
+           Where  Object_id = @w_idVista
            Order  By Column_id
 
       Begin
@@ -130,33 +171,31 @@ Begin
                   Break
                End
 
-            Set @w_descripcion = ' '
+            Set @w_descripcionCol = ' '
 
-            Select @w_descripcion = Cast(Value As NVarchar(1550))
-            From   fn_listextendedproperty('MS_Description', 'Schema', 'dbo', 'table', @w_tabla,
+            Select @w_descripcionCol = Cast(Value As NVarchar(1550))
+            From   fn_listextendedproperty('MS_Description', 'Schema', 'dbo', 'View', @w_vista,
                     'Column', @w_columna)
 
-            Execute dbo.Spc_valida_longitud @w_Tabla,     @w_Columna,
-                                            @w_Aplica     Output,
-                                            @w_TipoCampo  Output,
-                                            @w_Longitud   Output,
-                                            @w_Decimales  Output,
-                                            @w_requerido  Output,
-                                            @PnEstatus    Output,
-                                           @PsMensaje    Output
+            Execute dbo.Spc_valCamposView @w_vista,     @w_Columna,
+                                          @w_Aplica     Output,     @w_TipoCampo Output, @w_Longitud  Output,
+                                          @w_Decimales  Output,     @w_requerido Output, @PnEstatus   Output,
+                                          @PsMensaje    Output
+
 
             If @PnEstatus = 0
                Begin
                   Begin Try
                      Insert Into #Tmp_Objectos
-                    (Orden,             Objeto,      idcolumna,  Columna,      Tipo,       Longitud,  Decimales, Descripcion)
-                     Select  2, @w_tabla, @w_column_id, @w_columna, @w_TipoCampo,
+                    (Orden,     Objeto,   idcolumna,    Columna,    Tipo,
+                    Longitud,  Decimales, Descripcion)
+                     Select  2, @w_vista, @w_column_id, @w_columna, @w_TipoCampo,
                             Cast(@w_longitud As Varchar(20)),
                             Case When @w_decimales = 0
                                  Then ' '
                                  Else Cast(@w_decimales As Varchar)
                             End,
-                            @w_descripcion
+                            @w_descripcionCol
                   End Try
 
                   Begin Catch
@@ -187,15 +226,15 @@ Begin
    Close      C_tablas
    Deallocate C_tablas
 
-   Select Tabla "Vista", Columna, tipo "Tipo de Dato", Case When longitud = -1
-                                                            Then 'Max'
-                                                            Else longitud
-                                                        End +
-                                                           Case When Decimales != ' '
-                                                           Then ', ' + Decimales
-                                                           Else ' '
-                                                       End Longitud,
-          Descripcion "Descripción", Dependencias
+   Select Tabla "Vista", Columna ColumnaVw, tipo "TipoDatoVw", Case When longitud = -1
+                                                                    Then 'Max'
+                                                                    Else longitud
+                                                                End +
+                                                                   Case When Decimales != ' '
+                                                                   Then ', ' + Decimales
+                                                                   Else ' '
+                                                               End Longitud,
+          Descripcion descripcion, Dependencias
    From   #Tmp_Objectos
    Order By Objeto, idcolumna
 
@@ -203,6 +242,9 @@ Begin
 
 End
 GO
+
+Grant Execute On Spc_Lista_Det_Vistas to Public
+Go
 
 --
 -- Comentarios

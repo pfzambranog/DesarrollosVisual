@@ -1,3 +1,30 @@
+# ==============================================
+# Archivos temporales de Visual Studio
+# ==============================================
+**/.vs/
+**/*.vs
+*.user
+*.suo
+*.sln.cache
+
+# ==============================================
+# Carpetas de compilación
+# ==============================================
+**/bin/
+**/obj/
+**/*.bin
+
+# ==============================================
+# Archivos de configuración locales
+# ==============================================
+appsettings.local.config
+**/App.config.local
+
+# ==============================================
+# Otros archivos a ignorar
+# ==============================================
 **/desktop.ini
 **/*.rar
-appsettings.local.config
+**/*.zip
+**/*.bak
+**/*.tmp
