@@ -148,8 +148,9 @@ namespace SCMBD
                     //  Cargar permisos y datos del menu del usuario
 
                     Permisos = new DataTable();
-                    string sqlPermisos = @"SELECT idMenu, Menu, idOperacion, 
-                                                  Operacion, idAutorizacion, llamada, claveOperacion
+                    string sqlPermisos = @"SELECT idMenu,    Menu, idOperacion, 
+                                                  Operacion, idAutorizacion, llamada, claveOperacion,
+                                                  OrdenPresentacion, secuencia
                                            FROM   dbo.MenuUsuariosVw 
                                            WHERE  idUsuario = @IdUsuario 
                                            Order  BY OrdenPresentacion, secuencia";
@@ -194,7 +195,7 @@ namespace SCMBD
                         IdUsuario,        // 1
                         ClaveUsuario,     // 2
                         Permisos,         // 3
-                        Operacion,        // 4 ? ? VIENE DE: MenuUsuariosVw ? columna claveOperacion
+                        Operacion,        // 4
                         CadenaConexion);  // 5
 
                     this.Hide();

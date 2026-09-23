@@ -38,7 +38,7 @@ namespace SCMBD
             txtOperacion.Text = _claveOperacion;
             CargarLogo();
             CargarCombos();
-            CargarGridReglas();
+            CargarGridMotivoCorreo();
             LimpiarCampos();
 
 
@@ -91,7 +91,7 @@ namespace SCMBD
             }
         }
 
-        private void CargarGridReglas()
+        private void CargarGridMotivoCorreo()
         {
             int? filtroEst = null;
             if (cmbEstatus.SelectedValue != null)
@@ -281,49 +281,8 @@ ORDER BY codRegla";
 
         private void LimpiarCampos()
         {
-            TxtRegla.Text = "";
-            TxtNombreRegla.Text = "";
-            TxtDescripcion.Text = "";
-            CmbRequerido.SelectedIndex = -1;
-            cmbEstatus.SelectedIndex = -1;
-            TxtValorMinimo.Text = "";
-            if (cmbEstatus.Items.Count > 0) cmbEstatus.SelectedIndex = 0;
-          //  dg.ClearSelection();
+ 
             BtnBaja.Enabled = false;
-        }
-
-        private bool ValidarCampos()
-        {
-            if (string.IsNullOrWhiteSpace(TxtRegla.Text))
-            {
-                MessageBox.Show("Ingrese el código de la regla.", "Validación",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                TxtRegla.Focus();
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(TxtNombreRegla.Text))
-            {
-                MessageBox.Show("Ingrese el nombre de la regla.", "Validación",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                TxtNombreRegla.Focus();
-                return false;
-            }
-            if (CmbRequerido.SelectedValue == null)
-            {
-                MessageBox.Show("Seleccione si es requerido.", "Validación",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                CmbRequerido.Focus();
-                return false;
-            }
-            string val = string.IsNullOrWhiteSpace(TxtValorMinimo.Text) ? "0" : TxtValorMinimo.Text;
-            if (!int.TryParse(val, out _))
-            {
-                MessageBox.Show("Valor Mínimo debe ser numérico.", "Validación",
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                TxtValorMinimo.Focus();
-                return false;
-            }
-            return true;
         }
 
         private int ObtenerIdOperacionActual()
@@ -335,97 +294,6 @@ ORDER BY codRegla";
 
         private void BtnProcesar_Click(object sender, EventArgs e)
         {
-            if (!ValidarCampos()) return;
-
-            string codRegla = TxtRegla.Text.Trim().ToUpper();
-            string nombre = TxtNombreRegla.Text.Trim();
-            string desc = TxtDescripcion.Text.Trim();
-            int esReq = Convert.ToInt32(CmbRequerido.SelectedValue);
-            int valMin = string.IsNullOrWhiteSpace(TxtValorMinimo.Text) ? 0 : int.Parse(TxtValorMinimo.Text);
-            int idEst = Convert.ToInt32(cmbEstatus.SelectedValue);
-
-            StringBuilder json = new StringBuilder();
-            json.Append("[");
-            json.Append($"{{\"codRegla\":\"{codRegla}\",");
-            json.Append($"\"nombreRegla\":\"{EscaparJson(nombre)}\",");
-            json.Append($"\"descripcion\":\"{EscaparJson(desc)}\",");
-            json.Append($"\"esRequerido\":{esReq},");
-            json.Append($"\"valorMinimo\":{valMin},");
-            json.Append($"\"idEstatus\":{idEst}}}");
-            json.Append("]");
-            string jsonDatos = json.ToString();
-
-            try
-            {
-                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
-                {
-                    cn.Open();
-                    using (SqlCommand cmd = new SqlCommand("Spp_segReglasContrasenaTbl", cn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@PsJasonIn", jsonDatos);
-                        cmd.Parameters.AddWithValue("@PsOperacion", _claveOperacion);
-                        cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
-                        cmd.Parameters.AddWithValue("@PsIpAct", DBNull.Value);
-                        cmd.Parameters.AddWithValue("@PsMacAddressAct", DBNull.Value);
-
-                        SqlParameter pEstatus = new SqlParameter("@PnEstatus", SqlDbType.Int)
-                        {
-                            Direction = ParameterDirection.Output,
-                            Value = 0
-                        };
-                        cmd.Parameters.Add(pEstatus);
-
-                        SqlParameter pMensaje = new SqlParameter("@PsMensaje", SqlDbType.NVarChar, -1)
-                        {
-                            Direction = ParameterDirection.Output,
-                            Value = DBNull.Value
-                        };
-                        cmd.Parameters.Add(pMensaje);
-
-                        cmd.ExecuteNonQuery();
-
-                        int estatus = Convert.ToInt32(pEstatus.Value);
-                        string mensaje = pMensaje.Value?.ToString()?.Trim() ?? "";
-
-                        if (estatus == 0)
-                        {
-                            MessageBox.Show("✅ Proceso completado correctamente.", "Información",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            CargarGridReglas();
-                            LimpiarCampos();
-                        }
-                        else if (estatus == 1)
-                        {
-                            DataTable dtErrores = ParsearErroresJson(mensaje);
-                            if (dtErrores != null && dtErrores.Rows.Count > 0)
-                            {
-                                string rutaLogo = Path.Combine(Application.StartupPath,
-                                    ConfigurationManager.AppSettings["Imagenes"] ?? "", "Logo.png");
-                                using (FrmListaErrores frmErr = new FrmListaErrores(dtErrores, rutaLogo))
-                                {
-                                    frmErr.ShowDialog(this);
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show($"⚠️ No se pudieron detallar los errores:\n{mensaje}",
-                                                "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show($"⚠️ {mensaje}\nCódigo: {estatus}", "No completado",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}", "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private string EscaparJson(string texto)
@@ -511,80 +379,18 @@ ORDER BY codRegla";
         {
             if (dg.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Seleccione la regla a eliminar.", "Información",
+                MessageBox.Show("Seleccione el Motivo de Correp a eliminar.", "Información",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            string codRegla = dg.SelectedRows[0].Cells["codRegla"].Value?.ToString() ?? "";
-            string nombreRegla = dg.SelectedRows[0].Cells["nombreRegla"].Value?.ToString() ?? "";
-            int idOperacionAct = ObtenerIdOperacionActual();
-
-            if (MessageBox.Show(
-                $"¿Eliminar la regla?\n\n{codRegla} — {nombreRegla}",
-                "Confirmar Baja",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question,
-                MessageBoxDefaultButton.Button2) != DialogResult.Yes)
-                return;
-
-            try
-            {
-                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
-                {
-                    cn.Open();
-                    using (SqlCommand cmd = new SqlCommand("Spd_segReglasContrasenaTbl", cn))
-                    {
-                        cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@PsCodRegla", codRegla);
-                        cmd.Parameters.AddWithValue("@PnIdOperacionAct", idOperacionAct);
-                        cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
-
-                        SqlParameter pEstatus = new SqlParameter("@PnEstatus", SqlDbType.Int)
-                        {
-                            Direction = ParameterDirection.Output,
-                            Value = 0
-                        };
-                        cmd.Parameters.Add(pEstatus);
-
-                        SqlParameter pMensaje = new SqlParameter("@PsMensaje", SqlDbType.NVarChar, -1)
-                        {
-                            Direction = ParameterDirection.Output,
-                            Value = DBNull.Value
-                        };
-                        cmd.Parameters.Add(pMensaje);
-
-                        cmd.ExecuteNonQuery();
-
-                        int estatus = Convert.ToInt32(pEstatus.Value);
-                        string mensaje = pMensaje.Value?.ToString()?.Trim() ?? "";
-
-                        if (estatus == 0)
-                        {
-                            MessageBox.Show("✅ Regla eliminada correctamente.", "Baja",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            CargarGridReglas();
-                            LimpiarCampos();
-                        }
-                        else
-                        {
-                            MessageBox.Show($"⚠️ {mensaje}\nCódigo error: {estatus}", "No se pudo eliminar",
-                                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error al eliminar:\n{ex.Message}", "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+           
         }
 
         private void BtnRefrescar_Click(object sender, EventArgs e)
         {
            
-            CargarGridReglas();
+            CargarGridMotivoCorreo();
             LimpiarCampos();
         }
 

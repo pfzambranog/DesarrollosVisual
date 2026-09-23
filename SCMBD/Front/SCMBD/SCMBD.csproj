@@ -110,6 +110,9 @@
     <Compile Include="FrmConexion.Designer.cs">
       <DependentUpon>FrmConexion.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmListaErroresExtendida.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FrmManMenus.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -121,6 +124,12 @@
     </Compile>
     <Compile Include="FrmListaErrores.Designer.cs">
       <DependentUpon>FrmListaErrores.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmManMotivoCorreo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmManMotivoCorreo.Designer.cs">
+      <DependentUpon>FrmManMotivoCorreo.cs</DependentUpon>
     </Compile>
     <Compile Include="FrmRelMenuOperacion.cs">
       <SubType>Form</SubType>
@@ -183,6 +192,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmManMenus.resx">
       <DependentUpon>FrmManMenus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmManMotivoCorreo.resx">
+      <DependentUpon>FrmManMotivoCorreo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmRelMenuOperacion.resx">
       <DependentUpon>FrmRelMenuOperacion.cs</DependentUpon>

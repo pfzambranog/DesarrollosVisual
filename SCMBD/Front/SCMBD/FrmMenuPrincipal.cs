@@ -167,21 +167,19 @@ namespace SCMBD
                 return;
             }
 
-            var filasOrdenadas = _dtPermisos.AsEnumerable()
-                .OrderBy(r => r["idMenu"])
-                .ThenBy(r => r["idOperacion"]);
-
-            foreach (var fila in filasOrdenadas)
+            // ✅ RESPETAR EL ORDEN QUE VIENE DE LA CONSULTA — SIN reordenar
+            foreach (DataRow fila in _dtPermisos.Rows) // ⬅️ Recorre en el orden exacto de la BD
             {
                 int idOperacion = Convert.ToInt32(fila["idOperacion"]);
                 int idAutorizacion = Convert.ToInt32(fila["idAutorizacion"]);
-                string nombreMenu = fila["Menu"].ToString();
-                string nombreOp = fila["Operacion"].ToString();
+                string nombreMenu = fila["Menu"]?.ToString() ?? "";
+                string nombreOp = fila["Operacion"]?.ToString() ?? "";
                 string claveOp = fila["claveOperacion"]?.ToString().Trim() ?? "";
                 string llamada = fila["llamada"]?.ToString().Trim() ?? "";
 
                 if (idOperacion == 0 || idAutorizacion == 0)
                 {
+                    // Encabezado de grupo
                     var itemMenu = new ListViewItem(nombreMenu)
                     {
                         Tag = null,
@@ -191,9 +189,9 @@ namespace SCMBD
                 }
                 else
                 {
+                    // Elemento dentro del grupo
                     var itemOp = new ListViewItem("    " + nombreOp)
                     {
-                        // ✅ Guardar 3 valores: llamada, claveOperacion, nombreOperacion
                         Tag = Tuple.Create(llamada, claveOp, nombreOp)
                     };
                     lstOperaciones.Items.Add(itemOp);
