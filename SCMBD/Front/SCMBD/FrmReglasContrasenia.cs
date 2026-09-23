@@ -41,10 +41,10 @@ namespace SCMBD
             CargarGridMotivoCorreo();
             LimpiarCampos();
 
-
             bool puedeEditar = _dtPermisos.AsEnumerable()
                 .Any(f => f["claveOperacion"].ToString().Trim() == _claveOperacion.Trim()
                        && Convert.ToInt32(f["idAutorizacion"]) >= 2);
+
             BtnProcesar.Enabled = puedeEditar;
             BtnBaja.Enabled = false;
         }
@@ -87,19 +87,11 @@ namespace SCMBD
                 cmbEstatus.DisplayMember = "descripcion";
                 cmbEstatus.ValueMember = "valor";
                 cmbEstatus.DataSource = dt;
-
             }
         }
 
         private void CargarGridMotivoCorreo()
         {
-            int? filtroEst = null;
-            if (cmbEstatus.SelectedValue != null)
-            {
-                int val = Convert.ToInt32(cmbEstatus.SelectedValue);
-                if (val >= 0) filtroEst = val;
-            }
-
             try
             {
                 using (SqlConnection cn = new SqlConnection(_cadenaConexion))
@@ -114,14 +106,16 @@ SELECT
     CASE WHEN esRequerido = 1 THEN 'SI' ELSE 'NO' END AS RequeridoTexto,
     valorMinimo,
     idEstatus,
-    dbo.Fn_BuscaDescripcionGeneral('segReglasContrasenaTbl','idEstatus',idEstatus) AS EstatusTexto
+    CASE 
+        WHEN idEstatus = 0 THEN 'Regla Deshabilitada'
+        WHEN idEstatus = 1 THEN 'Regla Habilitada'
+        ELSE 'Desconocido'
+    END AS EstatusTexto
 FROM dbo.segReglasContrasenaTbl
 ORDER BY codRegla";
 
                     using (SqlCommand cmd = new SqlCommand(sql, cn))
                     {
-                       
-
                         cn.Open();
                         DataTable dt = new DataTable();
                         dt.Load(cmd.ExecuteReader());
@@ -141,36 +135,45 @@ ORDER BY codRegla";
             if (dg == null || dg.CurrentRow == null || dg.CurrentRow.Index < 0)
                 return;
 
-            DataGridViewRow fila = dg.CurrentRow;
-
-            TxtRegla.Text = LeerCelda(fila, "codRegla");
-            TxtNombreRegla.Text = LeerCelda(fila, "nombreRegla");
-            TxtDescripcion.Text = LeerCelda(fila, "descripcion");
-            string valReq = LeerCelda(fila, "esRequerido");
-            TxtValorMinimo.Text = LeerCelda(fila, "valorMinimo");
-            string valEst = LeerCelda(fila, "idEstatus");
-
-            BtnBaja.Enabled = true;
+            SeleccionarFila(dg.CurrentRow.Index);
         }
 
-        // Nuevo nombre — rompe la confusión
-        private string LeerCelda(DataGridViewRow fila, string nombreColumna)
+        private void Dg_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (fila == null) return "";
-            if (string.IsNullOrWhiteSpace(nombreColumna)) return "";
-        
-            DataGridViewCell celda = fila.Cells[nombreColumna];
-            if (celda == null || celda.Value == null || celda.Value == DBNull.Value)
-                return "";
-
-            return celda.Value.ToString().Trim();
+            if (e.RowIndex >= 0)
+            {
+                SeleccionarFila(e.RowIndex);
+                BtnBaja.Enabled = true;
+            }
+            else
+            {
+                BtnBaja.Enabled = false;
+            }
         }
-
 
         private void Dg_SelectionChanged(object sender, EventArgs e)
         {
             if (dg.SelectedRows.Count > 0)
                 dg.SelectedRows[0].Selected = true;
+        }
+
+        private void SeleccionarFila(int indice)
+        {
+            DataGridViewRow fila = dg.Rows[indice];
+
+            TxtRegla.Text = fila.Cells["codRegla"].Value?.ToString().Trim() ?? "";
+            TxtNombreRegla.Text = fila.Cells["nombreRegla"].Value?.ToString().Trim() ?? "";
+            TxtDescripcion.Text = fila.Cells["descripcion"].Value?.ToString().Trim() ?? "";
+
+            if (fila.Cells["esRequerido"].Value != null && fila.Cells["esRequerido"].Value != DBNull.Value)
+                CmbRequerido.SelectedValue = Convert.ToInt32(fila.Cells["esRequerido"].Value);
+
+            TxtValorMinimo.Text = fila.Cells["valorMinimo"].Value?.ToString().Trim() ?? "";
+
+            if (fila.Cells["idEstatus"].Value != null && fila.Cells["idEstatus"].Value != DBNull.Value)
+                cmbEstatus.SelectedValue = Convert.ToInt32(fila.Cells["idEstatus"].Value);
+
+            BtnBaja.Enabled = true;
         }
 
         private void ConfigurarAparienciaGrid(DataTable dt)
@@ -187,7 +190,6 @@ ORDER BY codRegla";
             dg.AllowUserToAddRows = false;
             dg.MultiSelect = false;
 
-            // Columnas visibles
             dg.Columns.Add("codRegla", "Regla");
             dg.Columns["codRegla"].Width = 90;
             dg.Columns["codRegla"].ReadOnly = true;
@@ -213,13 +215,13 @@ ORDER BY codRegla";
             dg.Columns.Add("EstatusTexto", "Estatus");
             dg.Columns["EstatusTexto"].Width = 150;
             dg.Columns["EstatusTexto"].ReadOnly = true;
+            dg.Columns["EstatusTexto"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
 
-            // Columnas ocultas
+
             dg.Columns.Add("idRegla", "idRegla"); dg.Columns["idRegla"].Visible = false;
             dg.Columns.Add("esRequerido", "esRequerido"); dg.Columns["esRequerido"].Visible = false;
             dg.Columns.Add("idEstatus", "idEstatus"); dg.Columns["idEstatus"].Visible = false;
 
-            // Llenar filas
             foreach (DataRow fila in dt.Rows)
             {
                 int idx = dg.Rows.Add();
@@ -235,16 +237,13 @@ ORDER BY codRegla";
                 f.Cells["idEstatus"].Value = fila["idEstatus"];
             }
 
-            // ✅ Limpiar y conectar eventos UNA SOLA VEZ
             dg.CellClick -= Dg_CellClick;
             dg.CurrentCellChanged -= Dg_CurrentCellChanged;
             dg.SelectionChanged -= Dg_SelectionChanged;
-
             dg.CellClick += Dg_CellClick;
             dg.CurrentCellChanged += Dg_CurrentCellChanged;
             dg.SelectionChanged += Dg_SelectionChanged;
 
-            // Seleccionar primera fila
             if (dg.Rows.Count > 0)
             {
                 dg.ClearSelection();
@@ -254,34 +253,14 @@ ORDER BY codRegla";
             }
         }
 
-        private void Dg_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.RowIndex >= 0)
-            {
-                SeleccionarFila(e.RowIndex);
-                BtnBaja.Enabled = true;
-            }
-            else
-            {
-                BtnBaja.Enabled = false;
-            }
-        }
-
-        private void SeleccionarFila(int indice)
-        {
-            DataGridViewRow fila = dg.Rows[indice];
-            TxtRegla.Text = fila.Cells["codRegla"].Value?.ToString() ?? "";
-            TxtNombreRegla.Text = fila.Cells["nombreRegla"].Value?.ToString() ?? "";
-            TxtDescripcion.Text = fila.Cells["descripcion"].Value?.ToString() ?? "";
-            CmbRequerido.SelectedValue = fila.Cells["esRequerido"].Value;
-            TxtValorMinimo.Text = fila.Cells["valorMinimo"].Value?.ToString() ?? "";
-            cmbEstatus.SelectedValue = fila.Cells["idEstatus"].Value;
-            BtnBaja.Enabled = true;
-        }
-
         private void LimpiarCampos()
         {
- 
+            TxtRegla.Text = "";
+            TxtNombreRegla.Text = "";
+            TxtDescripcion.Text = "";
+            CmbRequerido.SelectedIndex = -1;
+            TxtValorMinimo.Text = "";
+            cmbEstatus.SelectedIndex = -1;
             BtnBaja.Enabled = false;
         }
 
@@ -292,13 +271,14 @@ ORDER BY codRegla";
                 .Field<int>("idOperacion");
         }
 
-        private void BtnProcesar_Click(object sender, EventArgs e)
-        {
-        }
-
         private string EscaparJson(string texto)
         {
-            return texto.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            if (string.IsNullOrEmpty(texto)) return "";
+            return texto
+                .Replace("\\", "\\\\")
+                .Replace("\"", "\\\"")
+                .Replace("\n", "\\n")
+                .Replace("\r", "\\r");
         }
 
         private DataTable ParsearErroresJson(string jsonTexto)
@@ -375,21 +355,174 @@ ORDER BY codRegla";
             return v.StartsWith("1") ? "SI" : "NO";
         }
 
+        private void BtnProcesar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(TxtRegla.Text))
+                {
+                    MessageBox.Show("Ingrese la clave de la regla.", "Validación",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    TxtRegla.Focus();
+                    return;
+                }
+
+                string codRegla = TxtRegla.Text.Trim();
+                string nombreRegla = TxtNombreRegla.Text?.Trim() ?? "";
+                string descripcion = TxtDescripcion.Text?.Trim() ?? "";
+
+                int esRequerido = CmbRequerido.SelectedValue != null
+                    ? Convert.ToInt32(CmbRequerido.SelectedValue)
+                    : 0;
+
+                int valorMinimo = int.TryParse(TxtValorMinimo.Text, out int vm) ? vm : 0;
+
+                int idEstatus = cmbEstatus.SelectedValue != null
+                    ? Convert.ToInt32(cmbEstatus.SelectedValue)
+                    : 0;
+
+                string jsonDatos = $@"
+[{{
+    ""codRegla"": ""{EscaparJson(codRegla)}"",
+    ""nombreRegla"": ""{EscaparJson(nombreRegla)}"",
+    ""descripcion"": ""{EscaparJson(descripcion)}"",
+    ""esRequerido"": {esRequerido},
+    ""valorMinimo"": {valorMinimo},
+    ""idEstatus"": {idEstatus}
+}}]";
+
+                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
+                using (SqlCommand cmd = new SqlCommand("Spp_segReglasContrasenaTbl", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@PsJasonIn", jsonDatos);
+                    cmd.Parameters.AddWithValue("@PsOperacion", _claveOperacion);
+                    cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
+                    cmd.Parameters.AddWithValue("@PsIpAct", DBNull.Value);
+                    cmd.Parameters.AddWithValue("@PsMacAddressAct", DBNull.Value);
+
+                    SqlParameter pEstatus = new SqlParameter("@PnEstatus", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output,
+                        Value = 0
+                    };
+                    cmd.Parameters.Add(pEstatus);
+
+                    SqlParameter pMensaje = new SqlParameter("@PsMensaje", SqlDbType.NVarChar, -1)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(pMensaje);
+
+                    cn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    int estatus = Convert.ToInt32(pEstatus.Value);
+                    string mensaje = pMensaje.Value?.ToString()?.Trim() ?? "";
+
+                    if (estatus == 0)
+                    {
+                        MessageBox.Show("✅ Regla guardada correctamente.", "Éxito",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        CargarGridMotivoCorreo();
+                        LimpiarCampos();
+                    }
+                    else if (estatus == 1 && !string.IsNullOrWhiteSpace(mensaje))
+                    {
+                        DataTable dtErrores = ParsearErroresJson(mensaje);
+                        if (dtErrores.Rows.Count > 0)
+                        {
+                            FrmListaErrores frm = new FrmListaErrores(dtErrores);
+                            frm.ShowDialog();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show($"⚠️ {mensaje}", "Aviso",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al procesar:\n{ex.Message}", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void BtnBaja_Click(object sender, EventArgs e)
         {
             if (dg.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Seleccione el Motivo de Correp a eliminar.", "Información",
+                MessageBox.Show("Seleccione la regla a eliminar.", "Información",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-           
+            DataGridViewRow fila = dg.SelectedRows[0];
+            string codRegla = fila.Cells["codRegla"].Value?.ToString()?.Trim() ?? "";
+            string nombreRegla = fila.Cells["nombreRegla"].Value?.ToString()?.Trim() ?? "";
+
+            if (MessageBox.Show($"¿Eliminar la regla?\n\n{codRegla} — {nombreRegla}",
+                                "Confirmar Baja", MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                return;
+
+            try
+            {
+                using (SqlConnection cn = new SqlConnection(_cadenaConexion))
+                using (SqlCommand cmd = new SqlCommand("Spd_segReglasContrasenaTbl", cn))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    // ✅ SOLO los 5 parámetros que el SP espera — SIN @PsIpAct ni @PsMacAddressAct
+                    cmd.Parameters.AddWithValue("@PsCodRegla", codRegla);
+                    cmd.Parameters.AddWithValue("@PnIdOperacionAct", ObtenerIdOperacionActual());
+                    cmd.Parameters.AddWithValue("@PnIdUsuarioAct", _idUsuario);
+
+                    SqlParameter pEstatus = new SqlParameter("@PnEstatus", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output,
+                        Value = 0
+                    };
+                    cmd.Parameters.Add(pEstatus);
+
+                    SqlParameter pMensaje = new SqlParameter("@PsMensaje", SqlDbType.NVarChar, -1)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    cmd.Parameters.Add(pMensaje);
+
+                    cn.Open();
+                    cmd.ExecuteNonQuery();
+
+                    int estatus = Convert.ToInt32(pEstatus.Value);
+                    string mensaje = pMensaje.Value?.ToString()?.Trim() ?? "";
+
+                    if (estatus == 0)
+                    {
+                        MessageBox.Show("✅ Regla eliminada.", "Éxito",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        CargarGridMotivoCorreo();
+                        LimpiarCampos();
+                    }
+                    else
+                    {
+                        MessageBox.Show($"⚠️ {mensaje}", "Aviso",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al eliminar:\n{ex.Message}", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         private void BtnRefrescar_Click(object sender, EventArgs e)
         {
-           
             CargarGridMotivoCorreo();
             LimpiarCampos();
         }
@@ -410,7 +543,9 @@ ORDER BY codRegla";
                 string ruta = Path.Combine(carpeta, archivo);
                 string operReporte = _claveOperacion;
                 string tituloReporte = _nombreOperacion;
+
                 Services.ExcelExportService.ExportarUsuarios(ruta, dg, operReporte, tituloReporte, _claveUsuario);
+
                 MessageBox.Show($"✅ Exportado:\n{ruta}", "Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
                 {
