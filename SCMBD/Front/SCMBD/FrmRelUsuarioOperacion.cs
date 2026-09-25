@@ -18,12 +18,10 @@ namespace SCMBD
         private readonly string _claveOperacion;
         private readonly string _nombreOperacion;
         private readonly string _cadenaConexion;
-        private DataGridView dgv;
 
-        private DataTable _dtOriginal; // Guarda los valores al cargar
+        private DataTable _dtOriginal;
 
 
-        // ✅ Constructor con 6 parámetros: recibe CLAVE + NOMBRE
         public FrmRelUsuarioOperacion(int idUsuario,         string claveUsuario,    DataTable dtPermisos,
                                       string claveOperacion, string nombreOperacion, string cadenaConexion)
         {

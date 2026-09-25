@@ -79,7 +79,6 @@
             this.panel0.Name = "panel0";
             this.panel0.Size = new System.Drawing.Size(1500, 80);
             this.panel0.TabIndex = 2;
-
             // 
             // BtnBaja
             // 
@@ -91,7 +90,6 @@
             this.BtnBaja.TabIndex = 15;
             this.BtnBaja.UseVisualStyleBackColor = true;
             this.BtnBaja.Click += new System.EventHandler(this.BtnBaja_Click);
-
             // 
             // BtnProcesar
             // 
@@ -209,7 +207,7 @@
             this.cmbCompartir.Location = new System.Drawing.Point(603, 125);
             this.cmbCompartir.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.cmbCompartir.Name = "cmbCompartir";
-            this.cmbCompartir.Size = new System.Drawing.Size(34, 23);
+            this.cmbCompartir.Size = new System.Drawing.Size(44, 23);
             this.cmbCompartir.TabIndex = 7;
             // 
             // label1
@@ -380,6 +378,7 @@
             // TxtIdMotivo
             // 
             this.TxtIdMotivo.BackColor = System.Drawing.SystemColors.Control;
+            this.TxtIdMotivo.Enabled = false;
             this.TxtIdMotivo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.TxtIdMotivo.Location = new System.Drawing.Point(73, 16);
             this.TxtIdMotivo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
